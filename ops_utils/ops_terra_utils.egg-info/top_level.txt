@@ -1,4 +1,0 @@
-requests_utils
-tdr_api_schema
-tdr_utils
-terra_utils
