@@ -7,7 +7,7 @@ import math
 from typing import Optional, Any
 from dateutil import parser
 
-from .. import GCP, AZURE
+from ..vars import GCP, AZURE
 
 from .tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
 from .tdr_job_utils import MonitorTDRJob

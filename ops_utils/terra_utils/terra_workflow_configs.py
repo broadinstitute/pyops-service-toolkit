@@ -2,7 +2,7 @@ import os
 import yaml  # type: ignore[import]  # noqa: F401
 import re
 from .terra_util import TerraWorkspace
-from .. import ARG_DEFAULTS
+from ..vars import ARG_DEFAULTS
 import logging
 
 DOCKER_IMAGE = "us-central1-docker.pkg.dev/operations-portal-427515/ops-toolbox/ops_terra_utils_slim:latest"

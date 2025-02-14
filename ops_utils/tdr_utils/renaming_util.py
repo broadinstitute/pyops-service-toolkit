@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 from .tdr_ingest_utils import StartAndMonitorIngest
 from .tdr_api_utils import TDR
 from ..gcp_utils import GCPCloudFunctions
-from .. import ARG_DEFAULTS
+from ..vars import ARG_DEFAULTS
 
 
 class GetRowAndFileInfoForReingest:

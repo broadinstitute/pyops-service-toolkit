@@ -4,7 +4,7 @@ import re
 from typing import Any, Optional
 from urllib.parse import urlparse
 
-from .. import GCP
+from ..vars import GCP
 
 from ..requests_utils.request_util import GET, POST, PATCH, PUT, DELETE
 

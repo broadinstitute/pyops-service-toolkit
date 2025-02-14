@@ -9,7 +9,7 @@ testpaths = [
 ]
 
 [project]
-name = "ops-terra-utils"
+name = "ops_terra_utils"
 version = "0.0.1"
 dependencies = [
     "requests",
