@@ -30,3 +30,18 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/workspace_entity_info.yaml")
         entify_info = self.workspace.get_workspace_entity_info()
         assert entify_info['idName'] == "file_metadata_id"
+
+
+    @responses.activate
+    def test_get_workspace_acl(self):
+        responses.patch("https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace/acl")
+        responses._add_from_file(file_path="ops_utils/tests/data/workspace_acl_info.yaml")
+        workspace_acl = self.workspace.get_workspace_acl()
+        assert workspace_acl
+
+    @responses.activate
+    def test_get_workspace_metrics(self):
+        responses.patch("https://api.firecloud.org/api/workspaces/dsp-ops-gp-development-terra/js_test/entityQuery")
+        responses._add_from_file(file_path="ops_utils/tests/data/workspace_metrics.yaml")
+        workspace_metrics = self.workspace.get_gcp_workspace_metrics(entity_type='file_metadata')
+        assert workspace_metrics

@@ -1,0 +1,282 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"parameters\": {\n    \"fields\": {\n\n    },\n    \"filterOperator\"\
+      : \"and\",\n    \"page\": 1,\n    \"pageSize\": 40000,\n    \"sortDirection\"\
+      : \"asc\",\n    \"sortField\": \"name\"\n  },\n  \"resultMetadata\": {\n   \
+      \ \"filteredCount\": 51,\n    \"filteredPageCount\": 1,\n    \"unfilteredCount\"\
+      : 51\n  },\n  \"results\": [{\n  \"attributes\": {\n    \"file_name\": \"CDS-01bI6z.bai\"\
+      ,\n    \"content_type\": \"application/octet-stream\",\n    \"size_in_bytes\"\
+      : 7510768,\n    \"file_extension\": \".bai\",\n    \"md5_hash\": \"HCKPPecz3PYx/WAtCxwOiQ==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/CDS-01bI6z.bai\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_CDS-01bI6z.bai\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"CDS-01bI6z.bam\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 11799933048,\n    \"\
+      file_extension\": \".bam\",\n    \"md5_hash\": \"F8phr63PFbDemxj8mFDv4A==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/CDS-01bI6z.bam\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_CDS-01bI6z.bam\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"CDS-02TzJp.bai\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 3474168,\n    \"file_extension\"\
+      : \".bai\",\n    \"md5_hash\": \"ysw1vLYkHuzpYRviMQwb6g==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/CDS-02TzJp.bai\"\n  },\n  \"\
+      entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_CDS-02TzJp.bai\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"CDS-02TzJp.bam\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 4554705564,\n    \"\
+      file_extension\": \".bam\",\n    \"md5_hash\": \"ndZYv/aMwlWSIZl+lEsZTQ==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/CDS-02TzJp.bam\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_CDS-02TzJp.bam\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"CDS-05XWcR.bai\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 8529016,\n    \"file_extension\"\
+      : \".bai\",\n    \"md5_hash\": \"DpicN9SPC97ESXD0h9pYWQ==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/CDS-05XWcR.bai\"\n  },\n  \"\
+      entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_CDS-05XWcR.bai\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"CDS-05XWcR.bam\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 20515251946,\n    \"\
+      file_extension\": \".bam\",\n    \"md5_hash\": \"0PeX2yywF5aHUEUdUW37Ug==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/CDS-05XWcR.bam\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_CDS-05XWcR.bam\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"CDS-0693hw.bai\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 4066592,\n    \"file_extension\"\
+      : \".bai\",\n    \"md5_hash\": \"w1sQcM7sLTOpngWhM3K+gA==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/CDS-0693hw.bai\"\n  },\n  \"\
+      entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_CDS-0693hw.bai\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"CDS-0693hw.bam\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 7530218979,\n    \"\
+      file_extension\": \".bam\",\n    \"md5_hash\": \"8pY0FdFGbrI8oQ1BbO0zXg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/CDS-0693hw.bam\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_CDS-0693hw.bam\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"new_test.txt\",\n    \"content_type\"\
+      : \"text/plain; charset=utf-8\",\n    \"size_in_bytes\": 19,\n    \"file_extension\"\
+      : \".txt\",\n    \"md5_hash\": \"1Q3ShIHoQrkjnziVeIk22g==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/new_test.txt\"\n  },\n  \"\
+      entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_new_test.txt\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"test.ipynb\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 1106,\n    \"file_extension\"\
+      : \".ipynb\",\n    \"md5_hash\": \"azflKRyURIY1qIs+fj3i1Q==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/notebooks/test.ipynb\"\n  },\n\
+      \  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_notebooks_test.ipynb\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"test.Rmd\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 44,\n    \"file_extension\"\
+      : \".Rmd\",\n    \"md5_hash\": \"IBURK4GSEeGrOdlnawVbAg==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/notebooks/test.Rmd\"\n  },\n\
+      \  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_notebooks_test.Rmd\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_1.cram\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 202,\n    \"file_extension\"\
+      : \".cram\",\n    \"md5_hash\": \"WfFirQEloDHCOrX+r2gzhA==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/omop_synthetic/data_files/output_1.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_1.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_10.cram\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 94,\n    \"file_extension\"\
+      : \".cram\",\n    \"md5_hash\": \"e5FOKC3EIz/v8KH2EGyBYA==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/omop_synthetic/data_files/output_10.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_10.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_100.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 144,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"kPeXR0IrOjINuHDDXkJXZg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/omop_synthetic/data_files/output_100.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_100.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_101.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 116,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"NBcefszSGKFGr0hS4tZnXA==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/omop_synthetic/data_files/output_101.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_101.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_102.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 243,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"qVnXtsfrae9xpmNx3NQt9g==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/omop_synthetic/data_files/output_102.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_102.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_103.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 222,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"GeTPIUs/vWoG8Acm09ZGIg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/omop_synthetic/data_files/output_103.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_103.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_104.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 169,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"fwpmxsMXYtVuxH1cwDa9xw==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/omop_synthetic/data_files/output_104.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_104.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_105.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 124,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"t0XlLmQEO3Yq3kabiOwblg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/omop_synthetic/data_files/output_105.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_105.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_106.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 247,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"JQ1G5oTIllFdJYoKAangkg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/omop_synthetic/data_files/output_106.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_106.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_107.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 201,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"mHFNcaxD92osY4VPIbbOJQ==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/omop_synthetic/data_files/output_107.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_omop_synthetic_data_files_output_107.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_1.cram\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 202,\n    \"file_extension\"\
+      : \".cram\",\n    \"md5_hash\": \"WfFirQEloDHCOrX+r2gzhA==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/output_1.cram\"\n  },\n  \"\
+      entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_1.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_10.cram\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 94,\n    \"file_extension\"\
+      : \".cram\",\n    \"md5_hash\": \"e5FOKC3EIz/v8KH2EGyBYA==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/output_10.cram\"\n  },\n  \"\
+      entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_10.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_100.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 144,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"kPeXR0IrOjINuHDDXkJXZg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/output_100.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_100.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_101.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 116,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"NBcefszSGKFGr0hS4tZnXA==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/output_101.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_101.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_102.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 243,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"qVnXtsfrae9xpmNx3NQt9g==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/output_102.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_102.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_103.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 222,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"GeTPIUs/vWoG8Acm09ZGIg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/output_103.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_103.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_104.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 169,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"fwpmxsMXYtVuxH1cwDa9xw==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/output_104.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_104.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_105.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 124,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"t0XlLmQEO3Yq3kabiOwblg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/output_105.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_105.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_106.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 247,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"JQ1G5oTIllFdJYoKAangkg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/output_106.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_106.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_107.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 201,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"mHFNcaxD92osY4VPIbbOJQ==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/output_107.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_output_107.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"test.txt\",\n    \"content_type\"\
+      : \"text/plain\",\n    \"size_in_bytes\": 4,\n    \"file_extension\": \".txt\"\
+      ,\n    \"md5_hash\": \"CY9rzUYh03PK3k6DJie09g==\",\n    \"file_path\": \"gs://test-gs-path/test.txt\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_test.txt\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"Untitled.ipynb\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 13267,\n    \"file_extension\"\
+      : \".ipynb\",\n    \"md5_hash\": \"mBNRfwLq2mgmoVHmMWEXuQ==\",\n    \"file_path\"\
+      : \"gs://test-gs-path/Untitled.ipynb\"\n  },\n  \"\
+      entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_Untitled.ipynb\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"Untitled1.ipynb\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 4216,\n\
+      \    \"file_extension\": \".ipynb\",\n    \"md5_hash\": \"456wpFOCN5FvmlFzIKi+mg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path/Untitled1.ipynb\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path_Untitled1.ipynb\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"Untitled.ipynb\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 13267,\n    \"file_extension\"\
+      : \".ipynb\",\n    \"md5_hash\": \"mBNRfwLq2mgmoVHmMWEXuQ==\",\n    \"file_path\"\
+      : \"gs://test-gs-path//analyses/Untitled.ipynb\"\n\
+      \  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__analyses_Untitled.ipynb\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"Untitled1.ipynb\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 4216,\n\
+      \    \"file_extension\": \".ipynb\",\n    \"md5_hash\": \"456wpFOCN5FvmlFzIKi+mg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//analyses/Untitled1.ipynb\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__analyses_Untitled1.ipynb\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"CDS-01bI6z.bai\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 7510768,\n    \"file_extension\"\
+      : \".bai\",\n    \"md5_hash\": \"HCKPPecz3PYx/WAtCxwOiQ==\",\n    \"file_path\"\
+      : \"gs://test-gs-path//dataset-1/data_files/CDS-01bI6z.bai\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__dataset-1_data_files_CDS-01bI6z.bai\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_1.cram\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 202,\n    \"file_extension\"\
+      : \".cram\",\n    \"md5_hash\": \"WfFirQEloDHCOrX+r2gzhA==\",\n    \"file_path\"\
+      : \"gs://test-gs-path//omop_synthetic/data_files/output_1.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_1.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_10.cram\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 94,\n    \"file_extension\"\
+      : \".cram\",\n    \"md5_hash\": \"e5FOKC3EIz/v8KH2EGyBYA==\",\n    \"file_path\"\
+      : \"gs://test-gs-path//omop_synthetic/data_files/output_10.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_10.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_100.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 144,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"kPeXR0IrOjINuHDDXkJXZg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//omop_synthetic/data_files/output_100.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_100.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_101.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 116,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"NBcefszSGKFGr0hS4tZnXA==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//omop_synthetic/data_files/output_101.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_101.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_102.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 243,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"qVnXtsfrae9xpmNx3NQt9g==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//omop_synthetic/data_files/output_102.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_102.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_103.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 222,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"GeTPIUs/vWoG8Acm09ZGIg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//omop_synthetic/data_files/output_103.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_103.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_104.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 169,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"fwpmxsMXYtVuxH1cwDa9xw==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//omop_synthetic/data_files/output_104.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_104.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_105.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 124,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"t0XlLmQEO3Yq3kabiOwblg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//omop_synthetic/data_files/output_105.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_105.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_106.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 247,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"JQ1G5oTIllFdJYoKAangkg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//omop_synthetic/data_files/output_106.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_106.cram\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"output_107.cram\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 201,\n\
+      \    \"file_extension\": \".cram\",\n    \"md5_hash\": \"mHFNcaxD92osY4VPIbbOJQ==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//omop_synthetic/data_files/output_107.cram\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__omop_synthetic_data_files_output_107.cram\"\
+      \n},{\n  \"attributes\": {\n    \"content_type\": \"application/octet-stream\"\
+      ,\n    \"size_in_bytes\": 7510768,\n    \"md5_hash\": \"HCKPPecz3PYx/WAtCxwOiQ==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//test/path/\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__test_path_\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"CDS-01bI6z.bai\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 7510768,\n    \"file_extension\"\
+      : \".bai\",\n    \"md5_hash\": \"HCKPPecz3PYx/WAtCxwOiQ==\",\n    \"file_path\"\
+      : \"gs://test-gs-path//test/path/CDS-01bI6z.bai\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__test_path_something.bai\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"Untitled.ipynb\",\n    \"content_type\"\
+      : \"application/octet-stream\",\n    \"size_in_bytes\": 13267,\n    \"file_extension\"\
+      : \".ipynb\",\n    \"md5_hash\": \"mBNRfwLq2mgmoVHmMWEXuQ==\",\n    \"file_path\"\
+      : \"gs://test-gs-path//test/path/Untitled.ipynb\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__test_path_Untitled.ipynb\"\
+      \n},{\n  \"attributes\": {\n    \"file_name\": \"Untitled1.ipynb\",\n    \"\
+      content_type\": \"application/octet-stream\",\n    \"size_in_bytes\": 4216,\n\
+      \    \"file_extension\": \".ipynb\",\n    \"md5_hash\": \"456wpFOCN5FvmlFzIKi+mg==\"\
+      ,\n    \"file_path\": \"gs://test-gs-path//test/path/Untitled1.ipynb\"\
+      \n  },\n  \"entityType\": \"file_metadata\",\n  \"name\": \"test-gs-path__test_path_Untitled1.ipynb\"\
+      \n}]\n}"
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: authorization,content-type,accept,origin,x-app-id
+      Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '1728000'
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000, h3=":443"; ma=2592000,h3-29=":443";
+        ma=2592000
+      Cache-control: no-store
+      Pragma: no-cache
+      Referrer-Policy: strict-origin-when-cross-origin
+      Strict-Transport-Security: max-age=31536000; includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding
+      Via: 1.1 google, 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: 1; mode=block
+    method: GET
+    status: 200
+    url: https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace/entityQuery/file_metadata?pageSize=40000
