@@ -16,3 +16,17 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/get_workspace.yaml")
         workspace_info = self.workspace.get_workspace_info()
         assert workspace_info
+
+    @responses.activate
+    def test_get_workspace_bucket(self):
+        responses.patch("https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace")
+        responses._add_from_file(file_path="ops_utils/tests/data/get_workspace.yaml")
+        workspace_bucket = self.workspace.get_workspace_bucket()
+        assert workspace_bucket == "gs-bucket-id"
+
+    @responses.activate
+    def test_get_workspace_entity_info(self):
+        responses.patch("https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace/entities")
+        responses._add_from_file(file_path="ops_utils/tests/data/workspace_entity_info.yaml")
+        entify_info = self.workspace.get_workspace_entity_info()
+        assert entify_info['idName'] == "file_metadata_id"
