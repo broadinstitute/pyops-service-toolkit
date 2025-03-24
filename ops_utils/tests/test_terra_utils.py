@@ -45,3 +45,18 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/workspace_metrics.yaml")
         workspace_metrics = self.workspace.get_gcp_workspace_metrics(entity_type='file_metadata')
         assert workspace_metrics
+
+    @responses.activate
+    def test_get_workspace_workflows(self):
+        responses.patch("https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace/methodconfigs")
+        responses._add_from_file(file_path="ops_utils/tests/data/get_workspace_workflows.yaml")
+        workflows = self.workspace.get_workspace_workflows()
+        assert workflows
+
+    @responses.activate
+    def test_check_workspace_public(self):
+        responses.patch("https://api.firecloud.org/api/test_billing_project/test_workspace/js_test")
+        responses.patch("https://sam.dsde-prod.broadinstitute.org/api/resources/v2/workspace/test-workspace-guid/policies/reader/public")
+        responses._add_from_file(file_path="ops_utils/tests/data/check_workspace_public.yaml")
+        workspace_public = self.workspace.check_workspace_public()
+        assert not workspace_public 
