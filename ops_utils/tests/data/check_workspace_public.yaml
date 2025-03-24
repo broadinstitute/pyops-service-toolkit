@@ -22,7 +22,7 @@ responses:
       X-XSS-Protection: 1; mode=block
     method: GET
     status: 200
-    url: https://api.firecloud.org/api/test_billing_project/test_workspace/js_test
+    url: https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace
 - response:
     auto_calculate_content_length: false
     body: 'false'

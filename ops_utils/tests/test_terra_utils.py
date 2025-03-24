@@ -55,8 +55,16 @@ class TestTerraWorkspaceUtils:
 
     @responses.activate
     def test_check_workspace_public(self):
-        responses.patch("https://api.firecloud.org/api/test_billing_project/test_workspace/js_test")
+        responses.patch("https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace")
         responses.patch("https://sam.dsde-prod.broadinstitute.org/api/resources/v2/workspace/test-workspace-guid/policies/reader/public")
         responses._add_from_file(file_path="ops_utils/tests/data/check_workspace_public.yaml")
         workspace_public = self.workspace.check_workspace_public()
         assert not workspace_public 
+
+
+    @responses.activate
+    def test_create_workspace(self):
+        responses.patch("https://api.firecloud.org/api/workspaces")
+        responses._add_from_file(file_path="ops_utils/tests/data/create_workspace.yaml")
+        new_workspace_metadata = self.workspace.check_workspace_public()
+        assert new_workspace_metadata
