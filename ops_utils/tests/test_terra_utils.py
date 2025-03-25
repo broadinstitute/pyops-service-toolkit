@@ -77,3 +77,11 @@ class TestTerraWorkspaceUtils:
         attributes = [{"op": "AddUpdateAttribute","attributeName": "dataset_id","addUpdateAttribute": 'ex-dataset-guid'}]
         updated_workspace_metadata = self.workspace.update_workspace_attributes(attributes=attributes)
         assert updated_workspace_metadata
+
+
+    @responses.activate
+    def test_update_user_acl(self):
+        responses.patch("https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace/acl")
+        responses._add_from_file(file_path="ops_utils/tests/data/update_workspace_attributes.yaml")
+        update_acl = self.workspace.update_user_acl(email='test-account@integration-project.iam.gserviceaccount.com', access_level='reader')
+        assert update_acl

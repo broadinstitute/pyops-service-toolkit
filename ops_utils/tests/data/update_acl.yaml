@@ -1,0 +1,24 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"invitesSent":[],"usersNotFound":[],"usersUpdated":[{"accessLevel":"READER","canCompute":false,"canShare":false,"email":"test-account@integration-project.iam.gserviceaccount.com"}]}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: authorization,content-type,accept,origin,x-app-id
+      Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '1728000'
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-control: no-store
+      Pragma: no-cache
+      Referrer-Policy: strict-origin-when-cross-origin
+      Strict-Transport-Security: max-age=31536000; includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: 1; mode=block
+    method: PATCH
+    status: 200
+    url: https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace/acl?inviteUsersNotFound=false
