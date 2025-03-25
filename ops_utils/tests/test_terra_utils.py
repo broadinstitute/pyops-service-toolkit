@@ -85,3 +85,11 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/update_workspace_attributes.yaml")
         update_acl = self.workspace.update_user_acl(email='test-account@integration-project.iam.gserviceaccount.com', access_level='reader')
         assert update_acl
+
+    @responses.activate
+    def test_update_multiple_user_acl(self):
+        responses.patch("https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace/acl")
+        responses._add_from_file(file_path="ops_utils/tests/data/update_multiple_acl.yaml")
+        acl_list = [ { "email": "test@broadinstitute.org", "accessLevel": "READER", "canShare": False, "canCompute": False, }, { "email": "test-account@integration-project.iam.gserviceaccount.com", "accessLevel": "READER", "canShare": False, "canCompute": False, } ]
+        update_multiple_acl = self.workspace.update_multiple_users_acl(acl_list=acl_list, invite_users_not_found=False)
+        assert update_multiple_acl
