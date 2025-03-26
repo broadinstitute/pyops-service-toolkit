@@ -93,3 +93,10 @@ class TestTerraWorkspaceUtils:
         acl_list = [ { "email": "test@broadinstitute.org", "accessLevel": "READER", "canShare": False, "canCompute": False, }, { "email": "test-account@integration-project.iam.gserviceaccount.com", "accessLevel": "READER", "canShare": False, "canCompute": False, } ]
         update_multiple_acl = self.workspace.update_multiple_users_acl(acl_list=acl_list, invite_users_not_found=False)
         assert update_multiple_acl
+
+    @responses.activate
+    def test_put_library_metadata(self):
+        responses.patch("https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace/acl")
+        responses._add_from_file(file_path="ops_utils/tests/data/put_library_metadata.yaml")
+        upload_metadata_res = self.workspace.upload_metadata_to_workspace_table("sample.tsv")
+        assert upload_metadata_res
