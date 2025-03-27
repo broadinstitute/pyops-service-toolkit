@@ -2,7 +2,7 @@ import responses
 from unittest.mock import MagicMock
 from ops_utils.requests_utils.request_util import RunRequest
 from ops_utils.terra_utils.terra_util import Terra, TerraGroups, TerraWorkspace
-
+from ops_utils.terra_utils.terra_workflow_configs import WorkflowConfigs
 mock_token = MagicMock()
 request_util = RunRequest(token=mock_token)
 
