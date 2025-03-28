@@ -1,7 +1,9 @@
 responses:
 - response:
     auto_calculate_content_length: false
-    body: '{"acl":{"test_user@broadinstitute.org":{"accessLevel":"OWNER","canCompute":true,"canShare":true,"pending":false}}}}'
+    body: '{"acl":
+      {"test_user@broadinstitute.org":
+        {"accessLevel":"OWNER","canCompute":true,"canShare":true,"pending":false}}}'
     content_type: text/plain
     headers:
       Access-Control-Allow-Headers: authorization,content-type,accept,origin,x-app-id
