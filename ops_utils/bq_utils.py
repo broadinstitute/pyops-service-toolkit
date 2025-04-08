@@ -5,13 +5,13 @@ from typing import Any
 
 
 class BigQueryUtil:
-    def __init__(self, project_id: str):
+    def __init__(self, project_id: Optional[str] = None):
         """
         Initialize the BigQuery utility with user authentication.
         """
         self.project_id = project_id
         if project_id:
-            self.client = bigquery.Client(project=project_id)
+            self.client = bigquery.Client(project=self.project_id)
         else:
             self.client = bigquery.Client()
 
