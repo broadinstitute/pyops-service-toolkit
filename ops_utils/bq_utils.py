@@ -1,7 +1,7 @@
 import logging
 from google.cloud import bigquery
 from google.api_core.exceptions import Forbidden
-from typing import Any
+from typing import Any, Optional
 
 
 class BigQueryUtil:
