@@ -64,11 +64,28 @@ class GCPCloudFunctions:
             Any: The GCS blob object.
         """
         file_path_components = self._process_cloud_path(full_path)
-        blob = self.client.bucket(file_path_components["bucket"]).blob(file_path_components["blob_url"])
+
+        # Specify the billing project
+        bucket = self.client.bucket(file_path_components["bucket"], user_project=self.client.project)
+        blob = bucket.blob(file_path_components["blob_url"])
+
         # If blob exists in GCS reload it so metadata is there
         if blob.exists():
             blob.reload()
         return blob
+
+    def check_file_exists(self, full_path: str) -> bool:
+        """
+        Check if a file exists in GCS.
+
+        Args:
+            full_path (str): The full GCS path.
+
+        Returns:
+            bool: True if the file exists, False otherwise.
+        """
+        blob = self.load_blob_from_full_path(full_path)
+        return blob.exists()
 
     @staticmethod
     def _create_bucket_contents_dict(bucket_name: str, blob: Any, file_name_only: bool) -> dict:
@@ -154,9 +171,16 @@ class GCPCloudFunctions:
         # If the bucket name starts with gs://, remove it
         if bucket_name.startswith("gs://"):
             bucket_name = bucket_name.split("/")[2].strip()
-        logging.info(f"Running list_blobs on gs://{bucket_name}/")
-        blobs = self.client.list_blobs(bucket_name)
-        logging.info("Finished running. Processing files now")
+
+        logging.info(f"Accessing bucket: {bucket_name} with project: {self.client.project}")
+
+        # Get the bucket object and set user_project for Requester Pays
+        bucket = self.client.bucket(bucket_name, user_project=self.client.project)
+
+        # List blobs within the bucket
+        blobs = bucket.list_blobs()
+        logging.info("Finished listing blobs. Processing files now.")
+
         # Create a list of dictionaries containing file information
         file_list = [
             self._create_bucket_contents_dict(
@@ -288,7 +312,7 @@ class GCPCloudFunctions:
             verbose (bool, optional): Whether to log each job's success. Defaults to False.
             job_complete_for_logging (int, optional): The number of jobs to complete before logging. Defaults to 500.
         """
-        list_of_jobs_args_list = [[file_path] for file_path in files_to_delete]
+        list_of_jobs_args_list = [[file_path] for file_path in set(files_to_delete)]
 
         MultiThreadedJobs().run_multi_threaded_job(
             workers=workers,
@@ -382,6 +406,7 @@ class GCPCloudFunctions:
 
         Args:
             files_to_copy (list[dict]): List of dictionaries containing source and destination file paths.
+                dict should have keys "source_file" and "full_destination_path"
             workers (int): Number of worker threads.
             max_retries (int): Maximum number of retries.
         """
@@ -639,3 +664,10 @@ class GCPCloudFunctions:
 
         logging.info("No valid files found.")
         return None
+
+    def write_to_gcp_file(self, cloud_path: str, file_contents: str) -> None:
+        """
+        Write content to a file in GCS.
+        """
+        blob = self.load_blob_from_full_path(cloud_path)
+        blob.upload_from_string(file_contents)
