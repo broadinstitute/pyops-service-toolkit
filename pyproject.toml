@@ -11,6 +11,7 @@ testpaths = [
 [project]
 name = "ops_utils_module"
 version = "0.0.1"
+requires-python = ">=3.11.9"
 dependencies = [
     "requests",
     "google-cloud-resource-manager",
