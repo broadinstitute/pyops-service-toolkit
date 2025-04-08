@@ -30,7 +30,7 @@ dependencies = [
     "pytz",
     "pandas",
     "db-dtypes",
-    "pydantic==2.9.1",
+    "pydantic==2.5.3",
     "pyyaml",
     "humanfriendly",
     "responses",
