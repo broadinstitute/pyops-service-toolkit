@@ -4,8 +4,8 @@ import re
 from typing import Any, Optional
 from urllib.parse import urlparse
 
+from .. import deprecated
 from ..vars import GCP
-
 from ..requests_utils.request_util import GET, POST, PATCH, PUT, DELETE
 
 TERRA_LINK = "https://api.firecloud.org/api"
@@ -29,8 +29,31 @@ class Terra:
         self.request_util = request_util
 
     def fetch_accessible_workspaces(self, fields: Optional[list[str]]) -> list[dict]:
+        """
+        Fetch the list of accessible workspaces.
+
+        Args:
+            fields (Optional[list[str]]): A list of fields to include in the response. If None, all fields are included.
+
+        Returns:
+            list[dict]: A list of dictionaries containing the accessible workspaces.
+        """
         fields_str = "fields=" + ",".join(fields) if fields else ""
         url = f'{RAWLS_LINK}/workspaces?{fields_str}'
+        response = self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
+        return response.json()
+
+    def get_pet_account_json(self) -> dict:
+        """
+        Get the service account JSON.
+
+        Returns:
+            dict: The service account JSON.
+        """
+        url = f"{SAM_LINK}/google/v1/user/petServiceAccount/key"
         response = self.request_util.run_request(
             uri=url,
             method=GET
@@ -509,8 +532,14 @@ class TerraWorkspace:
             )
         return request_json
 
+    @deprecated(
+        """Firecloud functionality has been sunset. There is currently no support for adding library
+        attributes in Terra."""
+    )
     def put_metadata_for_library_dataset(self, library_metadata: dict, validate: bool = False) -> dict:
         """
+        THIS FUNCTION HAS BEEN DEPRECATED
+
         Update the metadata for a library dataset.
 
         Args:
@@ -746,13 +775,19 @@ class TerraWorkspace:
         """
         Make a workspace public.
         """
-        workspace_bucket = self.get_workspace_bucket()
-        bucket_prefix_stripped = workspace_bucket.removeprefix("fc-secure-").removeprefix("fc-")
+        body = [
+            {
+                "settingType": "PubliclyReadable",
+                "config": {
+                    "enabled": public
+                }
+            }
+        ]
         self.request_util.run_request(
-            uri=f"{SAM_LINK}/resources/v2/workspace/{bucket_prefix_stripped}/policies/reader/public",
+            uri=f"{RAWLS_LINK}/workspaces/v2/{self.billing_project}/{self.workspace_name}/settings",
             method=PUT,
             content_type="application/json",
-            data="true" if public else "false"
+            data=json.dumps(body)
         )
 
     def check_workspace_public(self, bucket: Optional[str] = None) -> bool:
