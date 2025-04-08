@@ -9,7 +9,7 @@ testpaths = [
 ]
 
 [project]
-name = "ops_terra_utils"
+name = "ops_utils_module"
 version = "0.0.1"
 dependencies = [
     "requests",
@@ -43,5 +43,5 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["ops_utils"]
+where = ["."]
 exclude = ["ops_utils.tests*"]  # empty by default
