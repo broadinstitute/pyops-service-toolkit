@@ -1,5 +1,5 @@
 from concurrent import futures
-from typing import Callable, Any, Optional
+from typing import Callable, Any, Optional, Tuple
 import logging
 
 
