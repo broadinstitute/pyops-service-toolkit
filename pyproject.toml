@@ -23,7 +23,7 @@ dependencies = [
     "google-cloud-logging",
     "google-auth-oauthlib==1.2.1",
     "google-cloud-bigquery",
-    "azure-identity==1.15.0",
+    "azure-identity==1.16.1",
     "azure-storage-blob==12.19.1",
     "oauth2client",
     "backoff",
