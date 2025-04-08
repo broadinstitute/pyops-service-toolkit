@@ -9,8 +9,9 @@ testpaths = [
 ]
 
 [project]
-name = "ops_terra_utils"
+name = "ops_util_module"
 version = "0.0.1"
+requires-python = ">=3.11.0"
 dependencies = [
     "requests",
     "google-cloud-resource-manager",
@@ -22,15 +23,15 @@ dependencies = [
     "google-cloud-logging",
     "google-auth-oauthlib==1.2.1",
     "google-cloud-bigquery",
-    "azure-identity==1.17.1",
-    "azure-storage-blob==12.21.0",
+    "azure-identity==1.15.0",
+    "azure-storage-blob==12.19.1",
     "oauth2client",
     "backoff",
     "aiohttp",
     "pytz",
     "pandas",
     "db-dtypes",
-    "pydantic==2.9.1",
+    "pydantic==2.5.3",
     "pyyaml",
     "humanfriendly",
     "responses",
@@ -43,5 +44,5 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["ops_utils"]
+where = ["."]
 exclude = ["ops_utils.tests*"]  # empty by default
