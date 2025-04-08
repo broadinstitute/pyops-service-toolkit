@@ -1,6 +1,6 @@
+import logging
 from google.cloud import bigquery
 from google.api_core.exceptions import Forbidden
-import logging
 from typing import Any
 
 

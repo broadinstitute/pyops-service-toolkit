@@ -1,9 +1,10 @@
 import os
 import yaml  # type: ignore[import]  # noqa: F401
 import re
+import logging
+
 from .terra_util import TerraWorkspace
 from ..vars import ARG_DEFAULTS
-import logging
 
 DOCKER_IMAGE = "us-central1-docker.pkg.dev/operations-portal-427515/ops-toolbox/ops_terra_utils_slim:latest"
 # Define the relative path to the file
