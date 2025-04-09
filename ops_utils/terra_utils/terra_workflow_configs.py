@@ -8,24 +8,26 @@ from ..vars import ARG_DEFAULTS
 
 DOCKER_IMAGE = "us-central1-docker.pkg.dev/operations-portal-427515/ops-toolbox/ops_terra_utils_slim:latest"
 # Define the relative path to the file
-DOCKSTORE_YAML = "../../../.dockstore.yml"
-WDL_ROOT_DIR = "../../../"
+#DOCKSTORE_YAML = "../../../.dockstore.yml"
+#WDL_ROOT_DIR = "../../../"
 
-# Get the absolute path to the file based on the script's location
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-YAML_FILE_FULL_PATH = os.path.join(SCRIPT_DIR, DOCKSTORE_YAML)
-WDL_ROOT_DIR_FULL_PATH = os.path.join(SCRIPT_DIR, WDL_ROOT_DIR)
 
 
 class GetWorkflowNames:
-    def __init__(self) -> None:
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    def __init__(self, dockstore_yaml: str) -> None:
         """
         Initialize the GetWorkflowNames class.
 
         Loads the YAML file and extracts workflow names.
+
+        Args:
+            dockstore_yaml (str): The path to the Dockstore YAML file.
         """
+        self.yaml_full_path = os.path.join(self.SCRIPT_DIR, dockstore_yaml)
         # Load the YAML file
-        with open(YAML_FILE_FULL_PATH, 'r') as file:
+        with open(self.yaml_full_path, 'r') as file:
             yaml_data = yaml.safe_load(file)
 
         # Extract workflow names and store them
@@ -44,12 +46,14 @@ class GetWorkflowNames:
         return list(self.workflow_names)
 
 
-class WorkflowConfigs:
+class WorkflowConfigs(GetWorkflowNames):
     def __init__(
             self,
             workflow_name: str,
             billing_project: str,
             terra_workspace_util: TerraWorkspace,
+            dockstore_yaml: str,
+            wdl_root_dir: str,
             set_input_defaults: bool = False,
             extra_default_inputs: dict = {}
     ):
@@ -61,24 +65,28 @@ class WorkflowConfigs:
             billing_project (str): The billing project to use for the workflow.
             terra_workspace_util (TerraWorkspace): The TerraWorkspace utility object.
             set_input_defaults (bool): Whether to set the default input values for the workflow configuration.
-            tdr_billing_profile (str): The TDR billing profile for workflow.
+            dockstore_yaml (str): The path to the Dockstore YAML file.
+            wdl_root_dir (str): The root directory for WDL files.
+            extra_default_inputs (dict): Additional default inputs for the workflow configuration.
 
         Raises:
             ValueError: If the workflow name is not found in the YAML file.
         """
+        super().__init__(dockstore_yaml)
         self.workflow_name = workflow_name
         self.terra_workspace_util = terra_workspace_util
         self.set_input_defaults = set_input_defaults
         self.billing_project = billing_project
         self.extra_default_inputs = extra_default_inputs
+        self.wdl_root_dir = wdl_root_dir
 
         # Check if the workflow name is in the YAML file
-        available_workflows = GetWorkflowNames().get_workflow_names()
+        available_workflows = self.get_workflow_names()
         if workflow_name not in available_workflows:
-            raise ValueError(f"Workflow name {workflow_name} not found in {YAML_FILE_FULL_PATH}: {available_workflows}")
+            raise ValueError(f"Workflow name {workflow_name} not found in {self.yaml_full_path}: {available_workflows}")
 
         # Load the YAML file
-        with open(YAML_FILE_FULL_PATH, 'r') as file:
+        with open(self.yaml_full_path, 'r') as file:
             yaml_data = yaml.safe_load(file)
         # Extract specific workflow information from yaml_data
         self.yaml_info = next(workflow for workflow in yaml_data['workflows'] if workflow['name'] == self.workflow_name)
@@ -96,7 +104,7 @@ class WorkflowConfigs:
         Returns:
             str: The absolute path.
         """
-        return os.path.join(WDL_ROOT_DIR_FULL_PATH, relative_path.lstrip('/'))
+        return os.path.join(self.SCRIPT_DIR, self.wdl_root_dir, relative_path.lstrip('/'))
 
     @staticmethod
     def _get_wdl_workflow_name(wdl_file_path: str) -> str:
