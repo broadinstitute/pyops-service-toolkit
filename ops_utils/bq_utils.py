@@ -15,14 +15,31 @@ class BigQueryUtil:
         else:
             self.client = bigquery.Client()
 
-    def upload_data_to_table(self, table_id: str, rows: list[dict]) -> None:
+    def _delete_existing_records(self, table_id):
+        """
+        Deletes all records from a BigQuery table.
+
+        Args:
+            table_id (str): BigQuery table ID in the format 'project.dataset.table'.
+        """
+        delete_query = f"DELETE FROM `{table_id}` WHERE TRUE"
+        query_job = self.client.query(delete_query)
+        results = query_job.result()
+        n_rows_deleted = len([row for row in results])
+        logging.info(f"Deleted {n_rows_deleted} records from table {table_id}")
+
+    def upload_data_to_table(self, table_id: str, rows: list[dict], delete_existing_data: bool = False) -> None:
         """
         Uploads data directly from a list of dictionaries to a BigQuery table.
 
         Args:
             table_id (str): BigQuery table ID in the format 'project.dataset.table'.
             rows (list[dict]): List of dictionaries, where each dictionary represents a row of data.
+            delete_existing_data (bool): If True, deletes existing data in the table before uploading. Default is False.
         """
+        if delete_existing_data:
+            self._delete_existing_records(table_id)
+
         # Get the BigQuery table reference
         destination_table = self.client.get_table(table_id)
         previous_rows = destination_table.num_rows
