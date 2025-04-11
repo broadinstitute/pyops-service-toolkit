@@ -1,0 +1,46 @@
+name: Auto Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Bump version
+        id: bump
+        run: |
+          VERSION_FILE="VERSION"
+          old_version=$(cat $VERSION_FILE)
+          IFS='.' read -r major minor patch <<< "$old_version"
+          new_version="$major.$minor.$((patch + 1))"
+          echo $new_version > $VERSION_FILE
+          echo "version=$new_version" >> $GITHUB_OUTPUT
+
+      - name: Commit bumped version
+        run: |
+          git add VERSION
+          git commit -m "chore: bump version to ${{ steps.bump.outputs.version }}"
+          git push origin main
+
+      - name: Tag new version
+        run: |
+          git tag v${{ steps.bump.outputs.version }}
+          git push origin v${{ steps.bump.outputs.version }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.bump.outputs.version }}
+          name: Release v${{ steps.bump.outputs.version }}
