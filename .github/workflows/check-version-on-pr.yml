@@ -1,0 +1,33 @@
+name: Check Version Bump in PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Make sure we have the base and head
+
+      - name: Check for VERSION file changes
+        run: |
+          echo "Checking if VERSION file was changed in this PR..."
+
+          # Get the list of changed files in this PR
+          git fetch origin ${{ github.base_ref }} --depth=1
+          changed_files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+
+          echo "Changed files:"
+          echo "$changed_files"
+
+          if echo "$changed_files" | grep -q "^VERSION.txt$"; then
+            echo "✅ VERSION file was changed."
+          else
+            echo "❌ VERSION file was NOT changed. Please update it when making a release-worthy change."
+            exit 1
+          fi
