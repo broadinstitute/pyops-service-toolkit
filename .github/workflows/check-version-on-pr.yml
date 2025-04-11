@@ -25,7 +25,7 @@ jobs:
           echo "Changed files:"
           echo "$changed_files"
 
-          if echo "$changed_files" | grep -q "^VERSION$"; then
+          if echo "$changed_files" | grep -q "^VERSION.txt$"; then
             echo "✅ VERSION file was changed."
           else
             echo "❌ VERSION file was NOT changed. Please update it when making a release-worthy change."
