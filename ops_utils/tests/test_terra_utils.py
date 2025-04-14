@@ -9,7 +9,8 @@ request_util = RunRequest(token=mock_token)
 
 class TestTerraWorkspaceUtils:
     workspace = TerraWorkspace(workspace_name="test_workspace",billing_project="test_billing_project", request_util=request_util)
-
+    azure_workspace = TerraWorkspace(workspace_name="azure_workspace",billing_project="Azure_billing_project", request_util=request_util)
+    
     @responses.activate
     def test_get_workspace(self):
         responses._add_from_file(file_path="ops_utils/tests/data/get_workspace.yaml")
@@ -66,7 +67,7 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/update_workspace_attributes.yaml")
         attributes = [{"op": "AddUpdateAttribute","attributeName": "dataset_id","addUpdateAttribute": 'ex-dataset-guid'}]
         workspace_update = self.workspace.update_workspace_attributes(attributes=attributes)
-        assert workspace_update == None
+        assert workspace_update is None
 
 
     @responses.activate
@@ -88,3 +89,10 @@ class TestTerraWorkspaceUtils:
         patch('__main__.open', mock_open(read_data="entity:sample_id\tsample_alias\nRP-123_ABC\tABC"))
         upload_metadata_res = self.workspace.upload_metadata_to_workspace_table("sample.tsv")
         assert upload_metadata_res
+
+    @responses.activate
+    def test_set_workspace_id(self):
+        responses._add_from_file(file_path="ops_utils/tests/data/set_workspace_id.yaml")
+        workspace_info_dict = self.azure_workspace.get_workspace_info()
+        workspace_id = self.azure_workspace.set_workspace_id(workspace_info_dict)
+        assert workspace_id
