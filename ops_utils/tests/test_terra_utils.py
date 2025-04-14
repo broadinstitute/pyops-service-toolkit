@@ -2,7 +2,6 @@ import responses
 from unittest.mock import MagicMock, mock_open, patch
 from ops_utils.requests_utils.request_util import RunRequest
 from ops_utils.terra_utils.terra_util import Terra, TerraGroups, TerraWorkspace
-from ops_utils.terra_utils.terra_workflow_configs import WorkflowConfigs
 mock_token = MagicMock()
 request_util = RunRequest(token=mock_token)
 
@@ -86,13 +85,19 @@ class TestTerraWorkspaceUtils:
     @responses.activate
     def test_upload_metadata_metadata(self):
         responses._add_from_file(file_path="ops_utils/tests/data/put_library_metadata.yaml")
-        patch('__main__.open', mock_open(read_data="entity:sample_id\tsample_alias\nRP-123_ABC\tABC"))
-        upload_metadata_res = self.workspace.upload_metadata_to_workspace_table("sample.tsv")
+        with patch('ops_utils.terra_utils.terra_util.open', mock_open(read_data="entity:sample_id\tsample_alias\nRP-123_ABC\tABC")):
+            upload_metadata_res = self.workspace.upload_metadata_to_workspace_table("sample.tsv")
         assert upload_metadata_res
 
     @responses.activate
-    def test_set_workspace_id(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/set_workspace_id.yaml")
-        workspace_info_dict = self.azure_workspace.get_workspace_info()
-        workspace_id = self.azure_workspace.set_workspace_id(workspace_info_dict)
-        assert workspace_id
+    def test_set_azure_terra_vars(self):
+        responses._add_from_file(file_path="ops_utils/tests/data/set_az_vars.yaml")
+        self.azure_workspace.set_azure_terra_variables()
+        assert self.azure_workspace
+
+
+    @responses.activate
+    def test_leave_workspace(self):
+        responses._add_from_file(file_path="ops_utils/tests/data/leave_workspace.yaml")
+        self.workspace.leave_workspace(ignore_direct_access_error=True)
+        assert self.azure_workspace
