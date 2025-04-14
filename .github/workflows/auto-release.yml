@@ -13,12 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Read version from VERSION file
+      - name: Read version and changelog from VERSION.txt
         id: version
         run: |
-          VERSION=$(cat VERSION.txt | tr -d ' \t\n')
+          VERSION=$(head -n 1 VERSION.txt | tr -d ' \t\n')
+          NOTES=$(tail -n +2 VERSION.txt)
           echo "Using version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Set up Git
         run: |
@@ -35,3 +39,4 @@ jobs:
         with:
           tag_name: v${{ steps.version.outputs.version }}
           name: Release v${{ steps.version.outputs.version }}
+          body: ${{ steps.version.outputs.notes }}
