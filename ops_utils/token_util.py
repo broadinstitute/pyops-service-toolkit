@@ -6,7 +6,7 @@ import os
 from typing import Optional, Union
 from datetime import datetime, timedelta
 
-from .vars import GCP, AZURE
+from .vars import GCP, AZURE  # import from __init__.py
 
 
 class Token:

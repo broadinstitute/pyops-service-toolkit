@@ -83,7 +83,6 @@ class RunRequest:
         )
 
         # Apply decorators to request execution
-        @mock_responses(activate=self.create_mocks, update_results=True)  # type: ignore[no-untyped-call]
         @backoff_decorator
         def _make_request() -> requests.Response:
             if method == GET:
