@@ -14,12 +14,16 @@ pip3 install git+https://github.com/broadinstitute/ops_util_module.git#egg=ops_u
 ## Releases and Installing a Specific Version
 
 ### Versioning 
-With each PR, a GitHub action will run to ensure that the [VERSION.txt](VERSION.txt) file has been updated. This 
-version file is used as the tag for each new release. Update this version file according to what has been changed. 
-Given the versioning standard outlined as MAJOR.MINOR.PATCH, update your version according to what has been updated 
-as part of your PR. Increment MAJOR versioning when adding breaking changes, increment MINOR versioning when 
-adding functionality in a backwards-compatible manner, and increment PATCH versioning when making 
-backwards-compatible bug fixes. For more information on versioning, see [here](https://semver.org/).  
+With each PR, a GitHub action will run to ensure that the [VERSION.txt](VERSION.txt) file has been updated. The 
+contents of the `VERSION.txt` file are used both for tagging the release _and_ adding release notes. When updating 
+this file, be sure to update both the version AND the release notes that should be used.   
+
+* Update the version within the `VERSION.txt` file according to what has been changed. 
+  * Given the versioning standard outlined as MAJOR.MINOR.PATCH, update your version according to what has been updated 
+  as part of your PR. Increment MAJOR versioning when adding breaking changes, increment MINOR versioning when 
+  adding functionality in a backwards-compatible manner, and increment PATCH versioning when making 
+  backwards-compatible bug fixes. For more information on versioning, see [here](https://semver.org/).
+* Update the release notes with a short description of what has been changed as part of your PR 
 
 ### Releases 
 With each merge to `main`, a GitHub action will automatically run to create a new release and tag it using the 

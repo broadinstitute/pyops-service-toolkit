@@ -12,13 +12,13 @@ jobs:
       - name: Checkout PR branch
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2  # Make sure we have the base and head
+          fetch-depth: 2  # Ensure we get both base and head commits
 
-      - name: Check for VERSION file changes
+      - name: Check for VERSION file changes and content
         run: |
-          echo "Checking if VERSION file was changed in this PR..."
+          echo "Checking if VERSION.txt was changed..."
 
-          # Get the list of changed files in this PR
+          # Get the list of changed files
           git fetch origin ${{ github.base_ref }} --depth=1
           changed_files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
 
@@ -26,8 +26,19 @@ jobs:
           echo "$changed_files"
 
           if echo "$changed_files" | grep -q "^VERSION.txt$"; then
-            echo "✅ VERSION file was changed."
+            echo "✅ VERSION.txt was changed."
           else
-            echo "❌ VERSION file was NOT changed. Please update it when making a release-worthy change."
+            echo "❌ VERSION.txt was NOT changed. Please update it when making a release-worthy change."
             exit 1
+          fi
+
+          echo "Checking contents of VERSION.txt..."
+
+          # Check that VERSION.txt has at least two non-empty lines
+          line_count=$(grep -cve '^\s*$' VERSION.txt)
+          if [ "$line_count" -lt 2 ]; then
+            echo "❌ VERSION.txt must contain both a version and release notes (at least 2 non-empty lines)."
+            exit 1
+          else
+            echo "✅ VERSION.txt has a version and release notes."
           fi
