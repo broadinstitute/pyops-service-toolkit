@@ -4,8 +4,7 @@ ignore = ["E265"]
 [tool.pytest.ini_options]
 addopts = "-re -q"
 testpaths = [
-    "python/tests/unit_tests",
-    "python/tests/integration_tests",
+    "ops_utils/tests"
 ]
 
 [project]

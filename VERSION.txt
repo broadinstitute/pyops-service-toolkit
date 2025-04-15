@@ -1,2 +1,2 @@
-1.0.0
-- Update name of repo and package name
+1.1.0
+- Adding unit tests for terra workspace utils

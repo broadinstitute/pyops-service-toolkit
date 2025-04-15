@@ -1,0 +1,24 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"attributes":{},"authorizationDomain":[],"billingAccount":"billingAccounts/guid","bucketName":"bucket_guid","cloudPlatform":"Gcp","completedCloneWorkspaceFileTransfer":"2025-03-24T14:41:07.395Z","createdBy":"test_accnt@broadinstitute.org","createdDate":"2025-03-24T14:41:07.395Z","googleProject":"project_id","googleProjectNumber":"project_number","isLocked":false,"lastModified":"2025-03-24T14:41:07.395Z","name":"test_workspace","namespace":"test_billing_project","state":"Ready","workflowCollectionName":"workspace_guid","workspaceId":"workspace_guid","workspaceType":"rawls","workspaceVersion":"v2"}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: authorization,content-type,accept,origin,x-app-id
+      Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '1728000'
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000, h3=":443"; ma=2592000,h3-29=":443";
+        ma=2592000
+      Cache-control: no-store
+      Pragma: no-cache
+      Referrer-Policy: strict-origin-when-cross-origin
+      Strict-Transport-Security: max-age=31536000; includeSubDomains
+      Via: 1.1 google, 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: 1; mode=block
+      location: https://rawls.dsde-prod.broadinstitute.org^(?!/introspect/)(/)(.*)workspaces/test_billing_project/test_workspace
+    method: POST
+    status: 201
+    url: https://api.firecloud.org/api/workspaces
