@@ -9,7 +9,7 @@ testpaths = [
 ]
 
 [project]
-name = "ops_util_module"
+name = "pyops-service-toolkit"
 version = "0.0.1"
 requires-python = ">=3.11.0"
 dependencies = [
