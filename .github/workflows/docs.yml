@@ -2,7 +2,6 @@ name: website
 
 # build the documentation whenever there are new commits on main
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
