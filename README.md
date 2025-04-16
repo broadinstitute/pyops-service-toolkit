@@ -8,12 +8,13 @@ the same types of functionality.
 ## Installing Module Package
 This will automatically install the latest release version.
 ``` sh
-pip3 install git+https://github.com/broadinstitute/ops_util_module.git#egg=ops_util_module
+pip3 install git+https://github.com/broadinstitute/pyops-service-toolkit.git#egg=pyops-service-toolkit
 ```
 
 ## Releases and Installing a Specific Version
 
 ### Versioning
+
 With each PR, a GitHub action will run to ensure that the [VERSION.txt](VERSION.txt) file has been updated. The
 contents of the `VERSION.txt` file are used both for tagging the release _and_ adding release notes. When updating
 this file, be sure to update both the version AND the release notes that should be used.
@@ -25,22 +26,30 @@ this file, be sure to update both the version AND the release notes that should 
   backwards-compatible bug fixes. For more information on versioning, see [here](https://semver.org/).
 * Update the release notes with a short description of what has been changed as part of your PR
 
-### Releases
-With each merge to `main`, a GitHub action will automatically run to create a new release and tag it using the
-version indicated in the [VERSION.txt](VERSION.txt) file. All releases can be found [here](https://github.com/broadinstitute/ops_util_module/releases).
 
-### Installing a specific version
-In downstream repositories or tools that are using this module, you can pin or install specific versions using the
-following syntax:
+### Releases 
+With each merge to `main`, a GitHub action will automatically run to create a new release and tag it using the 
+version indicated in the [VERSION.txt](VERSION.txt) file. All releases and their tags can be found [here](https://github.com/broadinstitute/pyops-service-toolkit/releases).
+
+### Installing a specific version 
+In downstream repositories or tools that are using this module, **it is highly encouraged that a specific version is 
+pinned in the `requirements.txt` file.** This is recommended to prevent any breaking changes that are introduced in 
+this repository from breaking your downstream code. A specific version can be pinned or installed using the following syntax: 
+
 ```bash
-git+https://github.com/broadinstitute/ops_util_module.git@{VERSION}#egg=ops_util_module
-```
-So for example, if you wanted to install version `0.1.0`, you would pin the version in your `requirements.txt` file
-like this:
-```bash
-git+https://github.com/broadinstitute/ops_util_module.git@v0.1.0#egg=ops_util_module
+git+https://github.com/broadinstitute/pyops-service-toolkit.git@{VERSION_TAG}#egg=pyops-service-toolkit
 ```
 
+So for example, if you wanted to install version `v1.1.0`, you would pin the version in your `requirements.txt` file 
+like this: 
+```bash
+git+https://github.com/broadinstitute/pyops-service-toolkit.git@v1.1.0#egg=pyops-service-toolkit
+```
+
+Or installed using pip:
+```bash
+pip install git+https://github.com/broadinstitute/pyops-service-toolkit.git@v1.1.0#egg=pyops-service-toolkit
+```
 
 ## Example Usage
 Once you've installed the package, you can structure import statements like this:
@@ -48,8 +57,13 @@ Once you've installed the package, you can structure import statements like this
 # TDR api utils
 from ops_utils.tdr_utils.tdr_api_utils import TDR
 ```
-If that works successfully, you could then run something like:
+
+You could then run something like: 
 ```
 print(TDR.TDR_LINK)
 ```
 which should return `https://data.terra.bio/api/repository/v1`
+
+---
+
+If you're interested in contributing to this repository, see [CONTRIBUTING.md](CONTRIBUTING.md).
