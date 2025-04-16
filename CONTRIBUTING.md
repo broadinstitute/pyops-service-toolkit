@@ -21,7 +21,7 @@ to the appropriate utility file. For example, if creating new Terra functionalit
 [terra_util.py](ops_utils/terra_utils/terra_util.py). If adding functionality that interacts with a service that we 
 do not already have support for (or just does not belong in a category that already exists), add a new file under 
 [ops_utils](ops_utils). With your submitted PR, be sure to update the [VERSION.txt](VERSION.txt) appropriately by 
-incrementing the version and adding release notes. See [README.txt](README.md#versioning-) for more information 
+incrementing the version and adding release notes. See [README.txt](README.md#versioning) for more information 
 about incrementing versions correctly.  
 
 ### Fixing Bugs 
@@ -30,7 +30,7 @@ If possible, try to address bug fixes in a backwards compatible way.
 ### Breaking Changes 
 Is possible, it's best to avoid breaking changes. Prioritize trying to making changes in a backwards-compatible 
 manner. If this isn't possible, however, please make it abundantly clear in your PR that changes are breaking. 
-Increment the [VERSION.txt](VERSION.txt) appropriately - see [README.txt](README.md#versioning-) for more information 
+Increment the [VERSION.txt](VERSION.txt) appropriately - see [README.txt](README.md#versioning) for more information 
 about incrementing versions correctly.
 
 ## Testing Changes 
@@ -52,4 +52,4 @@ pip install git+https://github.com/broadinstitute/pyops-service-toolkit.git@{COM
 When submitting a PR, try to add as much detail to the description as possible that will help the reviewer in 
 evaluating the change. If there is a relevant ticket, please link it. If there are screenshots, links (to workspaces,
 datasets, etc.), or logging that will help the review, please include those too. Tag one of the Operations team 
-members for review. At least one review is required to merge changed into `main`.  
+members for review. At least one review is required to merge changes into `main`.  

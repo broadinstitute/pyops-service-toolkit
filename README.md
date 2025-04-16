@@ -13,7 +13,7 @@ pip3 install git+https://github.com/broadinstitute/pyops-service-toolkit.git#egg
 
 ## Releases and Installing a Specific Version
 
-### Versioning 
+### Versioning
 With each PR, a GitHub action will run to ensure that the [VERSION.txt](VERSION.txt) file has been updated. The 
 contents of the `VERSION.txt` file are used both for tagging the release _and_ adding release notes. When updating 
 this file, be sure to update both the version AND the release notes that should be used.   
