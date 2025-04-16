@@ -15,7 +15,7 @@ class BigQueryUtil:
         else:
             self.client = bigquery.Client()
 
-    def _delete_existing_records(self, table_id):
+    def _delete_existing_records(self, table_id: str) -> None:
         """
         Deletes all records from a BigQuery table.
 

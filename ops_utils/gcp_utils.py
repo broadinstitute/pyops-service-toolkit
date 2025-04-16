@@ -219,7 +219,9 @@ class GCPCloudFunctions:
                     src_blob, token=rewrite_token
                 )
                 if verbose:
-                    logging.info(f"{full_destination_path}: Progress so far: {bytes_rewritten}/{bytes_to_rewrite} bytes.")
+                    logging.info(
+                        f"{full_destination_path}: Progress so far: {bytes_rewritten}/{bytes_to_rewrite} bytes."
+                    )
                 if not rewrite_token:
                     break
 

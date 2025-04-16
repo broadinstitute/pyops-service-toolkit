@@ -3,8 +3,7 @@ import logging
 import base64
 import re
 from pathlib import Path
-from datetime import datetime, timezone, timedelta
-from typing import Union
+from datetime import datetime, timezone
 from urllib.parse import unquote
 
 
@@ -52,7 +51,7 @@ class AzureBlobDetails:
                     )
         return details
 
-    def download_blob(self, blob_name: str, dl_path: Path):
+    def download_blob(self, blob_name: str, dl_path: Path) -> None:
         blob_client = self.blob_service_client.get_blob_client(blob=blob_name, container=self.container_name)
         dl_path.parent.mkdir(parents=True, exist_ok=True)
         with dl_path.open(mode='wb') as file:
@@ -65,13 +64,13 @@ class SasTokenUtil:
         self.token = token
         self.expiry_datetime = self._set_token_expiry()
 
-    def _set_token_expiry(self):
+    def _set_token_expiry(self) -> datetime:
         sas_expiry_time_pattern = re.compile(r"se.+?(?=\&sp)")
         expiry_time_str = sas_expiry_time_pattern.search(self.token)
         time_str = unquote(expiry_time_str.group()).replace("se=", "").replace("&sr=c", "")  # type: ignore[union-attr]
         return datetime.fromisoformat(time_str)
 
-    def seconds_until_token_expires(self) -> Union[timedelta, None]:
+    def seconds_until_token_expires(self) -> int:
         current_time = datetime.now(timezone.utc)
         time_delta = self.expiry_datetime - current_time
         return time_delta.seconds

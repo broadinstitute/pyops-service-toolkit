@@ -62,7 +62,8 @@ class GetTdrAssetInfo:
         Execute the process to retrieve either dataset or snapshot information.
 
         Returns:
-            dict: A dictionary containing the relevant information based on whether dataset_id or snapshot_id is provided.
+            dict: A dictionary containing the relevant information based on whether dataset_id or
+            snapshot_id is provided.
         """
         if self.dataset_id:
             return self._get_dataset_info()
