@@ -7,9 +7,11 @@ request_util = RunRequest(token=mock_token)
 
 
 class TestTerraWorkspaceUtils:
-    workspace = TerraWorkspace(workspace_name="test_workspace",billing_project="test_billing_project", request_util=request_util)
-    azure_workspace = TerraWorkspace(workspace_name="azure_workspace",billing_project="Azure_billing_project", request_util=request_util)
-    
+    workspace = TerraWorkspace(workspace_name="test_workspace",
+                               billing_project="test_billing_project", request_util=request_util)
+    azure_workspace = TerraWorkspace(workspace_name="azure_workspace",
+                                     billing_project="Azure_billing_project", request_util=request_util)
+
     @responses.activate
     def test_get_workspace(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/get_workspace.yaml")
@@ -27,7 +29,6 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/workspace_entity_info.yaml")
         entify_info = self.workspace.get_workspace_entity_info()
         assert entify_info['file_metadata']['idName'] == "file_metadata_id"
-
 
     @responses.activate
     def test_get_workspace_acl(self):
@@ -51,8 +52,7 @@ class TestTerraWorkspaceUtils:
     def test_check_workspace_public(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/check_workspace_public.yaml")
         workspace_public = self.workspace.check_workspace_public()
-        assert not workspace_public 
-
+        assert not workspace_public
 
     @responses.activate
     def test_create_workspace(self):
@@ -60,25 +60,25 @@ class TestTerraWorkspaceUtils:
         new_workspace_metadata = self.workspace.create_workspace()
         assert new_workspace_metadata
 
-
     @responses.activate
     def test_update_workspace_attributes(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/update_workspace_attributes.yaml")
-        attributes = [{"op": "AddUpdateAttribute","attributeName": "dataset_id","addUpdateAttribute": 'ex-dataset-guid'}]
+        attributes = [{"op": "AddUpdateAttribute", "attributeName": "dataset_id", "addUpdateAttribute": 'ex-dataset-guid'}]
         workspace_update = self.workspace.update_workspace_attributes(attributes=attributes)
         assert workspace_update is None
-
 
     @responses.activate
     def test_update_user_acl(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/update_acl.yaml")
-        update_acl = self.workspace.update_user_acl(email='test-account@integration-project.iam.gserviceaccount.com', access_level='READER')
-        assert update_acl 
+        update_acl = self.workspace.update_user_acl(
+            email='test-account@integration-project.iam.gserviceaccount.com', access_level='READER')
+        assert update_acl
 
     @responses.activate
     def test_update_multiple_user_acl(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/update_multiple_acl.yaml")
-        acl_list = [ { "email": "test@broadinstitute.org", "accessLevel": "READER", "canShare": False, "canCompute": False, }, { "email": "test-account@integration-project.iam.gserviceaccount.com", "accessLevel": "READER", "canShare": False, "canCompute": False, } ]
+        acl_list = [{"email": "test@broadinstitute.org", "accessLevel": "READER", "canShare": False, "canCompute": False, },
+                    {"email": "test-account@integration-project.iam.gserviceaccount.com", "accessLevel": "READER", "canShare": False, "canCompute": False, }]
         update_multiple_acl = self.workspace.update_multiple_users_acl(acl_list=acl_list, invite_users_not_found=False)
         assert update_multiple_acl
 
@@ -94,7 +94,6 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/set_az_vars.yaml")
         self.azure_workspace.set_azure_terra_variables()
         assert self.azure_workspace
-
 
     @responses.activate
     def test_leave_workspace(self):

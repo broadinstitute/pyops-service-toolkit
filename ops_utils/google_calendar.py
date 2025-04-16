@@ -17,7 +17,7 @@ class GoogleCalendar:
         self.service = build(
             serviceName="calendar",
             version="v3",
-            credentials= credentials,
+            credentials=credentials,
             cache_discovery=False
         )
 
