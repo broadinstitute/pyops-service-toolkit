@@ -75,8 +75,8 @@ shouldn't be fixed, they can be ignored individually by adding the following to 
 the check: `# type: ignore[assignment]`. Be sure to replace `assignment` with the actual check-type that's failing
 (which is reported in the failure message).
 
-To override the check and commit directly, run git commit -m "YOU COMMIT MESSAGE" --no-verify
-The only time you may want to use the --no-verify flag is if your commit is WIP and you just need to commit
+To override the check and commit directly, run `git commit -m "YOU COMMIT MESSAGE" --no-verify`
+The only time you may want to use the `--no-verify` flag is if your commit is WIP and you just need to commit
 something for testing.
 
 To add more hooks, browse available hooks [here](https://pre-commit.com/hooks.html)
