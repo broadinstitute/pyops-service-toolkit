@@ -1,2 +1,2 @@
-1.1.0
-- Adding unit tests for terra workspace utils
+1.2.0
+- Add contributing guidelines
