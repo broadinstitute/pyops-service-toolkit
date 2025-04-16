@@ -3,8 +3,7 @@ import logging
 import base64
 import re
 from pathlib import Path
-from datetime import datetime, timezone, timedelta
-from typing import Union
+from datetime import datetime, timezone
 from urllib.parse import unquote
 
 

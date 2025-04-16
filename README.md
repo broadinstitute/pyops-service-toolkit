@@ -31,8 +31,7 @@ version indicated in the [VERSION.txt](VERSION.txt) file. All releases can be fo
 
 ### Installing a specific version
 In downstream repositories or tools that are using this module, you can pin or install specific versions using the
-following
-syntax:
+following syntax:
 ```bash
 git+https://github.com/broadinstitute/ops_util_module.git@{VERSION}#egg=ops_util_module
 ```

@@ -51,7 +51,13 @@ class Jira:
         """Transition a Jira ticket to a new status"""
         self.jira.transition_issue(issue_key, transition_id)
 
-    def get_issues_by_criteria(self, criteria: str, max_results: int = 200, fields: Optional[Union[list, str]] = None, expand_info: Optional[str] = None) -> dict:
+    def get_issues_by_criteria(
+            self,
+            criteria: str,
+            max_results: int = 200,
+            fields: Optional[Union[list, str]] = None,
+            expand_info: Optional[str] = None
+    ) -> dict:
         logging.info(f"Getting issues by criteria: {criteria}")
         if fields:
             return self.jira.search_issues(criteria, fields=fields, maxResults=max_results, expand=expand_info)
