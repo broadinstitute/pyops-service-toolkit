@@ -219,7 +219,9 @@ class GCPCloudFunctions:
                     src_blob, token=rewrite_token
                 )
                 if verbose:
-                    logging.info(f"{full_destination_path}: Progress so far: {bytes_rewritten}/{bytes_to_rewrite} bytes.")
+                    logging.info(
+                        f"{full_destination_path}: Progress so far: {bytes_rewritten}/{bytes_to_rewrite} bytes."
+                    )
                 if not rewrite_token:
                     break
 
@@ -399,7 +401,7 @@ class GCPCloudFunctions:
         return not_identical_files
 
     def multithread_copy_of_files_with_validation(
-            self, files_to_copy: list[dict], workers: int, max_retries: int
+            self, files_to_copy: list[dict], workers: int, max_retries: int, skip_check_if_already_copied: bool = False
     ) -> None:
         """
         Copy multiple files in parallel with validation.
@@ -409,13 +411,19 @@ class GCPCloudFunctions:
                 dict should have keys "source_file" and "full_destination_path"
             workers (int): Number of worker threads.
             max_retries (int): Maximum number of retries.
+            skip_check_if_already_copied (bool, optional): Whether to skip checking
+                if files are already copied and start copying right away. Defaults to False.
         """
-        updated_files_to_move = self.loop_and_log_validation_files_multithreaded(
-            files_to_copy,
-            log_difference=False,
-            workers=workers,
-            max_retries=max_retries
-        )
+        if skip_check_if_already_copied:
+            logging.info("Skipping check if files are already copied")
+            updated_files_to_move = files_to_copy
+        else:
+            updated_files_to_move = self.loop_and_log_validation_files_multithreaded(
+                files_to_copy,
+                log_difference=False,
+                workers=workers,
+                max_retries=max_retries
+            )
         # If all files are already copied, return
         if not updated_files_to_move:
             logging.info("All files are already copied")

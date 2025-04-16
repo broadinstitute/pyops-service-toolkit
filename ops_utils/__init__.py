@@ -1,5 +1,8 @@
 import warnings
 import functools
+from typing import Callable, TypeVar, Any, cast
+
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 def comma_separated_list(value: str) -> list:
@@ -10,15 +13,15 @@ def comma_separated_list(value: str) -> list:
 # A wrapper function to be used for deprecated functionality. Use the @deprecated
 # decorator for a function and provide a reason. Anytime the function is called, a
 # deprecation warning will be raised.
-def deprecated(reason: str):
-    def decorator(func):
+def deprecated(reason: str) -> Callable[[F], F]:
+    def decorator(func: F) -> F:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             warnings.warn(
                 f"{func.__name__} is deprecated: {reason}",
                 category=DeprecationWarning,
                 stacklevel=2
             )
             return func(*args, **kwargs)
-        return wrapper
+        return cast(F, wrapper)
     return decorator

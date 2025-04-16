@@ -49,8 +49,8 @@ class BatchIngest:
             batch_size (int): The size of each batch for ingestion.
             bulk_mode (bool): Flag indicating if bulk mode should be used.
             cloud_type (str): The type of cloud (GCP or AZURE).
-            terra_workspace (Optional[TerraWorkspace], optional): An instance of the TerraWorkspace class. Used for Azure
-                ingests so sas token can be created. Defaults to None.
+            terra_workspace (Optional[TerraWorkspace], optional): An instance of the TerraWorkspace class.
+                Used for Azure ingests so sas token can be created. Defaults to None.
             update_strategy (str, optional): The strategy for updating existing records. Defaults to "replace".
             waiting_time_to_poll (int, optional): The time to wait between polling for job status. Defaults to 60.
             sas_expire_in_secs (int, optional): The expiration time for SAS tokens in seconds.

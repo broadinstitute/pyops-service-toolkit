@@ -2,6 +2,7 @@ import os
 import logging
 from jira import JIRA
 from google.cloud import secretmanager
+from typing import Union, Optional
 
 WORKBENCH_SERVER = "https://broadworkbench.atlassian.net/"
 BROAD_INSTITUTE_SERVER = "https://broadinstitute.atlassian.net/"
@@ -11,10 +12,10 @@ DEFAULT_PROJECT_ID = "ops-team-metrics"
 class Jira:
     JIRA_API_KEY_SECRET_NAME = "jira_api_key"
 
-    def __init__(self, server: str):
+    def __init__(self, server: str) -> None:
         self.jira = self._connect_to_jira(server)
 
-    def _connect_to_jira(self, server):
+    def _connect_to_jira(self, server: str) -> JIRA:
         """Obtains credentials and establishes the Jira connection. User must have token stored in ~/.jira_api_key"""
 
         # Jira server and user details
@@ -50,7 +51,13 @@ class Jira:
         """Transition a Jira ticket to a new status"""
         self.jira.transition_issue(issue_key, transition_id)
 
-    def get_issues_by_criteria(self, criteria, max_results=200, fields=None, expand_info=None):
+    def get_issues_by_criteria(
+            self,
+            criteria: str,
+            max_results: int = 200,
+            fields: Optional[Union[list, str]] = None,
+            expand_info: Optional[str] = None
+    ) -> dict:
         logging.info(f"Getting issues by criteria: {criteria}")
         if fields:
             return self.jira.search_issues(criteria, fields=fields, maxResults=max_results, expand=expand_info)
