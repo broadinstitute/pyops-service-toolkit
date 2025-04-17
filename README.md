@@ -1,4 +1,5 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+[![codecov](https://codecov.io/gh/broadinstitute/pyops-service-toolkit/graph/badge.svg?token=J2YT04WO3C)](https://codecov.io/gh/broadinstitute/pyops-service-toolkit)
 
 # Ops Util Module Package
 This repository contains shared Python utilities. There are utilities that help with interactions with Terra, TDR,
