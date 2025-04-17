@@ -26,7 +26,9 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          coverage run -m pytest --cov --cov-branch --cov-report=xml
+          coverage run -m pytest
+          coverage report
+          coverage html
 
       # TODO update the minimum requirement coverage to 90% after POD-2632 is complete
       - name: Enforce minimum coverage %
