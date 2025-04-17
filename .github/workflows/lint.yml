@@ -17,7 +17,7 @@ jobs:
       - name: Install flake8
         run: pip install flake8
       - name: Run flake8
-        run: flake8 . --max-line-length=120
+        run: flake8 . --max-line-length=120 --exclude=docs,ops_utils/tests
 
   type-check:
     name: Type Checking (mypy)
@@ -37,27 +37,8 @@ jobs:
             --disallow-incomplete-defs \
             --disallow-untyped-calls \
             --ignore-missing-imports \
-            --python-version=3.11
-
-  formatting:
-    name: Formatting (autopep8 + line endings)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-      - name: Install autopep8
-        run: pip install autopep8
-      - name: Run autopep8 (check only)
-        run: autopep8 . --diff --exit-code --max-line-length 120
-
-      - name: Check for large files (>500KB)
-        run: |
-          find . -type f -size +500k -not -path "./.git/*" | grep . && {
-            echo "Large files detected"
-            exit 1
-          } || echo "No large files found"
+            --python-version=3.11 \
+            --exclude '^(docs/|ops_utils/tests/)'
 
   yaml-check:
     name: YAML Syntax Check

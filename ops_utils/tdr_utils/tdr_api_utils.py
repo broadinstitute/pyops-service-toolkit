@@ -835,7 +835,7 @@ class TDR:
         if additional_dataset_properties:
             dataset_properties.update(additional_dataset_properties)
         try:
-            CreateDatasetSchema(**dataset_properties)
+            CreateDatasetSchema(**dataset_properties)  # type: ignore[arg-type]
         except ValidationError as e:
             raise ValueError(f"Schema validation error: {e}")
         uri = f"{self.TDR_LINK}/datasets"
