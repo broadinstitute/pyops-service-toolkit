@@ -464,8 +464,7 @@ class ReformatMetricsForIngest:
                     reformatted_dict[key] = update_value
                     if not valid:
                         row_valid = False
-        reformatted_dict["last_modified_date"] = datetime.now(
-            tz=pytz.UTC).strftime("%Y-%m-%dT%H:%M:%S")  # type: ignore[assignment]
+        reformatted_dict["last_modified_date"] = datetime.now(tz=pytz.UTC).strftime("%Y-%m-%dT%H:%M:%S")  # type: ignore[assignment] # noqa: E501
         if row_valid:
             return reformatted_dict
         else:

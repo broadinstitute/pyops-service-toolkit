@@ -57,7 +57,7 @@ class Jira:
             max_results: int = 200,
             fields: Optional[Union[list, str]] = None,
             expand_info: Optional[str] = None
-    ) -> dict:
+    ) -> list[dict]:
         logging.info(f"Getting issues by criteria: {criteria}")
         if fields:
             return self.jira.search_issues(criteria, fields=fields, maxResults=max_results, expand=expand_info)

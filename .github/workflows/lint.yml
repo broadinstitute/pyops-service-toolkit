@@ -1,0 +1,55 @@
+name: Linting and Static Analysis
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint (flake8)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install flake8
+        run: pip install flake8
+      - name: Run flake8
+        run: flake8 . --max-line-length=120 --exclude=docs,ops_utils/tests
+
+  type-check:
+    name: Type Checking (mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install mypy and stubs
+        run: |
+          pip install mypy types-requests types-python-dateutil types-pytz
+      - name: Run mypy
+        run: |
+          mypy . \
+            --disallow-untyped-defs \
+            --disallow-incomplete-defs \
+            --disallow-untyped-calls \
+            --ignore-missing-imports \
+            --python-version=3.11 \
+            --exclude '^(docs/|ops_utils/tests/)'
+
+  yaml-check:
+    name: YAML Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install PyYAML
+        run: pip install pyyaml
+      - name: Validate YAML files
+        run: |
+          find . -name "*.yml" -o -name "*.yaml" | while read file; do
+            echo "Checking $file"
+            python -c "import yaml, sys; yaml.safe_load(open('$file'))"
+          done

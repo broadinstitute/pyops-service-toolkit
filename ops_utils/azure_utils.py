@@ -30,7 +30,7 @@ class AzureBlobDetails:
             logging.info(
                 f"Getting page {page_count} of max {max_per_page} blobs")
             for blob in blob_page:
-                blob_client = container_client.get_blob_client(blob)
+                blob_client = container_client.get_blob_client(blob)  # type: ignore[arg-type]
                 props = blob_client.get_blob_properties()
                 if not blob.name.endswith('/'):
                     md5_hash = base64.b64encode(props.content_settings.content_md5).decode(

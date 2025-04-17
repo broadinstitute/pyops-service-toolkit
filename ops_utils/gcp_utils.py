@@ -25,7 +25,7 @@ class GCPCloudFunctions:
         Initialize the GCPCloudFunctions class.
         Authenticates using the default credentials and sets up the storage client.
         """
-        from google.cloud import storage
+        from google.cloud import storage  # type: ignore[attr-defined]
         from google.auth import default
         credentials, default_project = default()
         if not project:
