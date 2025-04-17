@@ -1,13 +1,19 @@
+[![Auto Release](https://github.com/broadinstitute/pyops-service-toolkit/actions/workflows/auto-release.yml/badge.svg)](https://github.com/broadinstitute/pyops-service-toolkit/actions/workflows/auto-release.yml)
+[![Docs Site Build](https://github.com/broadinstitute/pyops-service-toolkit/actions/workflows/docs.yml/badge.svg)](https://github.com/broadinstitute/pyops-service-toolkit/actions/workflows/docs.yml)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 [![codecov](https://codecov.io/gh/broadinstitute/pyops-service-toolkit/graph/badge.svg?token=J2YT04WO3C)](https://codecov.io/gh/broadinstitute/pyops-service-toolkit)
 
-# Ops Util Module Package
-This repository contains shared Python utilities. There are utilities that help with interactions with Terra, TDR,
-BigQuery, and GCP to name a few. There are also additional utilities that do not interact with external services,
-such as utilities that assist in interacting with tabular data. The purpose of this repository is to provide a
-central place to all utilities to live, so that code can stay DRY and consistent across other repositories that need
-the same types of functionality.
 
+# 🧰 pyops-service-toolkit
+This repository contains shared Python utilities designed to streamline development across projects. It includes tools
+for interacting with external services such as Terra, TDR, BigQuery, and Google Cloud Platform (GCP), as well as
+utilities for working with local data, like helpers for manipulating tabular datasets. The goal of this repository is
+to centralize these common tools, helping teams write DRY, consistent, and reusable code across different codebases.
+
+### 🔗 [Explore our searchable documentation](https://broadinstitute.github.io/pyops-service-toolkit/ops_utils.html)
+
+
+# 🚀 Getting Started
 ## Installing Module Package
 This will automatically install the latest release version.
 ``` sh
@@ -68,8 +74,8 @@ print(TDR.TDR_LINK)
 which should return `https://data.terra.bio/api/repository/v1`
 
 
-### pre-commit
-pre-commit is configured in this repository. Automatic checks (configured in [[.pre-commit-config.yaml](.pre-commit-config.yaml)])
+# 🔧 pre-commit
+pre-commit is configured in this repository. Automatic checks (configured in [.pre-commit-config.yaml](.pre-commit-config.yaml))
 will run with each commit. Each time you go to commit changes, pre-commit will point out failing checks, which should
 be addressed before adding files to your branch. If there are checks that are failing that you don't think are valid or
 shouldn't be fixed, they can be ignored individually by adding the following to the line of code that's failing
@@ -82,5 +88,8 @@ something for testing.
 
 To add more hooks, browse available hooks [here](https://pre-commit.com/hooks.html)
 
+
 ---
+
+# 🤝 Contributing
 If you're interested in contributing to this repository, see [CONTRIBUTING.md](CONTRIBUTING.md).
