@@ -1,3 +1,2 @@
-1.6.0
-- Add documentation link to README
-- Add build badges to README
+1.7.0
+- Add GitHub action to run linting checks
