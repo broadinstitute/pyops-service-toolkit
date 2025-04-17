@@ -22,28 +22,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest coverage
+          pip install pytest pytest-cov
 
       - name: Run tests with coverage
         run: |
-          coverage run -m pytest
-          coverage report
-          coverage html
+          pytest --cov --cov-branch --cov-report=xml
+
       # TODO update the minimum requirement coverage to 90% after POD-2632 is complete
       - name: Enforce minimum coverage %
         run: |
           coverage report --fail-under=70
 
-      - name: Run tests with coverage
-        run: |
-          coverage run -m pytest
-          coverage xml
-          coverage report
-
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
-          files: coverage.xml
-          flags: unittests
-          name: codecov-coverage
-          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
