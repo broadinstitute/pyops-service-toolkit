@@ -35,6 +35,9 @@ jobs:
         run: |
           coverage report --fail-under=70
 
+      - name: Generate coverage report (XML)
+        run: coverage xml
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
