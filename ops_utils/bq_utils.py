@@ -1,15 +1,16 @@
 import logging
 from google.cloud import bigquery
 from google.api_core.exceptions import Forbidden
-from typing import Any, Optional
+from typing import Optional
 
 
 class BigQueryUtil:
     def __init__(self, project_id: Optional[str] = None):
         """
-        Initialize the BigQuery utility with user authentication.
+        Initializes the BigQuery utility with user's authentication.
         """
         self.project_id = project_id
+        """The GCP project ID"""
         if project_id:
             self.client = bigquery.Client(project=self.project_id)
         else:
@@ -30,12 +31,15 @@ class BigQueryUtil:
 
     def upload_data_to_table(self, table_id: str, rows: list[dict], delete_existing_data: bool = False) -> None:
         """
-        Uploads data directly from a list of dictionaries to a BigQuery table.
+        Uploads data directly from the provided list of dictionaries to a BigQuery table.
 
-        Args:
-            table_id (str): BigQuery table ID in the format 'project.dataset.table'.
-            rows (list[dict]): List of dictionaries, where each dictionary represents a row of data.
-            delete_existing_data (bool): If True, deletes existing data in the table before uploading. Default is False.
+        **Args:**
+
+        - table_id (`str`): BigQuery table ID in the format `project.dataset.table`.
+        - rows (`list[dict]`): List of dictionaries, where each dictionary represents a
+        row of data.
+        - delete_existing_data (`bool`): If `True`, deletes existing data in the table before
+         uploading. Default is `False`.
         """
         if delete_existing_data:
             self._delete_existing_records(table_id)
@@ -58,16 +62,16 @@ class BigQueryUtil:
         new_rows = destination_table.num_rows
         logging.info(f"Table now contains {new_rows} rows after upload")
 
-    def query_table(self, query: str, to_dataframe: bool = False) -> Any:
+    def query_table(self, query: str, to_dataframe: bool = False) -> list[dict]:
         """
-        Executes a SQL query on a BigQuery table and returns the results .
+        Executes a SQL query on a BigQuery table and returns the results.
 
-        Args:
-            query (str): SQL query to execute.
-            to_dataframe (bool): If True, returns the query results as a Pandas DataFrame. Default is False.
+        **Args:**
+        - query (str): The SQL query to execute.
+        - to_dataframe (bool): If True, returns the query results as a Pandas DataFrame. Default is False.
 
-        Returns:
-            list[dict]: List of dictionaries, where each dictionary represents a row of query results.
+        **Returns:**
+        - list[dict]: List of dictionaries, where each dictionary represents one row of query results.
         """
         query_job = self.client.query(query)
         if to_dataframe:
@@ -78,11 +82,11 @@ class BigQueryUtil:
         """
         Checks if the user has permission to access the project.
 
-        Args:
-            raise_on_other_failure (bool): If True, raises an error if an unexpected error occurs. Default is True.
+        **Args:**
+        - raise_on_other_failure (bool): If True, raises an error if an unexpected error occurs. Default is True.
 
-        Returns:
-            bool: True if the user has permissions, False if a 403 Forbidden error is encountered.
+        **Returns:**
+        - bool: True if the user has permissions, False if a 403 Forbidden error is encountered.
         """
         return self._check_permissions("SELECT 1", raise_on_other_failure)
 
@@ -90,12 +94,12 @@ class BigQueryUtil:
         """
         Checks if the user has permission to run a specific query.
 
-        Args:
-            query (str): SQL query to execute.
-            raise_on_other_failure (bool): If True, raises an error if an unexpected error occurs. Default is True.
+        **Args:**
+        - query (str): SQL query to execute.
+        - raise_on_other_failure (bool): If True, raises an error if an unexpected error occurs. Default is True.
 
-        Returns:
-            bool: True if the user has permissions, False if a 403 Forbidden error is encountered.
+        **Returns:**
+        - bool: True if the user has permissions, False if a 403 Forbidden error is encountered.
         """
         return self._check_permissions(query, raise_on_other_failure)
 
