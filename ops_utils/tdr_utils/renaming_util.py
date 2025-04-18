@@ -23,29 +23,29 @@ class GetRowAndFileInfoForReingest:
         """
         Initialize the GetRowAndFileInfoForReingest class.
 
-        Args:
-            table_schema_info (dict): Schema information of the table.
-            files_info (dict): A dictionary where the key is the file UUID and the value is the file metadata.
-            table_metrics (list[dict]): Metrics of the TDR table to update.
-            original_column (str): The column name with the original value.
-            new_column (str): The column name with the new value.
-            row_identifier (str): The identifier for the row. Should be the primary key.
-            temp_bucket (str): The temporary bucket for storing files.
-            update_original_column (bool, optional): Whether to update the original column.
-                If not used will just update file paths Defaults to False.
-            column_update_only (bool, optional): Whether to update only the column and
-                not update the file paths. Defaults to False.
         """
         self.table_schema_info = table_schema_info
+        """(dict): Schema information of the table."""
         self.files_info = files_info
+        """(dict): A dictionary where the key is the file UUID and the value is the file metadata."""
         self.table_metrics = table_metrics
+        """(list[dict]): Metrics of the TDR table to update."""
         self.original_column = original_column
+        """(str): The column name with the original value."""
         self.new_column = new_column
+        """(str): The column name with the new value."""
         self.row_identifier = row_identifier
+        """(str): The identifier for the row. Should be the primary key."""
         self.total_files_to_reingest = 0
+        """@private"""
         self.temp_bucket = temp_bucket
+        """(str): The temporary bucket for storing files."""
         self.update_original_column = update_original_column
+        """(bool, optional): Whether to update the original column.
+                If not used will just update file paths. Defaults to `False`."""
         self.column_update_only = column_update_only
+        """(bool, optional): Whether to update only the column and
+                not update the file paths. Defaults to `False`."""
 
     def _create_paths(self, file_info: dict, og_basename: str, new_basename: str) -> Tuple[str, str, str]:
         """
@@ -144,12 +144,11 @@ class GetRowAndFileInfoForReingest:
     def get_new_copy_and_ingest_list(self) -> Tuple[list[dict], list[list]]:
         """
         Get the list of rows to re-ingest and files to copy to temporary storage.
-
-        This method iterates through the table metrics, identifies the rows and files that need to be re-ingested,
+        Iterates through the table metrics, identifies the rows and files that need to be re-ingested,
         and prepares lists of these rows and files.
 
-        Returns:
-            Tuple[list[dict], list[list]]: A tuple containing a list of rows to re-ingest and a list of files to copy.
+        **Returns:**
+        - Tuple[list[dict], list[list]]: A tuple containing a list of rows to re-ingest and a list of files to copy.
         """
         rows_to_reingest = []
         files_to_copy_to_temp = []
@@ -175,45 +174,41 @@ class BatchCopyAndIngest:
             target_table_name: str,
             cloud_type: str,
             update_strategy: str,
-            workers: int,
             dataset_id: str,
-            copy_and_ingest_batch_size: int,
             row_files_to_copy: list[list[dict]],
+            copy_and_ingest_batch_size: int = ARG_DEFAULTS["file_ingest_batch_size"],  # type: ignore[assignment]
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
             wait_time_to_poll: int = ARG_DEFAULTS['waiting_time_to_poll']  # type: ignore[assignment]
     ) -> None:
         """
         Initialize the BatchCopyAndIngest class.
-
-        Args:
-            rows_to_ingest (list[dict]): List of rows to ingest.
-            tdr (TDR): TDR instance for interacting with the TDR API.
-            target_table_name (str): Name of the target table.
-            cloud_type (str): Type of cloud storage.
-            update_strategy (str): Strategy for updating the data.
-            workers (int): Number of workers for parallel processing copies of files to temp location.
-            dataset_id (str): ID of the dataset.
-            copy_and_ingest_batch_size (int): Size of each batch for copying and ingesting.
-            row_files_to_copy (list[list[dict]]): List of files to copy for each row.
-            wait_time_to_poll (int, optional): Time to wait between polling for ingest status.
-                Defaults to ARG_DEFAULTS['waiting_time_to_poll'].
         """
         self.rows_to_ingest = rows_to_ingest
+        """(list[dict]): List of rows to ingest."""
         self.tdr = tdr
+        """(`ops_utils.tdr_utils.tdr_api_utils.TDR`): TDR instance for interacting with the TDR API."""
         self.target_table_name = target_table_name
-        self.dataset_id = dataset_id
+        """(str): Name of the target table."""
+        # TODO Remove cloud_type as it's not used
         self.cloud_type = cloud_type
+        """(str): Type of cloud storage. Must be one of `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`."""
         self.update_strategy = update_strategy
-        self.workers = workers
-        self.wait_time_to_poll = wait_time_to_poll
-        self.copy_and_ingest_batch_size = copy_and_ingest_batch_size
+        """(str): Strategy for updating the data."""
+        self.dataset_id = dataset_id
+        """(str): ID of the dataset."""
         self.row_files_to_copy = row_files_to_copy
+        """(list[list[dict]]): List of files to copy for each row."""
+        self.copy_and_ingest_batch_size = copy_and_ingest_batch_size
+        """(int): Size of each batch for copying and ingesting. Defaults to `500`"""
+        self.workers = workers
+        """(int): Number of workers for parallel processing copies of files to temp location. Defaults to `10`"""
+        self.wait_time_to_poll = wait_time_to_poll
+        """(int, optional): Time to wait between polling for ingest status. Defaults to 90."""
 
     def run(self) -> None:
         """
-        Run the batch copy and ingest process.
-
-        This method batches the rows to copy files and ingest them into the dataset. It also
-        deletes the temporary files after ingestion.
+        Run the batch copy and ingest process. Batches the rows to copy files and
+        ingests them into the dataset. Also deletes the temporary files after ingestion.
         """
         # Batch through rows to copy files down and ingest so if script fails partway through large
         # copy and ingest it will have copied over and ingested some of the files already

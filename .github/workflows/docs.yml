@@ -27,9 +27,8 @@ jobs:
       - run: |
              pip install -e .
              pip install pdoc
-      # ADJUST THIS: build your documentation into docs/.
-      # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
-      - run: python -m pdoc ops_utils '!ops_utils.thread_pool_executor_util' -o docs/
+      # The '!' syntax tells pdocs which modules to completely ignore generating documentation for
+      - run: python -m pdoc ops_utils '!ops_utils.thread_pool_executor_util' '!ops_utils.tdr_api_schema' -o docs/
 
       - uses: actions/upload-pages-artifact@v3
         with:

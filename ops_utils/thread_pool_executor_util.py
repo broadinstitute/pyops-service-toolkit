@@ -4,6 +4,7 @@ import logging
 
 
 class MultiThreadedJobs:
+
     def execute_with_retries(
             self,
             function: Callable,

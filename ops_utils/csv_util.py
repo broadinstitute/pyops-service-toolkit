@@ -6,7 +6,7 @@ from typing import Optional, Sequence
 class Csv:
     def __init__(self, file_path: str, delimiter: str = "\t"):
         """
-        Initializes the Csv class.
+        Initialize the Csv class.
 
         **Args:**
         - file_path (str): The path to the tabular file.

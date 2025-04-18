@@ -7,7 +7,7 @@ from typing import Optional
 class BigQueryUtil:
     def __init__(self, project_id: Optional[str] = None):
         """
-        Initializes the BigQuery utility with user's authentication.
+        Initialize the BigQuery utility with user's authentication.
         """
         self.project_id = project_id
         """The GCP project ID"""
