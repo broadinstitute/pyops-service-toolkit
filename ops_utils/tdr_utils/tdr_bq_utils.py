@@ -9,24 +9,22 @@ class GetTdrAssetInfo:
     def __init__(self, tdr: TDR, dataset_id: Optional[str] = None, snapshot_id: Optional[str] = None):
         """
         Initialize the GetTdrAssetInfo class.
-
-        Args:
-            tdr (TDR): TDR instance for interacting with the TDR API.
-            dataset_id (Optional[str]): ID of the dataset.
-            snapshot_id (Optional[str]): ID of the snapshot.
         """
         if not dataset_id and not snapshot_id:
             raise ValueError("Either dataset_id or snapshot_id must be provided.")
         self.tdr = tdr
+        """(`ops_utils.tdr_utils.tdr_api_utils.TDR`): TDR instance for interacting with the TDR API."""
         self.dataset_id = dataset_id
+        """(str, optional): ID of the dataset."""
         self.snapshot_id = snapshot_id
+        """(str, optional): ID of the snapshot."""
 
     def _get_dataset_info(self) -> dict:
         """
         Retrieve dataset information from TDR.
 
-        Returns:
-            dict: A dictionary containing BigQuery project ID, schema, tables, and relationships.
+        **Returns:**
+        - dict: A dictionary containing BigQuery project ID, schema, tables, and relationships.
         """
         dataset_info = self.tdr.get_dataset_info(
             dataset_id=self.dataset_id,  # type: ignore[arg-type]
@@ -43,8 +41,8 @@ class GetTdrAssetInfo:
         """
         Retrieve snapshot information from TDR.
 
-        Returns:
-            dict: A dictionary containing BigQuery project ID, schema, tables, and relationships.
+        **Returns:**
+        - dict: A dictionary containing BigQuery project ID, schema, tables, and relationships.
         """
         snapshot_info = self.tdr.get_snapshot_info(
             snapshot_id=self.snapshot_id,  # type: ignore[arg-type]
@@ -61,9 +59,9 @@ class GetTdrAssetInfo:
         """
         Execute the process to retrieve either dataset or snapshot information.
 
-        Returns:
-            dict: A dictionary containing the relevant information based on whether dataset_id or
-            snapshot_id is provided.
+        **Returns:**
+        - dict: A dictionary containing the relevant information based on whether `dataset_id` or
+            `snapshot_id` is provided.
         """
         if self.dataset_id:
             return self._get_dataset_info()
@@ -75,23 +73,27 @@ class TdrBq:
         """
         Initialize the TdrBq class.
 
-        Args:
-            project_id (str): The Google Cloud project ID.
-            bq_schema (str): The BigQuery schema name.
+        **Args:**
+            project_id
+            bq_schema
         """
         self.project_id = project_id
+        """(str): The Google Cloud project ID."""
         self.bq_schema = bq_schema
+        """(str): The BigQuery schema name."""
         self.bq_util = BigQueryUtil(project_id)
+        """(`ops_utils.bq_utils.BigQueryUtil`): The instance of the BigQueryUtil class instantiated
+        with the provided `project_id`)"""
 
     def check_permissions_for_dataset(self, raise_on_other_failure: bool) -> bool:
         """
         Check the permissions for accessing BigQuery for specific dataset.
 
-        Args:
-            raise_on_other_failure (bool): Whether to raise an exception on other failures.
+        **Args:**
+        - raise_on_other_failure (bool): Whether to raise an exception on other failures.
 
-        Returns:
-            bool: True if permissions are sufficient, False otherwise.
+        **Returns:**
+        - bool: `True` if permissions are sufficient, `False` otherwise.
         """
         query = f"""SELECT 1 FROM `{self.project_id}.{self.bq_schema}.INFORMATION_SCHEMA.TABLES`"""
         return self.bq_util.check_permissions_for_query(
@@ -103,13 +105,13 @@ class TdrBq:
         """
         Retrieve the contents of a TDR table from BigQuery.
 
-        Args:
-            exclude_datarepo_id (bool): Whether to exclude the datarepo_row_id column.
-            table_name (str): The name of the table.
-            to_dataframe (bool): Whether to return the results as a DataFrame.
+        **Args:**
+        - exclude_datarepo_id (bool): Whether to exclude the datarepo_row_id column.
+        - table_name (str): The name of the table.
+        - to_dataframe (bool): Whether to return the results as a DataFrame.
 
-        Returns:
-            Any: The contents of the table, either as a DataFrame or another format.
+        **Returns:**
+        - list[dict]: The contents of the table
         """
         if exclude_datarepo_id:
             exclude_str = "EXCEPT (datarepo_row_id)"
