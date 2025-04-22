@@ -2,30 +2,42 @@ from typing import Any, Optional
 import requests
 import backoff
 
+from ..token_util import Token
+from ..vars import ARG_DEFAULTS
 
 GET = "GET"
+"""Method used for API GET endpoints"""
 POST = "POST"
+"""Method used for API POST endpoints"""
 DELETE = "DELETE"
+"""Method used for API DELETE endpoints"""
 PATCH = "PATCH"
+"""Method used for API PATCH endpoints"""
 PUT = "PUT"
+"""Method used for API PUT endpoints"""
 
 
 class RunRequest:
-    def __init__(self, token: Any, max_retries: int = 5, max_backoff_time: int = 5 * 60, create_mocks: bool = False):
+    def __init__(
+            self,
+            token: Token,
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
+            max_backoff_time: int = ARG_DEFAULTS["max_backoff_time"],  # type: ignore[assignment]
+    ):
         """
         Initialize the RunRequest class.
 
-        Args:
-            token (Any): The token used for authentication.
-            max_retries (int, optional): The maximum number of retries for a request. Defaults to 5.
-            max_backoff_time (int, optional): The maximum backoff time in seconds. Defaults to 5 * 60.
-            create_mocks (bool, optional): Used to capture responses for use with unit tests,
-                outputs to a yaml file. Defaults to False.
+        **Args:**
+        - token (`ops_utils.token_util.Token`): The token used for authentication
+        - max_retries (int, optional): Maximum number of retries for a request. Defaults to `5`.
+        - max_backoff_time (int, optional): Maximum backoff time for a request (in seconds). Defaults to `300`.
         """
-        self.max_retries = max_retries
-        self.max_backoff_time = max_backoff_time
         self.token = token
-        self.create_mocks = create_mocks
+        """@private"""
+        self.max_retries = max_retries
+        """@private"""
+        self.max_backoff_time = max_backoff_time
+        """@private"""
 
     @staticmethod
     def _create_backoff_decorator(max_tries: int, factor: int, max_time: int) -> Any:
@@ -61,17 +73,17 @@ class RunRequest:
         """
         Run an HTTP request with retries and backoff.
 
-        Args:
-            uri (str): The URI for the request.
-            method (str): The HTTP method (GET, POST, DELETE, PATCH, PUT).
-            data (Any, optional): The data to send in the request body. Defaults to None.
-            params (Optional[dict], optional): The query parameters for the request. Defaults to None.
-            factor (int, optional): The exponential backoff factor. Defaults to 15.
-            content_type (Optional[str], optional): The content type for the request. Defaults to None.
-            accept_return_codes (list[int], optional): List of acceptable return codes. Defaults to [].
+        **Args:**
+        - uri (str): The URI for the request.
+        - method (str): The HTTP method (must be one of `GET`, `POST`, `DELETE`, `PATCH`, `PUT`).
+        - data (Any, optional): The data to send in the request body. Defaults to None.
+        - params (dict, optional): The query parameters for the request. Defaults to None.
+        - factor (int, optional): The exponential backoff factor. Defaults to 15.
+        - content_type (str, optional): The content type for the request. Defaults to None.
+        - accept_return_codes (list[int], optional): List of acceptable return codes. Defaults to [].
 
-        Returns:
-            requests.Response: The response from the request.
+        **Returns:**
+        - requests.Response: The response from the request.
         """
 
         # Create a custom backoff decorator with the provided parameters
@@ -128,12 +140,12 @@ class RunRequest:
         """
         Create headers for API calls.
 
-        Args:
-            content_type (Optional[str], optional): The content type for the request. Defaults to None.
-            accept (Optional[str], optional): The accept header for the request. Defaults to "application/json".
+        **Args:**
+        - content_type (str, optional): The content type for the request. Defaults to None.
+        - accept (str, optional): The accept header for the request. Defaults to "application/json".
 
-        Returns:
-            dict: The headers for the request.
+        **Returns:**
+        - dict: The headers for the request.
         """
         self.token.get_token()
         headers = {
@@ -150,12 +162,12 @@ class RunRequest:
         """
         Run a POST request with files parameter.
 
-        Args:
-            uri (str): The URI for the request.
-            data (dict): The files data to upload.
+        **Args:**
+        - uri (str): The URI for the request.
+        - data (dict): The files data to upload.
 
-        Returns:
-            str: The response text from the request.
+        **Returns:**
+        - str: The response text from the request.
         """
         headers = self.create_headers(accept=None)
         response = requests.post(uri, headers=headers, files=data)

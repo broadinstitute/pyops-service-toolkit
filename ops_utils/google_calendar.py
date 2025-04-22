@@ -5,39 +5,52 @@ from google.oauth2 import service_account
 
 
 class GoogleCalendar:
-    SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+    _SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
     def __init__(self, service_account_info: dict):
         """
-        Initialize the GoogleCalendar instance using the user's credentials.
+        Initializes the GoogleCalendar instance using the user's credentials.
+
+        **Args:**
+        - service_account_info (dict): A dictionary containing the service account credentials.
         """
         credentials = service_account.Credentials.from_service_account_info(
-            service_account_info, scopes=self.SCOPES
+            service_account_info, scopes=self._SCOPES
         )
-        self.service = build(
+        self._service = build(
             serviceName="calendar",
             version="v3",
             credentials=credentials,
             cache_discovery=False
         )
 
-    def create_calendar_string_from_datetime(self, dt: datetime) -> str:
+    @staticmethod
+    def _create_calendar_string_from_datetime(dt: datetime) -> str:
+        """
+        Creates a string representation of a datetime object.
+
+        **Args:**
+        - dt (datetime): A datetime object.
+        """
         return (datetime(dt.year, dt.month, dt.day, 00, 00)).isoformat() + 'Z'
 
     def get_events(self, calendar_id: str, days_back: int, days_ahead: int) -> List[Dict]:
         """
         Get all events from the specified calendar for the last `x` days.
 
-        :param calendar_id: The ID of the Google Calendar.
-        :param days_back: Number of days in the past to retrieve events for.
-        :param days_ahead: Number of days in the future to retrieve events for.
-        :return: A list of events with their details.
+        **Args:**
+        - calendar_id (str): The ID of the Google Calendar.
+        - days_back (int): Number of days in the past to retrieve events for.
+        - days_ahead (int): Number of days in the future to retrieve events for.
+
+        **Returns:**
+        - list[dict]: A list of events with their details.
         """
         now = datetime.now()
-        time_min = self.create_calendar_string_from_datetime(now - timedelta(days=days_back))
-        time_max = self.create_calendar_string_from_datetime(now + timedelta(days=days_ahead))
+        time_min = self._create_calendar_string_from_datetime(now - timedelta(days=days_back))
+        time_max = self._create_calendar_string_from_datetime(now + timedelta(days=days_ahead))
 
-        events_result = self.service.events().list(
+        events_result = self._service.events().list(
             calendarId=calendar_id,
             timeMin=time_min,
             timeMax=time_max,

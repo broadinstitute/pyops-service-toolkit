@@ -6,14 +6,25 @@ import os
 from typing import Optional, Union
 from datetime import datetime, timedelta
 
-from .vars import GCP, AZURE  # import from __init__.py
+from .vars import GCP, AZURE
 
 
 class Token:
-    def __init__(self, cloud: Optional[str] = None, token_file: Optional[str] = None) -> None:
+    def __init__(self, cloud: str, token_file: Optional[str] = None) -> None:
+        """Initialize the Token class
+
+        **Args:**
+        - cloud (str): The type of cloud platform to be used. Must be one of `ops_utils.vars.GCP`
+        or `ops_utils.vars.AZURE`.
+        - token_file (str, optional): The path to a file containing an existing token string.
+        """
+
         self.cloud = cloud
+        """@private"""
         self.expiry: Optional[datetime] = None
+        """@private"""
         self.token_string: Optional[str] = ""
+        """@private"""
         # If provided with a file just use the contents of file
         if token_file:
             self.token_file = token_file
@@ -72,15 +83,22 @@ class Token:
             self.token_string = token_response.json()['access_token']
         return token_response.json()['access_token']
 
-    def get_token(self) -> Union[str, None]:
+    def get_token(self) -> str:
+        """
+        Generates a token based on the cloud type provided with a set expiration time.
+
+        **Returns:**
+        - string: The generated token
+        """
+
         # If token file provided then always return contents
         if self.token_file:
-            return self.token_string
+            return self.token_string  # type: ignore[return-value]
         elif self.cloud == GCP:
             # detect if this is running as a cloud run job
             if os.getenv("CLOUD_RUN_JOB"):
-                return self._get_sa_token()
+                return self._get_sa_token()  # type: ignore[return-value]
             else:
-                return self._get_gcp_token()
+                return self._get_gcp_token()  # type: ignore[return-value]
         else:
-            return self._get_az_token()
+            return self._get_az_token()  # type: ignore[return-value]

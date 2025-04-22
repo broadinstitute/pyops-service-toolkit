@@ -9,14 +9,31 @@ from urllib.parse import unquote
 
 class AzureBlobDetails:
     def __init__(self, account_url: str, sas_token: str, container_name: str):
+        """Initialize the AzureBlobDetails class
+
+        **Args:**
+        - account_url (str): The Azure account URL
+        - sas_token (str): The SAS token
+        - container_name (str): The container name
+        """
         from azure.storage.blob import BlobServiceClient
         self.account_url = account_url
+        """@private"""
         self.sas_token = sas_token
+        """@private"""
         self.container_name = container_name
+        """@private"""
         self.blob_service_client = BlobServiceClient(
             account_url=self.account_url, credential=self.sas_token)
+        """@private"""
 
     def get_blob_details(self, max_per_page: int = 500) -> list[dict]:
+        """
+        Get details about all Azure blobs within a container
+
+        **Args**:
+        - max_per_page (int): The maximum number of blobs to return per page
+        """
         container_client = self.blob_service_client.get_container_client(
             self.container_name)
         details = []
@@ -52,6 +69,14 @@ class AzureBlobDetails:
         return details
 
     def download_blob(self, blob_name: str, dl_path: Path) -> None:
+        """
+        Download an Azure blob object
+
+        **Args:**
+        - blob_name (str): The name of the blob to download
+        - dl_path (Path): The path to download the blob to
+        """
+
         blob_client = self.blob_service_client.get_blob_client(blob=blob_name, container=self.container_name)
         dl_path.parent.mkdir(parents=True, exist_ok=True)
         with dl_path.open(mode='wb') as file:
@@ -60,6 +85,10 @@ class AzureBlobDetails:
 
 
 class SasTokenUtil:
+    """
+    @private
+    """
+
     def __init__(self, token: str):
         self.token = token
         self.expiry_datetime = self._set_token_expiry()

@@ -6,24 +6,30 @@ import base64
 from humanfriendly import format_size, parse_size
 from mimetypes import guess_type
 from typing import Optional, Any
+from google.cloud.storage.blob import Blob
 
+from .vars import ARG_DEFAULTS
 from .thread_pool_executor_util import MultiThreadedJobs
 
 MOVE = "move"
+"""Variable to be used for the "action" when files should be moved."""
 COPY = "copy"
+"""Variable to be used for the "action" when files should be copied."""
+MD5_HEX = "hex"
+"""Variable to be used when the generated `md5` should be of the `hex` type."""
+MD5_BASE64 = "base64"
+"""Variable to be used when the generated `md5` should be of the `base64` type."""
 
 
 class GCPCloudFunctions:
-    """
-    A class to interact with Google Cloud Storage (GCS) for various file operations.
-    Authenticates using the default credentials and sets up the storage client.
-    Does NOT use Token class for authentication.
-    """
-
     def __init__(self, project: Optional[str] = None) -> None:
         """
         Initialize the GCPCloudFunctions class.
-        Authenticates using the default credentials and sets up the storage client.
+        Authenticates using the default credentials and sets up the Storage Client.
+        Uses the `project_id` if provided, otherwise utilizes the default project set.
+
+        **Args:**
+        - project (str, optional): The GCP project ID
         """
         from google.cloud import storage  # type: ignore[attr-defined]
         from google.auth import default
@@ -31,6 +37,7 @@ class GCPCloudFunctions:
         if not project:
             project = default_project
         self.client = storage.Client(credentials=credentials, project=project)
+        """@private"""
 
     @staticmethod
     def _process_cloud_path(cloud_path: str) -> dict:
@@ -53,15 +60,15 @@ class GCPCloudFunctions:
         }
         return path_components
 
-    def load_blob_from_full_path(self, full_path: str) -> Any:
+    def load_blob_from_full_path(self, full_path: str) -> Blob:
         """
         Load a GCS blob object from a full GCS path.
 
-        Args:
-            full_path (str): The full GCS path.
+        **Args:**
+        - full_path (str): The full GCS path.
 
-        Returns:
-            Any: The GCS blob object.
+        **Returns:**
+        - google.cloud.storage.blob.Blob: The GCS blob object.
         """
         file_path_components = self._process_cloud_path(full_path)
 
@@ -78,11 +85,11 @@ class GCPCloudFunctions:
         """
         Check if a file exists in GCS.
 
-        Args:
-            full_path (str): The full GCS path.
+        **Args:**
+        - full_path (str): The full GCS path.
 
-        Returns:
-            bool: True if the file exists, False otherwise.
+        **Returns:**
+        - bool: `True` if the file exists, `False` otherwise.
         """
         blob = self.load_blob_from_full_path(full_path)
         return blob.exists()
@@ -150,23 +157,25 @@ class GCPCloudFunctions:
             return False
         return True
 
-    def list_bucket_contents(self, bucket_name: str,
-                             file_extensions_to_ignore: list[str] = [],
-                             file_strings_to_ignore: list[str] = [],
-                             file_extensions_to_include: list[str] = [],
-                             file_name_only: bool = False) -> list[dict]:
+    def list_bucket_contents(
+            self, bucket_name: str,
+            file_extensions_to_ignore: list[str] = [],
+            file_strings_to_ignore: list[str] = [],
+            file_extensions_to_include: list[str] = [],
+            file_name_only: bool = False
+    ) -> list[dict]:
         """
         List contents of a GCS bucket and return a list of dictionaries with file information.
 
-        Args:
-            bucket_name (str): The name of the GCS bucket. If includes gs://, it will be removed.
-            file_extensions_to_ignore (list[str], optional): List of file extensions to ignore. Defaults to [].
-            file_strings_to_ignore (list[str], optional): List of file name substrings to ignore. Defaults to [].
-            file_extensions_to_include (list[str], optional): List of file extensions to include. Defaults to [].
-            file_name_only (bool, optional): Whether to return only the file list and no extra info. Defaults to False.
+        **Args:**
+        - bucket_name (str): The name of the GCS bucket. If includes `gs://`, it will be removed.
+        - file_extensions_to_ignore (list[str], optional): List of file extensions to ignore. Defaults to [].
+        - file_strings_to_ignore (list[str], optional): List of file name substrings to ignore. Defaults to [].
+        - file_extensions_to_include (list[str], optional): List of file extensions to include. Defaults to [].
+        - file_name_only (bool, optional): Whether to return only the file list and no extra info. Defaults to `False`.
 
-        Returns:
-            list[dict]: A list of dictionaries containing file information.
+        **Returns:**
+        - list[dict]: A list of dictionaries containing file information.
         """
         # If the bucket name starts with gs://, remove it
         if bucket_name.startswith("gs://"):
@@ -202,10 +211,10 @@ class GCPCloudFunctions:
         """
         Copy a file from one GCS location to another.
 
-        Args:
-            src_cloud_path (str): The source GCS path.
-            full_destination_path (str): The destination GCS path.
-            verbose (bool, optional): Whether to log progress. Defaults to False.
+        **Args:**
+        - src_cloud_path (str): The source GCS path.
+        - full_destination_path (str): The destination GCS path.
+        - verbose (bool, optional): Whether to log progress. Defaults to `False`.
         """
         try:
             src_blob = self.load_blob_from_full_path(src_cloud_path)
@@ -236,8 +245,8 @@ class GCPCloudFunctions:
         """
         Delete a file from GCS.
 
-        Args:
-            full_cloud_path (str): The GCS path of the file to delete.
+        **Args:**
+        - full_cloud_path (str): The GCS path of the file to delete.
         """
         blob = self.load_blob_from_full_path(full_cloud_path)
         blob.delete()
@@ -246,9 +255,9 @@ class GCPCloudFunctions:
         """
         Move a file from one GCS location to another.
 
-        Args:
-            src_cloud_path (str): The source GCS path.
-            full_destination_path (str): The destination GCS path.
+        **Args:**
+        - src_cloud_path (str): The source GCS path.
+        - full_destination_path (str): The destination GCS path.
         """
         self.copy_cloud_file(src_cloud_path, full_destination_path)
         self.delete_cloud_file(src_cloud_path)
@@ -257,11 +266,11 @@ class GCPCloudFunctions:
         """
         Get the size of a file in GCS.
 
-        Args:
-            target_path (str): The GCS path of the file.
+        **Args:**
+        - target_path (str): The GCS path of the file.
 
-        Returns:
-            int: The size of the file in bytes.
+        **Returns:**
+        - int: The size of the file in bytes.
         """
         blob = self.load_blob_from_full_path(target_path)
         return blob.size
@@ -270,12 +279,12 @@ class GCPCloudFunctions:
         """
         Validate if two cloud files (source and destination) are identical based on their MD5 hashes.
 
-        Args:
-            src_cloud_path (str): The source GCS path.
-            dest_cloud_path (str): The destination GCS path.
+        **Args:**
+        - src_cloud_path (str): The source GCS path.
+        - dest_cloud_path (str): The destination GCS path.
 
-        Returns:
-            bool: True if the files are identical, False otherwise.
+        **Returns:**
+        - bool: `True` if the files are identical, `False` otherwise.
         """
 
         src_blob = self.load_blob_from_full_path(src_cloud_path)
@@ -299,20 +308,20 @@ class GCPCloudFunctions:
     def delete_multiple_files(
             self,
             files_to_delete: list[str],
-            workers: int = 5,
-            max_retries: int = 3,
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
             verbose: bool = False,
             job_complete_for_logging: int = 500
     ) -> None:
         """
         Delete multiple cloud files in parallel using multi-threading.
 
-        Args:
-            files_to_delete (list[str]): List of GCS paths of the files to delete.
-            workers (int, optional): Number of worker threads. Defaults to 5.
-            max_retries (int, optional): Maximum number of retries. Defaults to 3.
-            verbose (bool, optional): Whether to log each job's success. Defaults to False.
-            job_complete_for_logging (int, optional): The number of jobs to complete before logging. Defaults to 500.
+        **Args:**
+        - files_to_delete (list[str]): List of GCS paths of the files to delete.
+        - workers (int, optional): Number of worker threads. Defaults to `10`.
+        - max_retries (int, optional): Maximum number of retries. Defaults to `5`.
+        - verbose (bool, optional): Whether to log each job's success. Defaults to `False`.
+        - job_complete_for_logging (int, optional): The number of jobs to complete before logging. Defaults to `500`.
         """
         list_of_jobs_args_list = [[file_path] for file_path in set(files_to_delete)]
 
@@ -327,15 +336,15 @@ class GCPCloudFunctions:
             jobs_complete_for_logging=job_complete_for_logging
         )
 
-    def validate_file_pair(self, source_file: str, full_destination_path: str) -> dict:
+    def _validate_file_pair(self, source_file: str, full_destination_path: str) -> dict:
         """
         Helper function to validate if source and destination files are identical.
 
-        Args:
-            source_file (str): The source file path.
-            full_destination_path (str): The destination file path.
+        **Args:**
+        - source_file (str): The source file path.
+        - full_destination_path (str): The destination file path.
 
-        Returns:
+        **Returns:**
             dict: The file dictionary of the files with a boolean indicating if they are identical.
         """
         if self.validate_files_are_same(source_file, full_destination_path):
@@ -348,23 +357,23 @@ class GCPCloudFunctions:
             self,
             files_to_validate: list[dict],
             log_difference: bool,
-            workers: int = 5,
-            max_retries: int = 3,
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
             job_complete_for_logging: int = 500
     ) -> list[dict]:
         """
         Validate if multiple cloud files are identical based on their MD5 hashes using multithreading.
 
-        Args:
-            files_to_validate (list[Dict]): List of dictionaries containing source and destination file paths.
-            log_difference (bool): Whether to log differences if files are not identical. Set false if you are running
+        **Args:**
+        - files_to_validate (list[dict]): List of dictionaries containing source and destination file paths.
+        - log_difference (bool): Whether to log differences if files are not identical. Set `False` if you are running
                                    this at the start of a copy/move operation to check if files are already copied.
-            workers (int, optional): Number of worker threads. Defaults to 5.
-            max_retries (int, optional): Maximum number of retries for all jobs. Defaults to 3.
-            job_complete_for_logging (int, optional): The number of jobs to complete before logging. Defaults to 500.
+        - workers (int, optional): Number of worker threads. Defaults to `10`.
+        - max_retries (int, optional): Maximum number of retries for all jobs. Defaults to `5`.
+        - job_complete_for_logging (int, optional): The number of jobs to complete before logging. Defaults to `500`.
 
-        Returns:
-            list[Dict]: List of dictionaries containing files that are not identical.
+        **Returns:**
+        - list[dict]: List of dictionaries containing files that are **not** identical.
         """
         logging.info(f"Validating if {len(files_to_validate)} files are identical")
 
@@ -374,7 +383,7 @@ class GCPCloudFunctions:
         # Use multithreaded job runner to validate the files
         checked_files = MultiThreadedJobs().run_multi_threaded_job(
             workers=workers,
-            function=self.validate_file_pair,
+            function=self._validate_file_pair,
             list_of_jobs_args_list=jobs,
             collect_output=True,
             max_retries=max_retries,
@@ -401,18 +410,22 @@ class GCPCloudFunctions:
         return not_identical_files
 
     def multithread_copy_of_files_with_validation(
-            self, files_to_copy: list[dict], workers: int, max_retries: int, skip_check_if_already_copied: bool = False
+            self,
+            files_to_copy: list[dict],
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
+            skip_check_if_already_copied: bool = False
     ) -> None:
         """
         Copy multiple files in parallel with validation.
 
-        Args:
-            files_to_copy (list[dict]): List of dictionaries containing source and destination file paths.
-                dict should have keys "source_file" and "full_destination_path"
-            workers (int): Number of worker threads.
-            max_retries (int): Maximum number of retries.
-            skip_check_if_already_copied (bool, optional): Whether to skip checking
-                if files are already copied and start copying right away. Defaults to False.
+        **Args:**
+        - files_to_copy (list[dict]): List of dictionaries containing source and destination file paths.
+                Dictionary should have keys `source_file` and `full_destination_path`
+        - workers (int): Number of worker threads. Defaults to `10`.
+        - max_retries (int): Maximum number of retries. Defaults to `5`
+        - skip_check_if_already_copied (bool, optional): Whether to skip checking
+                if files are already copied and start copying right away. Defaults to `False`.
         """
         if skip_check_if_already_copied:
             logging.info("Skipping check if files are already copied")
@@ -447,31 +460,32 @@ class GCPCloudFunctions:
     def move_or_copy_multiple_files(
             self, files_to_move: list[dict],
             action: str,
-            workers: int,
-            max_retries: int,
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
             verbose: bool = False,
             jobs_complete_for_logging: int = 500
     ) -> None:
         """
         Move or copy multiple files in parallel.
 
-        Args:
-            files_to_move (list[dict]): List of dictionaries containing source and destination file paths.
-            action (str): The action to perform ('move' or 'copy').
-            workers (int): Number of worker threads.
-            max_retries (int): Maximum number of retries.
-            verbose (bool, optional): Whether to log each job's success. Defaults to False.
-            jobs_complete_for_logging (int, optional): The number of jobs to complete before logging. Defaults to 500.
+        **Args:**
+        - files_to_move (list[dict]): List of dictionaries containing source and destination file paths.
+        - action (str): The action to perform (should be one of `ops_utils.gcp_utils.MOVE`
+        or `ops_utils.gcp_utils.COPY`).
+        - workers (int): Number of worker threads. Defaults to `10`.
+        - max_retries (int): Maximum number of retries. Defaults to `5`.
+        - verbose (bool, optional): Whether to log each job's success. Defaults to `False`.
+        - jobs_complete_for_logging (int, optional): The number of jobs to complete before logging. Defaults to `500`.
 
-        Raises:
-            Exception: If the action is not 'move' or 'copy'.
+        **Raises:**
+        - ValueError: If the action is not one of `ops_utils.gcp_utils.MOVE` or `ops_utils.gcp_utils.COPY`.
         """
         if action == MOVE:
             cloud_function = self.move_cloud_file
         elif action == COPY:
             cloud_function = self.copy_cloud_file
         else:
-            raise Exception("Must either select move or copy")
+            raise ValueError("Must either select move or copy")
 
         list_of_jobs_args_list = [
             [
@@ -494,12 +508,12 @@ class GCPCloudFunctions:
         """
         Read the content of a file from GCS.
 
-        Args:
-            cloud_path (str): The GCS path of the file to read.
-            encoding (str, optional): The encoding to use. Defaults to 'utf-8'.
+        **Args:**
+        - cloud_path (str): The GCS path of the file to read.
+        - encoding (str, optional): The encoding to use. Defaults to `utf-8`.
 
-        Returns:
-            bytes: The content of the file as bytes.
+        **Returns:**
+        - bytes: The content of the file as bytes.
         """
 
         blob = self.load_blob_from_full_path(cloud_path)
@@ -513,9 +527,9 @@ class GCPCloudFunctions:
         """
         Upload a file to GCS.
 
-        Args:
-            destination_path (str): The destination GCS path.
-            source_file (str): The source file path.
+        **Args:**
+        - destination_path (str): The destination GCS path.
+        - source_file (str): The source file path.
         """
         blob = self.load_blob_from_full_path(destination_path)
         blob.upload_from_filename(source_file)
@@ -531,15 +545,19 @@ class GCPCloudFunctions:
         """
         Calculate the MD5 checksum of a file in GCS.
 
-        Args:
-            file_path (str): The GCS path of the file.
-            chunk_size (int, optional): The size of each chunk to read. Defaults to 256 KB.
-            logging_bytes (int, optional): The number of bytes to read before logging progress. Defaults to 1 GB.
-            returned_md5_format (str, optional): The format of the MD5 checksum to return. Defaults to "hex".
-                Options are "hex" or "base64". hex = md5sum returns and base63 = gsutil stores.
+        **Args:**
+        - file_path (str): The GCS path of the file.
+        - chunk_size (int, optional): The size of each chunk to read. Defaults to `256 KB`.
+        - logging_bytes (int, optional): The number of bytes to read before logging progress. Defaults to `1 GB`.
+        - returned_md5_format (str, optional): The format of the MD5 checksum to return. Defaults to `hex`.
+                Options are `ops_utils.gcp_utils.MD5_HEX` or `ops_utils.gcp_utils.MD5_BASE64`.
 
-        Returns:
-            str: The MD5 checksum of the file.
+        **Returns:**
+        - str: The MD5 checksum of the file.
+
+        **Raises:**
+        - ValueError: If the `returned_md5_format` is not one of `ops_utils.gcp_utils.MD5_HEX`
+        or `ops_utils.gcp_utils.MD5_BASE64`
         """
         if returned_md5_format not in ["hex", "base64"]:
             raise ValueError("returned_md5_format must be 'hex' or 'base64'")
@@ -582,12 +600,12 @@ class GCPCloudFunctions:
         """
         Copy a file from an on-premises location to GCS.
 
-        Args:
-            onprem_src_path (str): The source path of the file on-premises.
-            cloud_dest_path (str): The destination GCS path.
+        **Args:**
+        - onprem_src_path (str): The source path of the file on-premises.
+        - cloud_dest_path (str): The destination GCS path.
 
-        Raises:
-            Exception: If the source file does not exist or the user does not have permission to access it.
+        **Raises:**
+        - Exception: If the source file does not exist or the user does not have permission to access it.
         """
         if not os.path.isfile(onprem_src_path):
             raise Exception(f"{onprem_src_path} does not exist or user does not have permission to it")
@@ -598,9 +616,9 @@ class GCPCloudFunctions:
         """
         Write content to a file in GCS.
 
-        Args:
-            cloud_path (str): The GCS path of the file to write.
-            content (str): The content to write.
+        **Args:**
+        - cloud_path (str): The GCS path of the file to write.
+        - content (str): The content to write.
         """
         blob = self.load_blob_from_full_path(cloud_path)
         blob.upload_from_string(content)
@@ -610,8 +628,8 @@ class GCPCloudFunctions:
         """
         Set the file in the bucket to be publicly readable.
 
-        Args:
-            cloud_path (str): The GCS path of the file.
+        **Args:**
+        - cloud_path (str): The GCS path of the file to be set as public readable.
         """
         blob = self.load_blob_from_full_path(cloud_path)
         blob.acl.all().grant_read()
@@ -621,9 +639,9 @@ class GCPCloudFunctions:
         """
         Set the file in the bucket to grant OWNER permission to a specific group.
 
-        Args:
-            cloud_path (str): The GCS path of the file.
-            group_email (str): The email of the group to grant OWNER permission
+        **Args:**
+        - cloud_path (str): The GCS path of the file.
+        - group_email (str): The email of the group to grant OWNER permission
         """
         blob = self.load_blob_from_full_path(cloud_path)
         blob.acl.group(group_email).grant_owner()
@@ -633,9 +651,9 @@ class GCPCloudFunctions:
         """
         Set Cache-Control metadata for a file.
 
-        Args:
-            cloud_path (str): The GCS path of the file.
-            cache_control (str): The Cache-Control metadata to set.
+        **Args:**
+        - cloud_path (str): The GCS path of the file.
+        - cache_control (str): The Cache-Control metadata to set.
         """
         blob = self.load_blob_from_full_path(cloud_path)
         blob.cache_control = cache_control
@@ -648,10 +666,11 @@ class GCPCloudFunctions:
         recent file until a log with useful information is encountered. This is useful when combing through
         GCP activity logs for Terra workspace buckets.
 
-        Args:
-            bucket_name (str): The GCS bucket name.
-        Returns:
-            Optional tuple of the blob found and the file contents from the blob
+        **Args:**
+        - bucket_name (str): The GCS bucket name.
+
+        **Returns:**
+        - Optional tuple of the blob found and the file contents from the blob
         """
         blobs = sorted(
             self.client.list_blobs(bucket_name), key=lambda blob: blob.updated, reverse=True
@@ -673,9 +692,15 @@ class GCPCloudFunctions:
         logging.info("No valid files found.")
         return None
 
+    # TODO Remove this after downstream repositories remove the use of this function
+    #  (should all be replaced with write_to_gcs)
     def write_to_gcp_file(self, cloud_path: str, file_contents: str) -> None:
         """
         Write content to a file in GCS.
+
+        **Args:**
+        - cloud_path (str): The GCS path of the file to write.
+        - file_contents (str): The content to write.
         """
         blob = self.load_blob_from_full_path(cloud_path)
         blob.upload_from_string(file_contents)
