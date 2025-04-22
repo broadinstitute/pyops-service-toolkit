@@ -3,3 +3,4 @@ coverage
 responses
 backoff
 pytest
+httplib2
