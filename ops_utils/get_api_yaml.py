@@ -10,9 +10,10 @@ DATASET_ID = "eccc736d-2a5a-4d54-a72e-dcdb9f10e67f"
 DATASET_NAME = "ops_test_tdr_dataset"
 OUTPUT_YAML = 'out.yaml'
 
+
 # Test to get yaml returned from the API call. Output will be written to
 @_recorder.record(file_path=OUTPUT_YAML)
-def _get_yaml(requests_utils):
+def _get_yaml(requests_utils: RunRequest) -> None:
     tdr_util = TDR(request_util=requests_utils)
     results = tdr_util.get_or_create_dataset(
         dataset_name=DATASET_NAME,
@@ -25,6 +26,7 @@ def _get_yaml(requests_utils):
     )
     if results:
         print(results)
+
 
 if __name__ == '__main__':
     print("Deleting old yaml file")
