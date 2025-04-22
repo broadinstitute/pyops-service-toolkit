@@ -3,9 +3,8 @@ from email import policy
 from responses import _recorder
 from ops_utils.requests_utils.request_util import RunRequest
 from ops_utils.token_util import Token
-from ops_utils.tdr_utils.tdr_api_utils import TDR
+from ops_utils.tdr_utils.tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
 from ops_utils.vars import GCP
-from ops_utils.tdr_utils.tdr_table_utils import SetUpTDRTables
 import os
 import json
 
@@ -18,8 +17,14 @@ OUTPUT_YAML = 'out.yaml'
 @_recorder.record(file_path=OUTPUT_YAML)
 def _get_yaml(requests_utils):
     tdr_util = TDR(request_util=requests_utils)
-    results = tdr_util.get_data_set_file_uuids_from_metadata(
-        dataset_id=DATASET_ID
+    results = tdr_util.get_or_create_dataset(
+        dataset_name=DATASET_NAME,
+        billing_profile=BILLING_ID,
+        schema={},
+        description="",
+        cloud_platform=GCP,
+        delete_existing=False,
+        continue_if_exists=True
     )
     if results:
         print(results)
