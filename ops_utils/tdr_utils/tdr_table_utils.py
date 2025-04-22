@@ -31,7 +31,15 @@ class SetUpTDRTables:
         Args:
             tdr (TDR): An instance of the TDR class.
             dataset_id (str): The ID of the dataset.
-            table_info_dict (dict): A dictionary containing table information.
+            table_info_dict (dict): A dictionary containing table information. Example looks like
+                {
+                    target_table_name: {
+                        "table_name": target_table_name,
+                        "primary_key": primary_key_column_name,
+                        "ingest_metadata": updated_metrics,
+                        "datePartitionOptions": None
+                    }
+                }
             all_fields_non_required (bool): A boolean indicating whether all columns are non-required.
             force_disparate_rows_to_string (bool): A boolean indicating whether disparate rows should be forced to
                 string.

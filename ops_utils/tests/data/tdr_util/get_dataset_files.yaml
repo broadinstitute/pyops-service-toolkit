@@ -1,0 +1,38 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '[{"fileId":"99bf3bbd-5610-4c93-90a1-48d0cf168a6d","collectionId":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","path":"/test.csv","size":4,"checksums":[{"checksum":"921dd6e9","type":"crc32c"},{"checksum":"5c9597f3c8245907ea71a89d9d39d08e","type":"md5"}],"created":"2025-04-22T16:16:41.316Z","description":null,"fileType":"file","fileDetail":{"datasetId":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","mimeType":null,"accessUrl":"gs://datarepo-e3ff3014-bucket/eccc736d-2a5a-4d54-a72e-dcdb9f10e67f/99bf3bbd-5610-4c93-90a1-48d0cf168a6d/test.csv","loadTag":"test_tag"},"directoryDetail":null},{"fileId":"ae2438c7-23ef-46e3-80c7-d8a3ef72fe54","collectionId":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","path":"/test.tsv","size":4,"checksums":[{"checksum":"921dd6e9","type":"crc32c"},{"checksum":"5c9597f3c8245907ea71a89d9d39d08e","type":"md5"}],"created":"2025-04-22T16:16:41.795Z","description":null,"fileType":"file","fileDetail":{"datasetId":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","mimeType":null,"accessUrl":"gs://datarepo-e3ff3014-bucket/eccc736d-2a5a-4d54-a72e-dcdb9f10e67f/ae2438c7-23ef-46e3-80c7-d8a3ef72fe54/test.tsv","loadTag":"test_tag"},"directoryDetail":null},{"fileId":"67c43183-4109-4f24-9744-dfa77ccac72c","collectionId":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","path":"/test.txt","size":4,"checksums":[{"checksum":"921dd6e9","type":"crc32c"},{"checksum":"5c9597f3c8245907ea71a89d9d39d08e","type":"md5"}],"created":"2025-04-22T16:16:41.209Z","description":null,"fileType":"file","fileDetail":{"datasetId":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","mimeType":null,"accessUrl":"gs://datarepo-e3ff3014-bucket/eccc736d-2a5a-4d54-a72e-dcdb9f10e67f/67c43183-4109-4f24-9744-dfa77ccac72c/test.txt","loadTag":"test_tag"},"directoryDetail":null}]'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: pYO0950Y
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/datasets/eccc736d-2a5a-4d54-a72e-dcdb9f10e67f/files?offset=0&limit=20000
+- response:
+    auto_calculate_content_length: false
+    body: '[]'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: pL8kqkE7
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/datasets/eccc736d-2a5a-4d54-a72e-dcdb9f10e67f/files?offset=20000&limit=20000

@@ -1,0 +1,97 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"4Fp5px7uTV29KiMh89e6aA","description":"Create dataset ops_test_tdr_dataset","job_status":"running","status_code":202,"submitted":"2025-04-22T14:27:16.867523Z","completed":null,"class_name":"bio.terra.service.dataset.flight.create.DatasetCreateFlight","target_iam_resource":{"type":"spend-profile","id":"ce149ca7-608b-4d5d-9612-2a43a7378885","action":"link"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: plZJoYdr
+    method: POST
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/datasets
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"4Fp5px7uTV29KiMh89e6aA","description":"Create dataset ops_test_tdr_dataset","job_status":"running","status_code":202,"submitted":"2025-04-22T14:27:16.867523Z","completed":null,"class_name":"bio.terra.service.dataset.flight.create.DatasetCreateFlight","target_iam_resource":{"type":"spend-profile","id":"ce149ca7-608b-4d5d-9612-2a43a7378885","action":"link"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: pLM3JEKx
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"4Fp5px7uTV29KiMh89e6aA","description":"Create dataset ops_test_tdr_dataset","job_status":"running","status_code":202,"submitted":"2025-04-22T14:27:16.867523Z","completed":null,"class_name":"bio.terra.service.dataset.flight.create.DatasetCreateFlight","target_iam_resource":{"type":"spend-profile","id":"ce149ca7-608b-4d5d-9612-2a43a7378885","action":"link"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: 6gZmvVvJ
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"4Fp5px7uTV29KiMh89e6aA","description":"Create dataset ops_test_tdr_dataset","job_status":"succeeded","status_code":201,"submitted":"2025-04-22T14:27:16.867523Z","completed":"2025-04-22T14:28:05.989765Z","class_name":"bio.terra.service.dataset.flight.create.DatasetCreateFlight","target_iam_resource":{"type":"spend-profile","id":"ce149ca7-608b-4d5d-9612-2a43a7378885","action":"link"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA/result
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: emz4n8JN
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","name":"ops_test_tdr_dataset","description":"Test
+      Dataset","defaultProfileId":"ce149ca7-608b-4d5d-9612-2a43a7378885","createdDate":"2025-04-22T14:27:53.052277Z","storage":[{"region":"us-central1","cloudResource":"bigquery","cloudPlatform":"gcp"},{"region":"us-east4","cloudResource":"firestore","cloudPlatform":"gcp"},{"region":"us-central1","cloudResource":"bucket","cloudPlatform":"gcp"}],"secureMonitoringEnabled":false,"cloudPlatform":"gcp","dataProject":"datarepo-e3ff3014","storageAccount":null,"phsId":null,"selfHosted":false,"predictableFileIds":false,"tags":[],"resourceLocks":{"exclusive":null,"shared":[]},"inheritSteward":false}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: aEzqvLGk
+    method: GET
+    status: 201
+    url: https://data.terra.bio/api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA/result
