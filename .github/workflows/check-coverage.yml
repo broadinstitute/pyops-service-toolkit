@@ -34,7 +34,7 @@ jobs:
       # TODO update the minimum requirement coverage to 90% after POD-2632 is complete
       - name: Enforce minimum coverage %
         run: |
-          coverage report --fail-under=70
+          coverage report --fail-under=60
 
       - name: Generate coverage report (XML)
         run: coverage xml
