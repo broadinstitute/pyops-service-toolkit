@@ -1,5 +1,7 @@
 GCP = "gcp"
+"""To be used anytime a "cloud type" should be defined as 'GCP'"""
 AZURE = "azure"
+"""To be used anytime a "cloud type" should be defined as 'Azure'"""
 ARG_DEFAULTS = {
     "max_retries": 5,
     "max_backoff_time": 5 * 60,
@@ -12,3 +14,4 @@ ARG_DEFAULTS = {
     "waiting_time_to_poll": 90,
     "docker_image": "us-central1-docker.pkg.dev/operations-portal-427515/ops-toolbox/ops_terra_utils_slim:latest"
 }
+"""@private"""

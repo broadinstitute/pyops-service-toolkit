@@ -7,7 +7,7 @@ from typing import Any, Optional, Union
 from urllib.parse import unquote
 from pydantic import ValidationError
 
-from ..requests_utils.request_util import GET, POST, DELETE
+from ..requests_utils.request_util import GET, POST, DELETE, RunRequest
 from ..tdr_api_schema.create_dataset_schema import CreateDatasetSchema
 from ..tdr_api_schema.update_dataset_schema import UpdateSchema
 from .tdr_job_utils import MonitorTDRJob, SubmitAndMonitorMultipleJobs
@@ -15,23 +15,18 @@ from ..vars import ARG_DEFAULTS
 
 
 class TDR:
-    """
-    A class to interact with the Terra Data Repository (TDR) API.
-
-    Attributes:
-        TDR_LINK (str): The base URL for the TDR API.
-        request_util (Any): Utility for making HTTP requests.
-    """
     TDR_LINK = "https://data.terra.bio/api/repository/v1"
+    """(str): The base URL for the TDR API."""
 
-    def __init__(self, request_util: Any):
+    def __init__(self, request_util: RunRequest):
         """
-        Initialize the TDR class.
+        Initialize the TDR class (A class to interact with the Terra Data Repository (TDR) API.)
 
-        Args:
-            request_util (Any): Utility for making HTTP requests.
+        **Args:**
+        - request_util (`ops_utils.requests_utils.request_util.RunRequest`): Utility for making HTTP requests.
         """
         self.request_util = request_util
+        """@private"""
 
     def get_dataset_files(
             self,
@@ -42,38 +37,38 @@ class TDR:
         Get all files in a dataset. Returns json like below
 
             {
-        "fileId": "68ba8bfc-1d84-4ef3-99b8-cf1754d5rrrr",
-        "collectionId": "b20b6024-5943-4c23-82e7-9c24f545fuy7",
-        "path": "/path/set/in/ingest.csv",
-        "size": 1722,
-        "checksums": [
-            {
-                "checksum": "82f7e79v",
-                "type": "crc32c"
-            },
-            {
-                "checksum": "fff973507e30b74fa47a3d6830b84a90",
-                "type": "md5"
+                "fileId": "68ba8bfc-1d84-4ef3-99b8-cf1754d5rrrr",
+                "collectionId": "b20b6024-5943-4c23-82e7-9c24f545fuy7",
+                "path": "/path/set/in/ingest.csv",
+                "size": 1722,
+                "checksums": [
+                    {
+                        "checksum": "82f7e79v",
+                        "type": "crc32c"
+                    },
+                    {
+                        "checksum": "fff973507e30b74fa47a3d6830b84a90",
+                        "type": "md5"
+                    }
+                ],
+                "created": "2024-13-11T15:01:00.256Z",
+                "description": null,
+                "fileType": "file",
+                "fileDetail": {
+                    "datasetId": "b20b6024-5943-4c23-82e7-9c24f5456444",
+                    "mimeType": null,
+                    "accessUrl": "gs://datarepo-bucket/path/to/actual/file.csv",
+                    "loadTag": "RP_3333-RP_3333"
+                },
+                "directoryDetail": null
             }
-        ],
-        "created": "2024-13-11T15:01:00.256Z",
-        "description": null,
-        "fileType": "file",
-        "fileDetail": {
-            "datasetId": "b20b6024-5943-4c23-82e7-9c24f5456444",
-            "mimeType": null,
-            "accessUrl": "gs://datarepo-bucket/path/to/actual/file.csv",
-            "loadTag": "RP_3333-RP_3333"
-        },
-        "directoryDetail": null
-    }
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 1000.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `20000`.
 
-        Returns:
-            list[dict]: A list of dictionaries containing the metadata of the files in the dataset.
+        **Returns:**
+        - list[dict]: A list of dictionaries containing the metadata of the files in the dataset.
         """
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/files"
         logging.info(f"Getting all files in dataset {dataset_id}")
@@ -87,15 +82,15 @@ class TDR:
         """
         Create a dictionary of all files in a dataset where the key is the file UUID.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 20000.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `20000`.
 
-        Returns:
-            dict: A dictionary where the key is the file UUID and the value is the file metadata.
+        **Returns:**
+        - dict: A dictionary where the key is the file UUID and the value is the file metadata.
         """
         return {
-            file_dict['fileId']: file_dict
+            file_dict["fileId"]: file_dict
             for file_dict in self.get_dataset_files(dataset_id=dataset_id, limit=limit)
         }
 
@@ -106,16 +101,16 @@ class TDR:
     ) -> dict:
         """
         Create a dictionary of all files in a dataset where the key is the file 'path' and the value is the file UUID.
-        This assumes that the tdr 'path' is original path of the file in the cloud storage with gs:// stripped out
+        This assumes that the TDR 'path' is original path of the file in the cloud storage with `gs://` stripped out.
 
-        This will ONLY work if dataset was created with experimentalSelfHosted = True
+        This will ONLY work if dataset was created with `experimentalSelfHosted = True`
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 20000.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `20000`.
 
-        Returns:
-            dict: A dictionary where the key is the file UUID and the value is the file path.
+        **Returns:**
+        - dict: A dictionary where the key is the file UUID and the value is the file path.
         """
         return {
             file_dict['fileDetail']['accessUrl']: file_dict['fileId']
@@ -124,18 +119,18 @@ class TDR:
 
     def get_sas_token(self, snapshot_id: str = "", dataset_id: str = "") -> dict:
         """
-        Get the SAS token for a snapshot or dataset.
+        Get the SAS token for a snapshot OR dataset. Only one should be provided.
 
-        Args:
-            snapshot_id (str, optional): The ID of the snapshot. Defaults to "".
-            dataset_id (str, optional): The ID of the dataset. Defaults to "".
+        **Args:**
+        - snapshot_id (str, optional): The ID of the snapshot. Defaults to "".
+        - dataset_id (str, optional): The ID of the dataset. Defaults to "".
 
-        Returns:
-            dict: A dictionary containing the SAS token and its expiry time.
-                Expirey time is a string like 2025-02-13T19:31:47Z.
+        **Returns:**
+        - dict: A dictionary containing the SAS token and its expiry time. Expiry
+        time is a string like `2025-02-13T19:31:47Z`.
 
-        Raises:
-            ValueError: If neither snapshot_id nor dataset_id is provided.
+        **Raises:**
+        - ValueError: If neither `snapshot_id` nor `dataset_id` is provided.
         """
         if snapshot_id:
             uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}?include=ACCESS_INFORMATION"
@@ -160,12 +155,12 @@ class TDR:
         """
         Delete a file from a dataset.
 
-        Args:
-            file_id (str): The ID of the file to be deleted.
-            dataset_id (str): The ID of the dataset.
+        **Args:**
+        - file_id (str): The ID of the file to be deleted.
+        - dataset_id (str): The ID of the dataset.
 
-        Returns:
-            str: The job ID of the delete operation.
+        **Returns:**
+        - str: The job ID of the delete operation.
         """
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/files/{file_id}"
         response = self.request_util.run_request(uri=uri, method=DELETE)
@@ -177,16 +172,16 @@ class TDR:
             self,
             file_ids: list[str],
             dataset_id: str,
-            batch_size_to_delete_files: int = 250,
+            batch_size_to_delete_files: int = ARG_DEFAULTS["batch_size_to_delete_files"],  # type: ignore[assignment]
             check_interval: int = 15) -> None:
         """
         Delete multiple files from a dataset in batches and monitor delete jobs until completion for each batch.
 
-        Args:
-            file_ids (list[str]): A list of file IDs to be deleted.
-            dataset_id (str): The ID of the dataset.
-            batch_size_to_delete_files (int, optional): The number of files to delete per batch. Defaults to 100.
-            check_interval (int, optional): The interval in seconds to wait between status checks. Defaults to 15.
+        **Args:**
+        - file_ids (list[str]): A list of file IDs to be deleted.
+        - dataset_id (str): The ID of the dataset.
+        - batch_size_to_delete_files (int, optional): The number of files to delete per batch. Defaults to `200`.
+        - check_interval (int, optional): The interval in seconds to wait between status checks. Defaults to `15`.
         """
         SubmitAndMonitorMultipleJobs(
             tdr=self,
@@ -200,14 +195,14 @@ class TDR:
         """
         Add a user to a dataset with a specified policy.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            user (str): The email of the user to be added.
-            policy (str): The policy to be assigned to the user.
-                Must be one of "steward", "custodian", or "snapshot_creator".
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - user (str): The email of the user to be added.
+        - policy (str): The policy to be assigned to the user.
+                Must be one of `steward`, `custodian`, or `snapshot_creator`.
 
-        Raises:
-            ValueError: If the policy is not valid.
+        **Raises:**
+        - ValueError: If the policy is not valid.
         """
         if policy not in ["steward", "custodian", "snapshot_creator"]:
             raise ValueError(f"Policy {policy} is not valid. Must be steward, custodian, or snapshot_creator")
@@ -224,14 +219,14 @@ class TDR:
         """
         Remove a user from a dataset.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            user (str): The email of the user to be removed.
-            policy (str): The policy to be removed from the user.
-                Must be one of "steward", "custodian", or "snapshot_creator".
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - user (str): The email of the user to be removed.
+        - policy (str): The policy to be removed from the user.
+                Must be one of `steward`, `custodian`, or `snapshot_creator`.
 
-        Raises:
-            ValueError: If the policy is not valid.
+        **Raises:**
+        - ValueError: If the policy is not valid.
         """
         if policy not in ["steward", "custodian", "snapshot_creator"]:
             raise ValueError(f"Policy {policy} is not valid. Must be steward, custodian, or snapshot_creator")
@@ -243,7 +238,7 @@ class TDR:
         """
         Delete a dataset.
 
-        Args:
+        **Args:**
             dataset_id (str): The ID of the dataset to be deleted.
         """
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}"
@@ -261,15 +256,15 @@ class TDR:
         """
         Get information about a snapshot.
 
-        Args:
-            snapshot_id (str): The ID of the snapshot.
-            continue_not_found (bool, optional): Whether to accept a 404 response. Defaults to False.
-            info_to_include (Optional[list[str]]): A list of additional information to include. Defaults to None.
-                Options are: SOURCES, TABLES, RELATIONSHIPS, ACCESS_INFORMATION, PROFILE, PROPERTIES, DATA_PROJECT,
-                CREATION_INFORMATION, DUOS
+        **Args:**
+        - snapshot_id (str): The ID of the snapshot.
+        - continue_not_found (bool, optional): Whether to accept a 404 response. Defaults to `False`.
+        - info_to_include (list[str], optional): A list of additional information to include. Defaults to None.
+                Options are: `SOURCES`, `TABLES`, `RELATIONSHIPS`, `ACCESS_INFORMATION`, `PROFILE`, `PROPERTIES`,
+                `DATA_PROJECT`,`CREATION_INFORMATION`, `DUOS`
 
-        Returns:
-            dict: A dictionary containing the snapshot information.
+        **Returns:**
+        - dict: A dictionary containing the snapshot information.
         """
         acceptable_return_code = [404, 403] if continue_not_found else []
         acceptable_include_info = [
@@ -306,11 +301,11 @@ class TDR:
         """
         Delete multiple snapshots.
 
-        Args:
-            snapshot_ids (list[str]): A list of snapshot IDs to be deleted.
-            batch_size (int, optional): The number of snapshots to delete per batch. Defaults to 25.
-            check_interval (int, optional): The interval in seconds to wait between status checks. Defaults to 10.
-            verbose (bool, optional): Whether to log detailed information about each job. Defaults to False.
+        **Args:**
+        - snapshot_ids (list[str]): A list of snapshot IDs to be deleted.
+        - batch_size (int, optional): The number of snapshots to delete per batch. Defaults to `25`.
+        - check_interval (int, optional): The interval in seconds to wait between status checks. Defaults to `10`.
+        - verbose (bool, optional): Whether to log detailed information about each job. Defaults to `False`.
         """
         SubmitAndMonitorMultipleJobs(
             tdr=self,
@@ -325,8 +320,11 @@ class TDR:
         """
         Delete a snapshot.
 
-        Args:
-            snapshot_id (str): The ID of the snapshot to be deleted.
+        **Args:**
+        - snapshot_id (str): The ID of the snapshot to be deleted.
+
+        **Returns:**
+        - str: The TDR job ID
         """
         uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}"
         logging.info(f"Deleting snapshot {snapshot_id}")
@@ -340,7 +338,7 @@ class TDR:
         """
         Get all datasets in TDR, optionally filtered by dataset name.
 
-        Args:
+        **Args:**
             filter (Optional[str]): A filter string to match dataset names. Defaults to None.
             batch_size (int): The number of datasets to retrieve per batch. Defaults to 100.
             direction (str): The direction to sort the datasets by creation date. Defaults to "asc".
@@ -371,12 +369,12 @@ class TDR:
         """
         Check if a dataset exists by name and optionally by billing profile.
 
-        Args:
-            dataset_name (str): The name of the dataset to check.
-            billing_profile (Optional[str]): The billing profile ID to match. Defaults to None.
+        **Args:**
+        - dataset_name (str): The name of the dataset to check.
+        - billing_profile (str, optional): The billing profile ID to match. Defaults to None.
 
-        Returns:
-            list[dict]: A list of matching datasets.
+        **Returns:**
+        - list[dict]: A list of matching datasets.
         """
         matching_datasets = []
         for dataset in self._yield_existing_datasets(filter=dataset_name):
@@ -406,15 +404,17 @@ class TDR:
         """
         Get information about a dataset.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            info_to_include (Optional[list[str]]): A list of additional information to include. Defaults to None.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - info_to_include (list[str], optional): A list of additional information to include. Valid options include:
+        `SCHEMA`, `ACCESS_INFORMATION`, `PROFILE`, `PROPERTIES`, `DATA_PROJECT`, `STORAGE`, `SNAPSHOT_BUILDER_SETTING`.
+        Defaults to None.
 
-        Returns:
-            dict: A dictionary containing the dataset information.
+        **Returns:**
+        - dict: A dictionary containing the dataset information.
 
-        Raises:
-            ValueError: If info_to_include contains invalid information types.
+        **Raises:**
+        - ValueError: If `info_to_include` contains invalid information types.
         """
         acceptable_include_info = [
             "SCHEMA",
@@ -444,13 +444,13 @@ class TDR:
         """
         Get schema information for a specific table within a dataset.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            table_name (str): The name of the table.
-            dataset_info (dict, optional): The dataset information if already retrieved. Defaults to None.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - table_name (str): The name of the table.
+        - dataset_info (dict, optional): The dataset information if already retrieved. Defaults to None.
 
-        Returns:
-            Union[dict, None]: A dictionary containing the table schema information, or None if the table is not found.
+        **Returns:**
+        - Union[dict, None]: A dictionary containing the table schema information, or None if the table is not found.
         """
         if not dataset_info:
             dataset_info = self.get_dataset_info(dataset_id=dataset_id, info_to_include=["SCHEMA"])
@@ -463,12 +463,12 @@ class TDR:
         """
         Retrieve the result of a job.
 
-        Args:
-            job_id (str): The ID of the job.
-            expect_failure (bool, optional): Whether the job is expected to fail. Defaults to False.
+        **Args:**
+        - job_id (str): The ID of the job.
+        - expect_failure (bool, optional): Whether the job is expected to fail. Defaults to `False`.
 
-        Returns:
-            dict: A dictionary containing the job result.
+        **Returns:**
+        - dict: A dictionary containing the job result.
         """
         uri = f"{self.TDR_LINK}/jobs/{job_id}/result"
         # If job is expected to fail, accept any return code
@@ -480,12 +480,12 @@ class TDR:
         """
         Load data into a TDR dataset.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            data (dict): The data to be ingested.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - data (dict): The data to be ingested.
 
-        Returns:
-            dict: A dictionary containing the response from the ingest operation.
+        **Returns:**
+        - dict: A dictionary containing the response from the ingest operation.
         """
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/ingest"
         logging.info(
@@ -509,16 +509,14 @@ class TDR:
         """
         Load files into a TDR dataset.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            data (dict): list of cloud file paths to be ingested.
-            {
-                "sourcePath":"gs:{bucket_name}/{file_path}",
-                "targetPath":"/{path}/{file_name}"
-            }
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - profile_id (str): The billing profile ID.
+        - file_list (list[dict]): The list of files to be ingested.
+        - load_tag (str): The tag to be used in the ingest job. Defaults to `file_ingest_load_tag`.
 
-        Returns:
-            dict: A dictionary containing the response from the ingest operation.
+        **Returns:**
+        - dict: A dictionary containing the response from the ingest operation.
         """
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/files/bulk/array"
         data = {
@@ -544,13 +542,13 @@ class TDR:
         """
         Retrieve all metrics for a specific table within a dataset.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            target_table_name (str): The name of the target table.
-            query_limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 1000.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - target_table_name (str): The name of the target table.
+        - query_limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `1000`.
 
-        Returns:
-            list[dict]: A list of dictionaries containing the metrics for the specified table.
+        **Returns:**
+        - list[dict]: A list of dictionaries containing the metrics for the specified table.
         """
         return [
             metric
@@ -565,7 +563,7 @@ class TDR:
         """
         Yield all entity metrics from a dataset.
 
-        Args:
+        **Args:**
             dataset_id (str): The ID of the dataset.
             target_table_name (str): The name of the target table.
             query_limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 1000.
@@ -601,13 +599,13 @@ class TDR:
         """
         Get existing IDs from a dataset.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            target_table_name (str): The name of the target table.
-            entity_id (str): The entity ID to retrieve.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - target_table_name (str): The name of the target table.
+        - entity_id (str): The entity ID to retrieve.
 
-        Returns:
-            list[str]: A list of entity IDs from the specified table.
+        **Returns:**
+        - list[str]: A list of entity IDs from the specified table.
         """
         data_set_metadata = self._yield_dataset_metrics(dataset_id=dataset_id, target_table_name=target_table_name)
         return [str(sample_dict[entity_id]) for sample_dict in data_set_metadata]
@@ -616,11 +614,11 @@ class TDR:
         """
         Retrieve the status of a job.
 
-        Args:
-            job_id (str): The ID of the job.
+        **Args:**
+        - job_id (str): The ID of the job.
 
-        Returns:
-            requests.Response: The response object containing the job status.
+        **Returns:**
+        - requests.Response: The response object containing the job status.
         """
         uri = f"{self.TDR_LINK}/jobs/{job_id}"
         response = self.request_util.run_request(uri=uri, method=GET)
@@ -630,11 +628,11 @@ class TDR:
         """
         Get all file UUIDs from the metadata of a dataset.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
 
-        Returns:
-            list[str]: A list of file UUIDs from the dataset metadata.
+        **Returns:**
+        - list[str]: A list of file UUIDs from the dataset metadata.
         """
         data_set_info = self.get_dataset_info(dataset_id=dataset_id, info_to_include=["SCHEMA"])
         all_metadata_file_uuids = []
@@ -671,14 +669,11 @@ class TDR:
         """
         Soft delete specific records from a table.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            table_name (str): The name of the target table.
-            datarepo_row_ids (list[str]): A list of row IDs to be deleted.
-            check_intervals (int, optional): The interval in seconds to wait between status checks. Defaults to 15.
-
-        Returns:
-            None
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - table_name (str): The name of the target table.
+        - datarepo_row_ids (list[str]): A list of row IDs to be deleted.
+        - check_intervals (int, optional): The interval in seconds to wait between status checks. Defaults to `15`.
         """
         if not datarepo_row_ids:
             logging.info(f"No records found to soft delete in table {table_name}")
@@ -716,14 +711,11 @@ class TDR:
         """
         Soft deletes all records in a table.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            table_name (str): The name of the target table.
-            query_limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 1000.
-            check_intervals (int, optional): The interval in seconds to wait between status checks. Defaults to 15.
-
-        Returns:
-            None
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - table_name (str): The name of the target table.
+        - query_limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `1000`.
+        - check_intervals (int, optional): The interval in seconds to wait between status checks. Defaults to `15`.
         """
         data_set_metrics = self.get_dataset_table_metrics(
             dataset_id=dataset_id, target_table_name=table_name, query_limit=query_limit
@@ -750,24 +742,25 @@ class TDR:
         """
         Get or create a dataset.
 
-        Args:
-            dataset_name (str): The name of the dataset.
-            billing_profile (str): The billing profile ID.
-            schema (dict): The schema of the dataset.
-            description (str): The description of the dataset.
-            cloud_platform (str): The cloud platform for the dataset.
-            additional_properties_dict (Optional[dict], optional): Additional properties
+        **Args:**
+        - dataset_name (str): The name of the dataset.
+        - billing_profile (str): The billing profile ID.
+        - schema (dict): The schema of the dataset.
+        - description (str): The description of the dataset.
+        - cloud_platform (str): The cloud platform for the dataset (must be one of
+        `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
+        - additional_properties_dict (Optional[dict], optional): Additional properties
                 for the dataset. Defaults to None.
-            delete_existing (bool, optional): Whether to delete the existing dataset if found.
-                Defaults to False.
-            continue_if_exists (bool, optional): Whether to continue if the dataset already exists.
-                Defaults to False.
+        - delete_existing (bool, optional): Whether to delete the existing dataset if found.
+                Defaults to `False`.
+        - continue_if_exists (bool, optional): Whether to continue if the dataset already exists.
+                Defaults to `False`.
 
-        Returns:
-            str: The ID of the dataset.
+        **Returns:**
+        - str: The ID of the dataset.
 
-        Raises:
-            ValueError: If multiple datasets with the same name are found under the billing profile.
+        **Raises:**
+        - ValueError: If multiple datasets with the same name are found under the billing profile.
         """
         existing_data_sets = self.check_if_dataset_exists(dataset_name, billing_profile)
         if existing_data_sets:
@@ -808,20 +801,21 @@ class TDR:
         """
         Create a new dataset.
 
-        Args:
-            schema (dict): The schema of the dataset.
-            cloud_platform (str): The cloud platform for the dataset.
-            dataset_name (str): The name of the dataset.
-            description (str): The description of the dataset.
-            profile_id (str): The billing profile ID.
-            additional_dataset_properties (Optional[dict], optional): Additional
+        **Args:**
+        - schema (dict): The schema of the dataset.
+        - cloud_platform (str): The cloud platform for the dataset (must be one of
+        `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
+        - dataset_name (str): The name of the dataset.
+        - description (str): The description of the dataset.
+        - profile_id (str): The billing profile ID.
+        - additional_dataset_properties (Optional[dict], optional): Additional
                 properties for the dataset. Defaults to None.
 
-        Returns:
-            Optional[str]: The ID of the created dataset, or None if creation failed.
+        **Returns:**
+        - Optional[str]: The ID of the created dataset, or None if creation failed.
 
         Raises:
-            ValueError: If the schema validation fails.
+        - ValueError: If the schema validation fails.
         """
         dataset_properties = {
             "name": dataset_name,
@@ -862,18 +856,18 @@ class TDR:
         """
         Update the schema of a dataset.
 
-        Args:
-            dataset_id (str): The ID of the dataset.
-            update_note (str): A note describing the update.
-            tables_to_add (Optional[list[dict]], optional): A list of tables to add. Defaults to None.
-            relationships_to_add (Optional[list[dict]], optional): A list of relationships to add. Defaults to None.
-            columns_to_add (Optional[list[dict]], optional): A list of columns to add. Defaults to None.
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - update_note (str): A note describing the update.
+        - tables_to_add (list[dict], optional): A list of tables to add. Defaults to None.
+        - relationships_to_add (list[dict], optional): A list of relationships to add. Defaults to None.
+        - columns_to_add (list[dict], optional): A list of columns to add. Defaults to None.
 
-        Returns:
-            Optional[str]: The ID of the updated dataset, or None if the update failed.
+        **Returns:**
+        - Optional[str]: The ID of the updated dataset, or None if the update failed.
 
-        Raises:
-            ValueError: If the schema validation fails.
+        **Raises:**
+        - ValueError: If the schema validation fails.
         """
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/updateSchema"
         request_body: dict = {"description": f"{update_note}", "changes": {}}
@@ -905,12 +899,12 @@ class TDR:
         Helper method for all GET endpoints that require batching. Given the URI and the limit (optional), will
         loop through batches until all metadata is retrieved.
 
-        Args:
-            uri (str): The base URI for the endpoint (without query params for offset or limit).
-            limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 1000.
+        **Args:**
+        - uri (str): The base URI for the endpoint (without query params for offset or limit).
+        - limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `1000`.
 
-        Returns:
-            list[dict]: A list of dictionaries containing the metadata retrieved from the endpoint.
+        **Returns:**
+        - list[dict]: A list of dictionaries containing the metadata retrieved from the endpoint.
         """
         batch = 1
         offset = 0
@@ -935,12 +929,12 @@ class TDR:
         Returns all the metadata about files in a given snapshot. Not all files can be returned at once, so the API
         is used repeatedly until all "batches" have been returned.
 
-        Args:
-            snapshot_id (str): The ID of the snapshot.
-            limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 1000.
+        **Args:**
+        - snapshot_id (str): The ID of the snapshot.
+        - limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `1000`.
 
-        Returns:
-            list[dict]: A list of dictionaries containing the metadata of the files in the snapshot.
+        **Returns:**
+        - list[dict]: A list of dictionaries containing the metadata of the files in the snapshot.
         """
         uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}/files"
         return self._get_response_from_batched_endpoint(uri=uri, limit=limit)
@@ -949,11 +943,11 @@ class TDR:
         """
         Returns snapshots belonging to specified datset.
 
-        Args:
-            dataset_id: uuid of dataset to query.
+        **Args:**
+        - dataset_id: uuid of dataset to query.
 
-        Returns:
-            list[dict]: A list of dictionaries containing the metadata of snapshots in the dataset.
+        **Returns:**
+        - list[dict]: A list of dictionaries containing the metadata of snapshots in the dataset.
         """
         uri = f"{self.TDR_LINK}/snapshots?datasetIds={dataset_id}"
         response = self.request_util.run_request(
@@ -975,25 +969,30 @@ class FilterOutSampleIdsAlreadyInDataset:
         """
         Initialize the FilterOutSampleIdsAlreadyInDataset class.
 
-        Args:
-            ingest_metrics (list[dict]): The metrics to be ingested.
-            dataset_id (str): The ID of the dataset.
-            tdr (TDR): Instance of the TDR class.
-            target_table_name (str): The name of the target table.
-            filter_entity_id (str): The entity ID to filter on.
+        **Args:**
+        - ingest_metrics (list[dict]): The metrics to be ingested.
+        - dataset_id (str): The ID of the dataset.
+        - tdr (`ops_utils.tdr_utils.tdr_utils.TDR`): The TDR instance
+        - target_table_name (str): The name of the target table.
+        - filter_entity_id (str): The entity ID to filter on.
         """
         self.ingest_metrics = ingest_metrics
+        """@private"""
         self.tdr = tdr
+        """@private"""
         self.dataset_id = dataset_id
+        """@private"""
         self.target_table_name = target_table_name
+        """@private"""
         self.filter_entity_id = filter_entity_id
+        """@private"""
 
     def run(self) -> list[dict]:
         """
         Run the filter process to remove sample IDs that already exist in the dataset.
 
-        Returns:
-            list[dict]: The filtered ingest metrics.
+        **Returns:**
+        - list[dict]: The filtered ingest metrics.
         """
         # Get all sample ids that already exist in dataset
         logging.info(

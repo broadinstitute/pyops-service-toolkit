@@ -1,2 +1,9 @@
-1.7.0
-- Add GitHub action to run linting checks
+1.8.1
+- Clean up documentation
+    - Reformatting all doc-strings so they're uniform and include `args` and `returns` in list formatting (making them
+    easier to read)
+    - Creating a "home page" for the documentation
+    - Updating the docs build GHA so that classes that are not to be used externally are removed (including
+        `thread_pool_executor_util` and `tdr_api_schema`)
+    - Adding `@private` tags to anything that shouldn't be documented (avoided adding leading underscores to prevent
+    breaking changes)

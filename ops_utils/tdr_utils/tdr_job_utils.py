@@ -1,33 +1,31 @@
 import json
 import logging
 import time
-from typing import Any, Callable, Optional
+from typing import Callable, Optional, Any
+
+from ..vars import ARG_DEFAULTS
 
 
 class MonitorTDRJob:
-    """
-    A class to monitor the status of a TDR job until completion.
-
-    Attributes:
-        tdr (TDR): An instance of the TDR class.
-        job_id (str): The ID of the job to be monitored.
-        check_interval (int): The interval in seconds to wait between status checks.
-    """
 
     def __init__(self, tdr: Any, job_id: str, check_interval: int, return_json: bool):
         """
-        Initialize the MonitorTDRJob class.
+        Initialize the MonitorTDRJob class (A class to monitor the status of a TDR job until completion).
 
-        Args:
-            tdr (TDR): An instance of the TDR class.
-            job_id (str): The ID of the job to be monitored.
-            check_interval (int): The interval in seconds to wait between status checks.
-            return_json (bool): Whether to get and return the result of the job as json.
+        **Args:**
+        - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
+        - job_id (str): The ID of the job to be monitored.
+        - check_interval (int): The interval in seconds to wait between status checks.
+        - return_json (bool): Whether to get and return the result of the job as json.
         """
         self.tdr = tdr
+        """@private"""
         self.job_id = job_id
+        """@private"""
         self.check_interval = check_interval
+        """@private"""
         self.return_json = return_json
+        """@private"""
 
     def _raise_for_failed_job(self) -> None:
         """
@@ -44,8 +42,8 @@ class MonitorTDRJob:
         """
         Monitor the job until completion.
 
-        Returns:
-            dict: The result of the job.
+        **Returns:**
+        - dict: The job results
         """
         while True:
             ingest_response = self.tdr.get_job_status(self.job_id)
@@ -75,36 +73,38 @@ class SubmitAndMonitorMultipleJobs:
             self, tdr: Any,
             job_function: Callable,
             job_args_list: list[tuple],
-            batch_size: int = 100,
-            check_interval: int = 5,
+            batch_size: int = ARG_DEFAULTS["batch_size"],  # type: ignore[assignment]
+            check_interval: int = ARG_DEFAULTS["waiting_time_to_poll"],  # type: ignore[assignment]
             verbose: bool = False
     ):
         """
         Initialize the SubmitAndMonitorMultipleJobs class.
 
-        Args:
-            tdr (Any): An instance of the TDR class.
-            job_function (Callable): The function to submit a job.
-            job_args_list (list[tuple]): A list of tuples containing the arguments for each job.
-            batch_size (int, optional): The number of jobs to process in each batch. Defaults to 100.
-            check_interval (int, optional): The interval in seconds to wait between status checks. Defaults to 5.
-            verbose (bool, optional): Whether to log detailed information about each job. Defaults to False.
+        **Args:**
+        - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
+        - job_function (Callable): The function to submit a job.
+        - job_args_list (list[tuple]): A list of tuples containing the arguments for each job.
+        - batch_size (int, optional): The number of jobs to process in each batch. Defaults to `500`.
+        - check_interval (int, optional): The interval in seconds to wait between status checks. Defaults to `90`.
+        - verbose (bool, optional): Whether to log detailed information about each job. Defaults to `False`.
         """
         self.tdr = tdr
+        """@private"""
         self.job_function = job_function
+        """@private"""
         self.job_args_list = job_args_list
+        """@private"""
         self.batch_size = batch_size
+        """@private"""
         self.check_interval = check_interval
+        """@private"""
         self.verbose = verbose
+        """@private"""
 
     def run(self) -> None:
         """
-        Run the process to submit and monitor multiple jobs in batches.
-
-        Logs the progress and status of each batch and job.
-
-        Returns:
-            None
+        Run the process to submit and monitor multiple jobs in batches. Logs the progress and
+         status of each batch and job.
         """
         total_jobs = len(self.job_args_list)
         logging.info(f"Processing {total_jobs} {self.job_function.__name__} jobs in batches of {self.batch_size}")
