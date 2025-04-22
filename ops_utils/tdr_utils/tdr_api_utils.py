@@ -210,7 +210,7 @@ class TDR:
             ValueError: If the policy is not valid.
         """
         if policy not in ["steward", "custodian", "snapshot_creator"]:
-            raise ValueError(f"Policy {policy} is not valid. Must be READER, WRITER, or OWNER")
+            raise ValueError(f"Policy {policy} is not valid. Must be steward, custodian, or snapshot_creator")
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/policies/{policy}/members"
         member_dict = {"email": user}
         logging.info(f"Adding user {user} to dataset {dataset_id} with policy {policy}")

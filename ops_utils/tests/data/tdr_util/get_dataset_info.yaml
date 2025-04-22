@@ -1,0 +1,21 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","name":"ops_test_tdr_dataset","description":"Test
+      Dataset","defaultProfileId":"ce149ca7-608b-4d5d-9612-2a43a7378885","dataProject":"datarepo-e3ff3014","defaultSnapshotId":null,"schema":{"tables":[{"name":"ingestion_reference","columns":[{"name":"key","datatype":"string","array_of":false,"required":true},{"name":"value","datatype":"string","array_of":false,"required":true}],"primaryKey":["key"],"partitionMode":"none","datePartitionOptions":null,"intPartitionOptions":null,"rowCount":null},{"name":"test_table","columns":[{"name":"sample_id","datatype":"string","array_of":false,"required":true},{"name":"file_1","datatype":"fileref","array_of":false,"required":true}],"primaryKey":["sample_id"],"partitionMode":"none","datePartitionOptions":null,"intPartitionOptions":null,"rowCount":null}],"relationships":[],"assets":[]},"createdDate":"2025-04-22T14:27:53.052277Z","storage":[{"region":"us-central1","cloudResource":"bigquery","cloudPlatform":"gcp"},{"region":"us-east4","cloudResource":"firestore","cloudPlatform":"gcp"},{"region":"us-central1","cloudResource":"bucket","cloudPlatform":"gcp"}],"secureMonitoringEnabled":false,"phsId":null,"accessInformation":null,"cloudPlatform":null,"selfHosted":false,"properties":null,"ingestServiceAccount":"tdr-ingest-sa@datarepo-e3ff3014.iam.gserviceaccount.com","predictableFileIds":false,"tags":[],"resourceLocks":{"exclusive":null,"shared":[]},"inheritSteward":false}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: 6WwKgY2o
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/datasets/eccc736d-2a5a-4d54-a72e-dcdb9f10e67f?include=
