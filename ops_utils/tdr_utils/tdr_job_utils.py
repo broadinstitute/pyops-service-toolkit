@@ -1,15 +1,14 @@
 import json
 import logging
 import time
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 
-from .tdr_api_utils import TDR
 from ..vars import ARG_DEFAULTS
 
 
 class MonitorTDRJob:
 
-    def __init__(self, tdr: TDR, job_id: str, check_interval: int, return_json: bool):
+    def __init__(self, tdr: Any, job_id: str, check_interval: int, return_json: bool):
         """
         Initialize the MonitorTDRJob class (A class to monitor the status of a TDR job until completion).
 
@@ -71,7 +70,7 @@ class MonitorTDRJob:
 
 class SubmitAndMonitorMultipleJobs:
     def __init__(
-            self, tdr: TDR,
+            self, tdr: Any,
             job_function: Callable,
             job_args_list: list[tuple],
             batch_size: int = ARG_DEFAULTS["batch_size"],  # type: ignore[assignment]
