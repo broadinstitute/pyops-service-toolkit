@@ -13,9 +13,9 @@ class Csv:
         - delimiter (str, optional): The delimiter to use in the tabular file. Defaults to `\\t` (tab-delimited).
         """
         self.file_path = file_path
-        """The path to the tabular file"""
+        """@private"""
         self.delimiter = delimiter
-        """The delimiter used in the tabular file"""
+        """@private"""
 
     def create_tsv_from_list_of_dicts(self, list_of_dicts: list[dict], header_list: Optional[list[str]] = None) -> str:
         """

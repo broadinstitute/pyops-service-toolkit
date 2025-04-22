@@ -9,11 +9,6 @@ from ..tdr_utils.tdr_schema_utils import InferTDRSchema
 class SetUpTDRTables:
     """
     A class to set up TDR tables by comparing and updating schemas.
-
-    Attributes:
-        tdr (TDR): An instance of the TDR class.
-        dataset_id (str): The ID of the dataset.
-        table_info_dict (dict): A dictionary containing table information.
     """
 
     def __init__(
@@ -28,22 +23,29 @@ class SetUpTDRTables:
         """
         Initialize the SetUpTDRTables class.
 
-        Args:
-            tdr (TDR): An instance of the TDR class.
-            dataset_id (str): The ID of the dataset.
-            table_info_dict (dict): A dictionary containing table information.
-            all_fields_non_required (bool): A boolean indicating whether all columns are non-required.
-            force_disparate_rows_to_string (bool): A boolean indicating whether disparate rows should be forced to
-                string.
-            ignore_existing_schema_mismatch (bool): A boolean indicating whether to not fail on data type not
-                matching existing schema.
+        **Args:**
+        - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
+        - dataset_id (str): The ID of the dataset.
+        - table_info_dict (dict): A dictionary containing table information.
+        - all_fields_non_required (bool): A boolean indicating whether all columns are non-required.
+        Defaults to `False`.
+        - force_disparate_rows_to_string (bool): A boolean indicating whether disparate rows should be forced to
+                string. Defaults to `False`.
+        - ignore_existing_schema_mismatch (bool): A boolean indicating whether to not fail on data type not
+                matching existing schema. Defaults to `False`.
         """
         self.tdr = tdr
+        """@private"""
         self.dataset_id = dataset_id
+        """@private"""
         self.table_info_dict = table_info_dict
+        """@private"""
         self.all_fields_non_required = all_fields_non_required
+        """@private"""
         self.force_disparate_rows_to_string = force_disparate_rows_to_string
+        """@private"""
         self.ignore_existing_schema_mismatch = ignore_existing_schema_mismatch
+        """@private"""
 
     @staticmethod
     def _compare_table(reference_dataset_table: dict, target_dataset_table: list[dict], table_name: str) -> list[dict]:
@@ -104,8 +106,8 @@ class SetUpTDRTables:
         """
         Run the setup process to ensure tables are created or updated as needed.
 
-        Returns:
-            dict: A dictionary with table names as keys and column information as values.
+        **Returns:**
+        - dict: A dictionary with table names as keys and column information as values.
         """
         data_set_info = self.tdr.get_dataset_info(dataset_id=self.dataset_id, info_to_include=["SCHEMA"])
         existing_tdr_table_schema_info = {

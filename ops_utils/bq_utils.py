@@ -8,9 +8,13 @@ class BigQueryUtil:
     def __init__(self, project_id: Optional[str] = None):
         """
         Initialize the BigQuery utility with user's authentication.
+
+        **Args:**
+        - project_id (str, optional): The GCP project ID. If provided, the GCP client
+         will be initialized using the project ID.
         """
         self.project_id = project_id
-        """The GCP project ID"""
+        """@private"""
         if project_id:
             self.client = bigquery.Client(project=self.project_id)
         else:

@@ -25,6 +25,7 @@ class InferTDRSchema:
         np.int64: "int64",
         time: "time",
     }
+    """@private"""
 
     def __init__(
             self,
@@ -37,27 +38,33 @@ class InferTDRSchema:
         """
         Initialize the InferTDRSchema class.
 
-        Args:
-            input_metadata (list[dict]): The input metadata to infer the schema from.
-            table_name (str): The name of the table for which the schema is being inferred.
-            all_fields_non_required (bool): A boolean indicating whether all columns should be set to non-required
-                besides for primary key.
-            primary_key (str): The name of the primary key column. Used to determine column should be required
-            allow_disparate_data_types_in_column (bool): A boolean indicating whether force disparate data types in a
-                column to be strings.
+        **Args:**
+        - input_metadata (list[dict]): The input metadata to infer the schema from.
+        - table_name (str): The name of the table for which the schema is being inferred.
+        - all_fields_non_required (bool): A boolean indicating whether all columns should be set to non-required
+                besides for primary key. Defaults to `False`
+        - allow_disparate_data_types_in_column (bool): A boolean indicating whether force disparate data types in a
+                column to be of type `str` Defaults to `False`.
+        - primary_key (str, optional): The name of the primary key column. Used to determine if the column
+            should be required
         """
         self.input_metadata = input_metadata
+        """@private"""
         self.table_name = table_name
+        """@private"""
         self.all_fields_non_required = all_fields_non_required
+        """@private"""
         self.primary_key = primary_key
+        """@private"""
         self.allow_disparate_data_types_in_column = allow_disparate_data_types_in_column
+        """@private"""
 
     def _check_type_consistency(self, key_value_type_mappings: dict) -> list[dict]:
         """
         Check if all values for each header are of the same type.
 
-        Args:
-            key_value_type_mappings (dict): A dictionary where the key is the header,
+        **Args:**
+        - key_value_type_mappings (dict): A dictionary where the key is the header,
                 and the value is a list of values for the header.
 
         Raises:
@@ -284,8 +291,8 @@ class InferTDRSchema:
         """
         Infer the schema for the table based on the input metadata.
 
-        Returns:
-            dict: The inferred schema in TDR format.
+        **Returns:**
+        - dict: The inferred schema in the format expected by TDR.
         """
         logging.info(f"Inferring schema for table {self.table_name}")
         # create the dataframe

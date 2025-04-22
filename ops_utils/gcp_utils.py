@@ -22,17 +22,14 @@ MD5_BASE64 = "base64"
 
 
 class GCPCloudFunctions:
-    """
-    Used interact with Google Cloud Storage (GCS) for various file operations.
-    Authenticates using the default credentials and sets up the storage client.
-    The Token() class should NOT be used for authentication.
-    """
-
     def __init__(self, project: Optional[str] = None) -> None:
         """
         Initialize the GCPCloudFunctions class.
         Authenticates using the default credentials and sets up the Storage Client.
         Uses the `project_id` if provided, otherwise utilizes the default project set.
+
+        **Args:**
+        - project (str, optional): The GCP project ID
         """
         from google.cloud import storage  # type: ignore[attr-defined]
         from google.auth import default
@@ -40,7 +37,7 @@ class GCPCloudFunctions:
         if not project:
             project = default_project
         self.client = storage.Client(credentials=credentials, project=project)
-        """The Storage Client to instance"""
+        """@private"""
 
     @staticmethod
     def _process_cloud_path(cloud_path: str) -> dict:
@@ -171,7 +168,7 @@ class GCPCloudFunctions:
         List contents of a GCS bucket and return a list of dictionaries with file information.
 
         **Args:**
-        - bucket_name (str): The name of the GCS bucket. If includes gs://, it will be removed.
+        - bucket_name (str): The name of the GCS bucket. If includes `gs://`, it will be removed.
         - file_extensions_to_ignore (list[str], optional): List of file extensions to ignore. Defaults to [].
         - file_strings_to_ignore (list[str], optional): List of file name substrings to ignore. Defaults to [].
         - file_extensions_to_include (list[str], optional): List of file extensions to include. Defaults to [].
@@ -311,8 +308,8 @@ class GCPCloudFunctions:
     def delete_multiple_files(
             self,
             files_to_delete: list[str],
-            workers: int = 5,
-            max_retries: int = 3,
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
             verbose: bool = False,
             job_complete_for_logging: int = 500
     ) -> None:
@@ -321,8 +318,8 @@ class GCPCloudFunctions:
 
         **Args:**
         - files_to_delete (list[str]): List of GCS paths of the files to delete.
-        - workers (int, optional): Number of worker threads. Defaults to `5`.
-        - max_retries (int, optional): Maximum number of retries. Defaults to `3`.
+        - workers (int, optional): Number of worker threads. Defaults to `10`.
+        - max_retries (int, optional): Maximum number of retries. Defaults to `5`.
         - verbose (bool, optional): Whether to log each job's success. Defaults to `False`.
         - job_complete_for_logging (int, optional): The number of jobs to complete before logging. Defaults to `500`.
         """
@@ -559,7 +556,8 @@ class GCPCloudFunctions:
         - str: The MD5 checksum of the file.
 
         **Raises:**
-        - ValueError: If the md5 format is not one of `ops_utils.gcp_utils.MD5_HEX` or `ops_utils.gcp_utils.MD5_BASE64`
+        - ValueError: If the `returned_md5_format` is not one of `ops_utils.gcp_utils.MD5_HEX`
+        or `ops_utils.gcp_utils.MD5_BASE64`
         """
         if returned_md5_format not in ["hex", "base64"]:
             raise ValueError("returned_md5_format must be 'hex' or 'base64'")
@@ -607,7 +605,7 @@ class GCPCloudFunctions:
         - cloud_dest_path (str): The destination GCS path.
 
         **Raises:**
-            Exception: If the source file does not exist or the user does not have permission to access it.
+        - Exception: If the source file does not exist or the user does not have permission to access it.
         """
         if not os.path.isfile(onprem_src_path):
             raise Exception(f"{onprem_src_path} does not exist or user does not have permission to it")
@@ -670,6 +668,7 @@ class GCPCloudFunctions:
 
         **Args:**
         - bucket_name (str): The GCS bucket name.
+
         **Returns:**
         - Optional tuple of the blob found and the file contents from the blob
         """

@@ -15,18 +15,18 @@ from ..vars import ARG_DEFAULTS
 
 
 class TDR:
-    """
-    A class to interact with the Terra Data Repository (TDR) API.
-    """
     TDR_LINK = "https://data.terra.bio/api/repository/v1"
     """(str): The base URL for the TDR API."""
 
     def __init__(self, request_util: RunRequest):
         """
-        Initialize the TDR class.
+        Initialize the TDR class (A class to interact with the Terra Data Repository (TDR) API.)
+
+        **Args:**
+        - request_util (`ops_utils.requests_utils.request_util.RunRequest`): Utility for making HTTP requests.
         """
         self.request_util = request_util
-        """(`ops_utils.requests_utils.request_util.RunRequest`): Utility for making HTTP requests."""
+        """@private"""
 
     def get_dataset_files(
             self,
@@ -84,7 +84,7 @@ class TDR:
 
         **Args:**
         - dataset_id (str): The ID of the dataset.
-        - limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 20000.
+        - limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `20000`.
 
         **Returns:**
         - dict: A dictionary where the key is the file UUID and the value is the file metadata.
@@ -107,7 +107,7 @@ class TDR:
 
         **Args:**
         - dataset_id (str): The ID of the dataset.
-        - limit (int, optional): The maximum number of records to retrieve per batch. Defaults to 20000.
+        - limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `20000`.
 
         **Returns:**
         - dict: A dictionary where the key is the file UUID and the value is the file path.
@@ -322,6 +322,9 @@ class TDR:
 
         **Args:**
         - snapshot_id (str): The ID of the snapshot to be deleted.
+
+        **Returns:**
+        - str: The TDR job ID
         """
         uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}"
         logging.info(f"Deleting snapshot {snapshot_id}")
@@ -744,8 +747,8 @@ class TDR:
         - billing_profile (str): The billing profile ID.
         - schema (dict): The schema of the dataset.
         - description (str): The description of the dataset.
-        - cloud_platform (str): The cloud platform for the dataset. Must be one of
-        `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`.
+        - cloud_platform (str): The cloud platform for the dataset (must be one of
+        `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
         - additional_properties_dict (Optional[dict], optional): Additional properties
                 for the dataset. Defaults to None.
         - delete_existing (bool, optional): Whether to delete the existing dataset if found.
@@ -800,8 +803,8 @@ class TDR:
 
         **Args:**
         - schema (dict): The schema of the dataset.
-        - cloud_platform (str): The cloud platform for the dataset. Must be one of
-        `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`.
+        - cloud_platform (str): The cloud platform for the dataset (must be one of
+        `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
         - dataset_name (str): The name of the dataset.
         - description (str): The description of the dataset.
         - profile_id (str): The billing profile ID.
@@ -965,17 +968,24 @@ class FilterOutSampleIdsAlreadyInDataset:
     ):
         """
         Initialize the FilterOutSampleIdsAlreadyInDataset class.
+
+        **Args:**
+        - ingest_metrics (list[dict]): The metrics to be ingested.
+        - dataset_id (str): The ID of the dataset.
+        - tdr (`ops_utils.tdr_utils.tdr_utils.TDR`): The TDR instance
+        - target_table_name (str): The name of the target table.
+        - filter_entity_id (str): The entity ID to filter on.
         """
         self.ingest_metrics = ingest_metrics
-        """(list[dict]): The metrics to be ingested."""
+        """@private"""
         self.tdr = tdr
-        """(`ops_utils.tdr_utils.tdr_utils.TDR`): The TDR instance"""
+        """@private"""
         self.dataset_id = dataset_id
-        """(str): The ID of the dataset."""
+        """@private"""
         self.target_table_name = target_table_name
-        """(str): The name of the target table."""
+        """@private"""
         self.filter_entity_id = filter_entity_id
-        """(str): The entity ID to filter on."""
+        """@private"""
 
     def run(self) -> list[dict]:
         """

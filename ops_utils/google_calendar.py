@@ -44,7 +44,7 @@ class GoogleCalendar:
         - days_ahead (int): Number of days in the future to retrieve events for.
 
         **Returns:**
-        - A list of events with their details.
+        - list[dict]: A list of events with their details.
         """
         now = datetime.now()
         time_min = self._create_calendar_string_from_datetime(now - timedelta(days=days_back))

@@ -11,12 +11,20 @@ from .vars import GCP, AZURE
 
 class Token:
     def __init__(self, cloud: str, token_file: Optional[str] = None) -> None:
+        """Initialize the Token class
+
+        **Args:**
+        - cloud (str): The type of cloud platform to be used. Must be one of `ops_utils.vars.GCP`
+        or `ops_utils.vars.AZURE`.
+        - token_file (str, optional): The path to a file containing an existing token string.
+        """
+
         self.cloud = cloud
-        """The type of cloud platform to be used. Must be one of `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`."""
+        """@private"""
         self.expiry: Optional[datetime] = None
-        """Optional: The expiry date of the token."""
+        """@private"""
         self.token_string: Optional[str] = ""
-        """Optional: An existing token in string format"""
+        """@private"""
         # If provided with a file just use the contents of file
         if token_file:
             self.token_file = token_file

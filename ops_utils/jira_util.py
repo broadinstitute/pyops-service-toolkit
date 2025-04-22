@@ -25,7 +25,7 @@ class Jira:
         """
 
         self.jira = self._connect_to_jira(server)
-        """The JIRA instance"""
+        """@private"""
 
     def _connect_to_jira(self, server: str) -> JIRA:
         """Obtains credentials and establishes the Jira connection. User must have token stored in ~/.jira_api_key"""

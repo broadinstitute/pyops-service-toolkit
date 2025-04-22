@@ -7,7 +7,7 @@ import math
 from typing import Optional, Any
 from dateutil import parser
 
-from ..vars import GCP, AZURE
+from ..vars import GCP, AZURE, ARG_DEFAULTS
 
 from .tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
 from .tdr_job_utils import MonitorTDRJob
@@ -15,10 +15,6 @@ from ..terra_utils.terra_util import TerraWorkspace
 
 
 class BatchIngest:
-    """
-    A class to handle batch ingestion of metadata into TDR (Terra Data Repository).
-    """
-
     def __init__(
             self,
             ingest_metadata: list[dict],
@@ -30,7 +26,7 @@ class BatchIngest:
             cloud_type: str,
             terra_workspace: Optional[TerraWorkspace] = None,
             update_strategy: str = "replace",
-            waiting_time_to_poll: int = 60,
+            waiting_time_to_poll: int = ARG_DEFAULTS["waiting_time_to_poll"],  # type: ignore[assignment]
             sas_expire_in_secs: int = 3600,
             test_ingest: bool = False,
             load_tag: Optional[str] = None,
@@ -39,53 +35,71 @@ class BatchIngest:
             skip_reformat: bool = False
     ):
         """
-        Initialize the BatchIngest class.
+        Initialize the BatchIngest class. (A class to handle batch ingestion of metadata into
+        TDR (Terra Data Repository).)
 
-        Args:
-            ingest_metadata (list[dict]): The metadata to be ingested.
-            tdr (TDR): An instance of the TDR class.
-            target_table_name (str): The name of the target table.
-            dataset_id (str): The ID of the dataset.
-            batch_size (int): The size of each batch for ingestion.
-            bulk_mode (bool): Flag indicating if bulk mode should be used.
-            cloud_type (str): The type of cloud (GCP or AZURE).
-            terra_workspace (Optional[TerraWorkspace], optional): An instance of the TerraWorkspace class.
-                Used for Azure ingests so sas token can be created. Defaults to None.
-            update_strategy (str, optional): The strategy for updating existing records. Defaults to "replace".
-            waiting_time_to_poll (int, optional): The time to wait between polling for job status. Defaults to 60.
-            sas_expire_in_secs (int, optional): The expiration time for SAS tokens in seconds.
-                Azure only. Defaults to 3600.
-            test_ingest (bool, optional): Flag indicating if only the first batch should be
-                ingested for testing. Defaults to False.
-            load_tag (Optional[str], optional): A tag to identify the load. Used so future ingests
+        **Args:**
+        - ingest_metadata (list[dict]): The metadata to be ingested.
+        - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
+        - target_table_name (str): The name of the target table.
+        - dataset_id (str): The ID of the dataset.
+        - batch_size (int): The size of each batch for ingestion.
+        - bulk_mode (bool): Flag indicating if bulk mode should be used.
+        - cloud_type (str): The type of cloud (must be one of `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
+        - terra_workspace (`ops_utils.terra_utils.terra_util.TerraWorkspace`, optional): An instance of
+        the TerraWorkspace class.
+                Used for Azure ingests so SAS token can be created. Defaults to None.
+        - update_strategy (str, optional): The strategy for updating existing records. Defaults to `replace`.
+        - waiting_time_to_poll (int, optional): The time to wait between polling for job status. Defaults to `90`.
+        - sas_expire_in_secs (int, optional): The expiration time for SAS tokens in seconds.
+                Azure only. Defaults to `3600`.
+        - test_ingest (bool, optional): Flag indicating if only the first batch should be
+                ingested for testing. Defaults to `False`.
+        - load_tag (str, optional): A tag to identify the load. Used so future ingests
                 can pick up where left off. Defaults to None.
-            file_to_uuid_dict (Optional[dict], optional): A dictionary mapping source file paths to UUIDs. If used
+        - file_to_uuid_dict (dict, optional): A dictionary mapping source file paths to UUIDs. If used
                 will make ingest much quicker since no ingest or look up of file needed. Defaults to None.
-            schema_info (Optional[dict], optional): Schema information for the tables. Validates ingest data matches up
+        - schema_info (dict, optional): Schema information for the tables. Validates ingest data matches up
                 with schema info. Defaults to None.
-            skip_reformat (bool, optional): Flag indicating if reformatting should be skipped. Defaults to False.
+        - skip_reformat (bool, optional): Flag indicating if reformatting should be skipped. Defaults to `False`.
         """
         self.ingest_metadata = self._reformat_for_type_consistency(ingest_metadata)
+        """@private"""
         self.tdr = tdr
+        """@private"""
         self.target_table_name = target_table_name
+        """@private"""
         self.dataset_id = dataset_id
+        """@private"""
         self.cloud_type = cloud_type
+        """@private"""
         # terra_workspace only used if ingesting Azure data where you need to create sas tokens from workspace
         self.terra_workspace = terra_workspace
+        """@private"""
         self.batch_size = int(batch_size)
+        """@private"""
         self.update_strategy = update_strategy
+        """@private"""
         self.bulk_mode = bulk_mode
+        """@private"""
         self.waiting_time_to_poll = waiting_time_to_poll
+        """@private"""
         self.sas_expire_in_secs = sas_expire_in_secs
+        """@private"""
         # Used if you want to run first batch and then exit after success
         self.test_ingest = test_ingest
+        """@private"""
         self.load_tag = load_tag
+        """@private"""
         self.file_to_uuid_dict = file_to_uuid_dict
+        """@private"""
         # Used if you want to provide schema info for tables to make sure values match.
         # Should be dict with key being column name and value being dict with datatype
         self.schema_info = schema_info
+        """@private"""
         # Use if input is already formatted correctly for ingest
         self.skip_reformat = skip_reformat
+        """@private"""
 
     @staticmethod
     def _reformat_for_type_consistency(ingest_metadata: list[dict]) -> list[dict]:
@@ -192,10 +206,6 @@ class BatchIngest:
 
 
 class StartAndMonitorIngest:
-    """
-    A class to start and monitor the ingestion of records into a TDR dataset.
-    """
-
     def __init__(
             self, tdr: TDR,
             ingest_records: list[dict],
@@ -207,26 +217,35 @@ class StartAndMonitorIngest:
             waiting_time_to_poll: int
     ):
         """
-        Initialize the StartAndMonitorIngest class.
+        Initialize the StartAndMonitorIngest (A class to start and monitor the ingestion of records
+        into a TDR dataset).
 
-        Args:
-            tdr (TDR): An instance of the TDR class.
-            ingest_records (list[dict]): The records to be ingested.
-            target_table_name (str): The name of the target table.
-            dataset_id (str): The ID of the dataset.
-            load_tag (str): A tag to identify the load.
-            bulk_mode (bool): Flag indicating if bulk mode should be used.
-            update_strategy (str): The strategy for updating existing records.
-            waiting_time_to_poll (int): The time to wait between polling for job status.
+        **Args:**
+        - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
+        - ingest_records (list[dict]): The records to be ingested.
+        - target_table_name (str): The name of the target table.
+        - dataset_id (str): The ID of the dataset.
+        - load_tag (str): A tag to identify the load.
+        - bulk_mode (bool): Flag indicating if bulk mode should be used.
+        - update_strategy (str): The strategy for updating existing records.
+        - waiting_time_to_poll (int): The time to wait between polling for job status.
         """
         self.tdr = tdr
+        """@private"""
         self.ingest_records = ingest_records
+        """@private"""
         self.target_table_name = target_table_name
+        """@private"""
         self.dataset_id = dataset_id
+        """@private"""
         self.load_tag = load_tag
+        """@private"""
         self.bulk_mode = bulk_mode
+        """@private"""
         self.update_strategy = update_strategy
+        """@private"""
         self.waiting_time_to_poll = waiting_time_to_poll
+        """@private"""
 
     def _create_ingest_dataset_request(self) -> Any:
         """
@@ -264,17 +283,7 @@ class StartAndMonitorIngest:
 
 class ReformatMetricsForIngest:
     """
-    Reformat metrics for ingest.
-    Assumes input JSON for that will be
-    like below or similar for Azure:
-    {
-        "file_name": blob.name,
-        "file_path": f"gs://{self.bucket_name}/{blob.name}",
-        "content_type": blob.content_type or guess_type(blob.name)[0] or "application/octet-stream",
-        "file_extension": os.path.splitext(blob.name)[1],
-        "size_in_bytes": blob.size,
-        "md5_hash": blob.md5_hash
-    }
+
     """
 
     def __init__(
@@ -287,24 +296,42 @@ class ReformatMetricsForIngest:
             schema_info: Optional[dict] = None
     ):
         """
-        Initialize the ReformatMetricsForIngest class.
+        Initialize the ReformatMetricsForIngest class. This class is used to reformat metrics for ingest.
+        Assumes input JSON will be in the following format for GCP (or similar for Azure):
+        ```
+        {
+            "file_name": blob.name,
+            "file_path": f"gs://{self.bucket_name}/{blob.name}",
+            "content_type": blob.content_type or guess_type(blob.name)[0] or "application/octet-stream",
+            "file_extension": os.path.splitext(blob.name)[1],
+            "size_in_bytes": blob.size,
+            "md5_hash": blob.md5_hash
+        }
+        ```
 
-        Args:
-            ingest_metadata (list[dict]): The metadata to be ingested.
-            cloud_type (str): The type of cloud (GCP or AZURE).
-            storage_container (Optional[str], optional): The storage container name. For Azure only. Defaults to None.
-            sas_token_string (Optional[str], optional): The SAS token string for Azure. Defaults to None.
-            file_to_uuid_dict (Optional[dict], optional): A dictionary mapping file paths to UUIDs. Speeds up ingest
+        **Args:**
+        - ingest_metadata (list[dict]): The metadata to be ingested.
+        - cloud_type (str): The type of cloud (must be one of `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
+        - storage_container (str, optional): The storage container name. For Azure only. Defaults to None.
+        - sas_token_string (str, optional): The SAS token string for Azure. Defaults to None.
+        - file_to_uuid_dict (dict, optional): A dictionary mapping file paths to UUIDs. Speeds up ingest
                 dramatically as it can skip uploading files or looking up file UUIDs in TDR. Defaults to None.
-            schema_info (Optional[dict], optional): Schema information for the tables. Defaults to None.
+        - schema_info (dict, optional): Schema information for the tables. Defaults to None.
         """
         self.ingest_metadata = ingest_metadata
+        """@private"""
         self.cloud_type = cloud_type
+        """@private"""
         self.sas_token_string = sas_token_string
+        """@private"""
         self.file_prefix = {GCP: "gs://", AZURE: "https://"}[cloud_type]
+        """@private"""
         self.workspace_storage_container = storage_container
+        """@private"""
         self.file_to_uuid_dict = file_to_uuid_dict
+        """@private"""
         self.schema_info = schema_info
+        """@private"""
 
     def _add_file_ref(self, file_details: dict) -> None:
         """
@@ -475,8 +502,8 @@ class ReformatMetricsForIngest:
         """
         Run the reformatting process for all metrics.
 
-        Returns:
-            list[dict]: A list of reformatted metrics.
+        **Returns:**
+        - list[dict]: A list of reformatted metrics.
         """
         reformatted_metrics = []
         for row_dict in self.ingest_metadata:
@@ -487,47 +514,50 @@ class ReformatMetricsForIngest:
 
 
 class ConvertTerraTableInfoForIngest:
-    """Converts each row of table metadata into a dictionary that can be ingested into TDR.
-
-    Input looks like
-    [{
-      "attributes": {
-        "some_metric": 99.99,
-        "some_file_path": "gs://path/to/file",
-        "something_to_exclude": "exclude_me"
-      },
-      "entityType": "sample",
-      "name": "SM-MVVVV"
-    }]
-
-    converts to
-
-    [{
-      "sample_id": "SM-MVVVV",
-      "some_metric": 99.99,
-      "some_file_path": "gs://path/to/file"
-    }]
-    """
 
     def __init__(self, table_metadata: list[dict], tdr_row_id: str = 'sample_id', columns_to_ignore: list[str] = []):
         """
         Initialize the ConvertTerraTableInfoForIngest class.
+        Converts each row of table metadata into a dictionary that can be ingested into TDR.
 
-        Args:
-            table_metadata (list[dict]): The metadata of the table to be converted.
-            tdr_row_id (str): The row ID to be used in the TDR. Defaults to 'sample_id'.
-            columns_to_ignore (list[str]): List of columns to ignore during conversion. Defaults to an empty list.
+        Input will look like this:
+        ```
+            [{
+              "attributes": {
+                "some_metric": 99.99,
+                "some_file_path": "gs://path/to/file",
+                "something_to_exclude": "exclude_me"
+              },
+              "entityType": "sample",
+              "name": "SM-MVVVV"
+            }]
+        ```
+        And be converted to this:
+        ```
+            [{
+              "sample_id": "SM-MVVVV",
+              "some_metric": 99.99,
+              "some_file_path": "gs://path/to/file"
+            }]
+        ```
+        **Args:**
+        - table_metadata (list[dict]): The metadata of the table to be converted.
+        - tdr_row_id (str): The row ID to be used in the TDR. Defaults to `sample_id`.
+        - columns_to_ignore (list[str]): List of columns to ignore during conversion. Defaults to an empty list.
         """
         self.table_metadata = table_metadata
+        """@private"""
         self.tdr_row_id = tdr_row_id
+        """@private"""
         self.columns_to_ignore = columns_to_ignore
+        """@private"""
 
     def run(self) -> list[dict]:
         """
         Convert the table metadata into a format suitable for TDR ingestion.
 
-        Returns:
-            list[dict]: A list of dictionaries containing the converted table metadata.
+        **Returns:**
+        - list[dict]: A list of dictionaries containing the converted table metadata.
         """
         return [
             {
@@ -565,48 +595,67 @@ class FilterAndBatchIngest:
         """
         Initialize the FilterAndBatchIngest class.
 
-        Args:
-            tdr (TDR): Instance of the TDR class.
-            filter_existing_ids (bool): Whether to filter out sample IDs that already exist in the dataset.
-            unique_id_field (str): The unique ID field to filter on.
-            table_name (str): The name of the table to ingest data into.
-            ingest_metadata (list[dict]): The metadata to ingest.
-            dataset_id (str): The ID of the dataset.
-            ingest_waiting_time_poll (int): The waiting time to poll for ingest status.
-            ingest_batch_size (int): The batch size for ingest.
-            bulk_mode (bool): Whether to use bulk mode for ingest.
-            cloud_type (str): The type of cloud (e.g., GCP, AZURE).
-            update_strategy (str): The update strategy to use.
-            load_tag (str): The load tag for the ingest. Used to make future ingests of same files go faster.
-            test_ingest (bool, optional): Whether to run a test ingest. Defaults to False.
-            file_to_uuid_dict (Optional[dict], optional): A dictionary mapping source files to UUIDs.
+        **Args:**
+        - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
+        - filter_existing_ids (bool): Whether to filter out sample IDs that already exist in the dataset.
+        - unique_id_field (str): The unique ID field to filter on.
+        - table_name (str): The name of the table to ingest data into.
+        - ingest_metadata (list[dict]): The metadata to ingest.
+        - dataset_id (str): The ID of the dataset.
+        - ingest_waiting_time_poll (int): The waiting time to poll for ingest status.
+        - ingest_batch_size (int): The batch size for ingest.
+        - bulk_mode (bool): Whether to use bulk mode for ingest.
+        - cloud_type (str): The type of cloud (must be one of,`ops_utils.vars.GCP`, `ops_utils.vars.AZURE`).
+        - update_strategy (str): The update strategy to use.
+        - load_tag (str): The load tag for ingest. Used to make future ingests of the same files go faster.
+        - test_ingest (bool, optional): Whether to run a test ingest. Defaults to False.
+        - file_to_uuid_dict (dict, optional): A dictionary mapping source files to UUIDs.
                 If supplied makes ingest run faster due to just linking to already ingested file UUID. Defaults to None.
-            sas_expire_in_secs (int, optional): The expiration time for SAS tokens in seconds.
-                Azure only. Defaults to 3600.
-            schema_info (Optional[dict], optional): Schema information for the tables.
+        - sas_expire_in_secs (int, optional): The expiration time for SAS tokens in seconds.
+                Azure only. Defaults to `3600`.
+        - schema_info (dict, optional): Schema information for the tables.
                 Used to validate ingest metrics match. Defaults to None.
-            terra_workspace (Optional[TerraWorkspace], optional): Instance of the TerraWorkspace class.
-                Only used for azure ingests to get token. Defaults to None.
-            skip_reformat (bool, optional): Whether to skip reformatting of metrics. Defaults to False.
+        - terra_workspace (`ops_utils.terra_utils.terra_util.TerraWorkspace`, optional): Instance of the
+         TerraWorkspace class.
+                Only used for Azure ingests to get token. Defaults to None.
+        - skip_reformat (bool, optional): Whether to skip reformatting of metrics. Defaults to False.
         """
         self.tdr = tdr
+        """@private"""
         self.filter_existing_ids = filter_existing_ids
+        """@private"""
         self.unique_id_field = unique_id_field
+        """@private"""
         self.table_name = table_name
+        """@private"""
         self.ingest_metadata = ingest_metadata
+        """@private"""
         self.dataset_id = dataset_id
+        """@private"""
         self.ingest_waiting_time_poll = ingest_waiting_time_poll
+        """@private"""
         self.ingest_batch_size = ingest_batch_size
+        """@private"""
         self.bulk_mode = bulk_mode
+        """@private"""
         self.cloud_type = cloud_type
+        """@private"""
         self.update_strategy = update_strategy
+        """@private"""
         self.load_tag = load_tag
+        """@private"""
         self.test_ingest = test_ingest
+        """@private"""
         self.sas_expire_in_secs = sas_expire_in_secs
+        """@private"""
         self.terra_workspace = terra_workspace
+        """@private"""
         self.file_to_uuid_dict = file_to_uuid_dict
+        """@private"""
         self.schema_info = schema_info
+        """@private"""
         self.skip_reformat = skip_reformat
+        """@private"""
 
     def run(self) -> None:
         """
@@ -653,22 +702,25 @@ class GetPermissionsForWorkspaceIngest:
         """
         Initialize the GetPermissionsForWorkspaceIngest class.
 
-        Args:
-            terra_workspace (TerraWorkspace): Instance of the TerraWorkspace class.
-            dataset_info (dict): Information about the dataset.
-            added_to_auth_domain (bool, optional): Flag indicating if the SA account
-                has been added to the auth domain. Defaults to False.
+        **Args:**
+        - terra_workspace (`ops_utils.terra_utils.terra_util.TerraWorkspace`): Instance of the TerraWorkspace class.
+        - dataset_info (dict): Information about the dataset.
+        - added_to_auth_domain (bool, optional): Flag indicating if the SA account
+                has been added to the auth domain. Defaults to `False`.
         """
         self.terra_workspace = terra_workspace
+        """@private"""
         self.dataset_info = dataset_info
+        """@private"""
         self.added_to_auth_domain = added_to_auth_domain
+        """@private"""
 
     def run(self) -> None:
         """
         Ensure the dataset SA account has the necessary permissions on the Terra workspace.
 
         This method updates the user ACL to make the SA account a reader on the Terra workspace.
-        It also checks if the workspace has an authorization domain and logs the
+        It also checks if the workspace has an authorization domain, and logs the
         necessary steps to add the SA account to the auth domain.
         """
         # Ensure dataset SA account is reader on Terra workspace.

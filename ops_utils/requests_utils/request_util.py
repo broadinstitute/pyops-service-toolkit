@@ -26,13 +26,18 @@ class RunRequest:
     ):
         """
         Initialize the RunRequest class.
+
+        **Args:**
+        - token (`ops_utils.token_util.Token`): The token used for authentication
+        - max_retries (int, optional): Maximum number of retries for a request. Defaults to `5`.
+        - max_backoff_time (int, optional): Maximum backoff time for a request (in seconds). Defaults to `300`.
         """
         self.token = token
-        """(`ops_utils.token_util.Token`): The token used for authentication."""
+        """@private"""
         self.max_retries = max_retries
-        """(int, optional): The maximum number of retries for a request. Defaults to `5`."""
+        """@private"""
         self.max_backoff_time = max_backoff_time
-        """(int, optional): The maximum backoff time in seconds. Defaults to 5 * 60."""
+        """@private"""
 
     @staticmethod
     def _create_backoff_decorator(max_tries: int, factor: int, max_time: int) -> Any:

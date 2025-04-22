@@ -9,15 +9,20 @@ class GetTdrAssetInfo:
     def __init__(self, tdr: TDR, dataset_id: Optional[str] = None, snapshot_id: Optional[str] = None):
         """
         Initialize the GetTdrAssetInfo class.
+
+        **Args:**
+        - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): TDR instance for interacting with the TDR API.
+        - dataset_id (str, optional): ID of the dataset.
+        - snapshot_id (str, optional): ID of the snapshot.
         """
         if not dataset_id and not snapshot_id:
             raise ValueError("Either dataset_id or snapshot_id must be provided.")
         self.tdr = tdr
-        """(`ops_utils.tdr_utils.tdr_api_utils.TDR`): TDR instance for interacting with the TDR API."""
+        """@private"""
         self.dataset_id = dataset_id
-        """(str, optional): ID of the dataset."""
+        """@private"""
         self.snapshot_id = snapshot_id
-        """(str, optional): ID of the snapshot."""
+        """@private"""
 
     def _get_dataset_info(self) -> dict:
         """
@@ -74,16 +79,15 @@ class TdrBq:
         Initialize the TdrBq class.
 
         **Args:**
-            project_id
-            bq_schema
+        - project_id (str): The Google Cloud project ID.
+        - bq_schema (str): The BigQuery schema name.
         """
         self.project_id = project_id
-        """(str): The Google Cloud project ID."""
+        """@private"""
         self.bq_schema = bq_schema
-        """(str): The BigQuery schema name."""
+        """@private"""
         self.bq_util = BigQueryUtil(project_id)
-        """(`ops_utils.bq_utils.BigQueryUtil`): The instance of the BigQueryUtil class instantiated
-        with the provided `project_id`)"""
+        """@private"""
 
     def check_permissions_for_dataset(self, raise_on_other_failure: bool) -> bool:
         """
