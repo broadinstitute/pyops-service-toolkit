@@ -1,2 +1,4 @@
-1.8.2
-- Add tests for TDR API utils
+1.9.0
+- Add new Terra functionalities
+    - Add ability to delete an entire entity from a Terra workspace
+    - Add ability to save an entity version within a Terra workspace
