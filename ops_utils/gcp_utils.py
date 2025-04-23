@@ -617,18 +617,6 @@ class GCPCloudFunctions:
         dest_blob = self.load_blob_from_full_path(cloud_dest_path)
         dest_blob.upload_from_filename(onprem_src_path)
 
-    def write_to_gcs(self, cloud_path: str, content: str) -> None:
-        """
-        Write content to a file in GCS.
-
-        **Args:**
-        - cloud_path (str): The GCS path of the file to write.
-        - content (str): The content to write.
-        """
-        blob = self.load_blob_from_full_path(cloud_path)
-        blob.upload_from_string(content)
-        logging.info(f"Successfully wrote content to {cloud_path}")
-
     def set_acl_public_read(self, cloud_path: str) -> None:
         """
         Set the file in the bucket to be publicly readable.
@@ -697,8 +685,6 @@ class GCPCloudFunctions:
         logging.info("No valid files found.")
         return None
 
-    # TODO Remove this after downstream repositories remove the use of this function
-    #  (should all be replaced with write_to_gcs)
     def write_to_gcp_file(self, cloud_path: str, file_contents: str) -> None:
         """
         Write content to a file in GCS.
@@ -709,6 +695,7 @@ class GCPCloudFunctions:
         """
         blob = self.load_blob_from_full_path(cloud_path)
         blob.upload_from_string(file_contents)
+        logging.info(f"Successfully wrote content to {cloud_path}")
 
     @staticmethod
     def get_active_gcloud_account() -> str:

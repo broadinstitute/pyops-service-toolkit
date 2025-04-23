@@ -1,2 +1,2 @@
-1.10.0
-- Ensure version goes up on every commit
+2.0.0
+- Remove duplicate functions that write to a GCP file
