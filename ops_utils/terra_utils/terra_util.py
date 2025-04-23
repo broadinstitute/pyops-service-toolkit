@@ -194,6 +194,9 @@ class TerraGroups:
 
 
 class TerraWorkspace:
+    VALID_STATUS_CODES = [200, 201]
+    """@private"""
+
     def __init__(self, billing_project: str, workspace_name: str, request_util: RunRequest):
         """
         Initialize the TerraWorkspace class.
@@ -848,3 +851,30 @@ class TerraWorkspace:
             method=GET
         )
         return response.json()
+
+    def delete_entity_table(self, entity_to_delete: str) -> int:
+        """
+        Delete an entire entity table from a Terra workspace
+
+        **Args:**
+        - entity_to_delete (str): The name of the entity table to delete.
+
+        **Returns:**
+        - int: The API endpoint response status code
+        """
+
+        response = self.request_util.run_request(
+            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.billing_project}/entityTypes/{entity_to_delete}",
+            method=DELETE
+        )
+        if response.status_code in self.VALID_STATUS_CODES:
+            logging.info(
+                f"Successfully deleted entity table: '{entity_to_delete}' from workspace: "
+                f"'{self.billing_project}/{self.workspace_name}'"
+            )
+        else:
+            logging.error(
+                f"Encountered the following error while attempting to delete '{entity_to_delete}' "
+                f"table: {response.text}"
+            )
+        return response.status_code
