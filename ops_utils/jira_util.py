@@ -25,7 +25,7 @@ class Jira:
         **Args:**
         - server (str): The server URL to connect to. For example: `https://broadinstitute.atlassian.net/`
         - gcp_project_id (str): The GCP project ID used to locate the Jira API key that is stored in SecretManager.
-        - jira_api_key_secret_name (str): The name of the Jira API key that is stored in SecretManager.
+        - jira_api_key_secret_name (str): The name of the Jira API key secret that is stored in SecretManager.
         """
 
         self.server = server
