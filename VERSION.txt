@@ -1,4 +1,4 @@
-2.0.0
+3.0.0
 - Make the Jira utilities more configurable
     - Add the ability to provide the GCP project where the JIRA API key is stored
     - Add the ability to provide the key name containing the JIRA API key
