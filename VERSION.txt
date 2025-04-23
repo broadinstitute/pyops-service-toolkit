@@ -1,4 +1,2 @@
-1.9.0
-- Add new Terra functionalities
-    - Add ability to delete an entire entity from a Terra workspace
-    - Add ability to save an entity version within a Terra workspace
+1.9.1
+- Adding branding to documentation
