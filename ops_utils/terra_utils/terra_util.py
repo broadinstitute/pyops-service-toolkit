@@ -4,8 +4,12 @@ import re
 from typing import Any, Optional
 from urllib.parse import urlparse
 import requests
+import time
+import zipfile
+import os
 
 from .. import deprecated
+from ..gcp_utils import GCPCloudFunctions
 from ..vars import GCP
 from ..requests_utils.request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
@@ -876,3 +880,50 @@ class TerraWorkspace:
                 f"table: {response.text}"
             )
         return response.status_code
+
+    def save_entity_table_version(self, entity_type: str, version_name: str) -> None:
+        """
+        Save an entity table version in a Terra workspace
+
+        **Args:**
+        - entity_type (str): The name of the entity table to save a new version for
+        - version_name (str): The name of the version to save
+        """
+        # Get the workspace metrics
+        workspace_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type)
+        file_name = f"{entity_type}.json"
+        # Write the workspace metrics to a JSON file
+        with open(file_name, "w") as json_file:
+            json.dump(workspace_metrics, json_file)
+
+        # Create a zip file with the same naming convention that Terra backend uses
+        timestamp_ms = int(time.time() * 1000)
+        zip_file_name = f"{entity_type}.v{timestamp_ms}.zip"
+        with zipfile.ZipFile(zip_file_name, "w", zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(file_name, arcname=f"json/{file_name}")
+
+        # Upload the zip file to subdirectory within the workspace's bucket (where Terra expects it to live)
+        workspace_info = self.get_workspace_info()
+        path_to_upload_to = os.path.join(
+            "gs://", workspace_info["workspace"]["bucketName"], ".data-table-versions", entity_type, zip_file_name
+        )
+        gcp_util = GCPCloudFunctions(project=workspace_info["workspace"]["googleProject"])
+        # Attempt to get the currently active gcloud account. Default to the workspace creator if that fails
+        try:
+            active_account = gcp_util.get_active_gcloud_account()
+        except Exception as e:
+            active_account = workspace_info["workspace"]["createdBy"]
+            logging.error(
+                f"Encountered the following exception while attempting to get current GCP account: {e}. "
+                f"Will set the owner of the new metadata version as the workspace creator instead."
+            )
+        gcp_util.upload_blob(
+            source_file=zip_file_name,
+            destination_path=path_to_upload_to,
+            custom_metadata={
+                "createdBy": active_account,
+                "entityType": entity_type,
+                "timestamp": timestamp_ms,
+                "description": version_name,
+            }
+        )
