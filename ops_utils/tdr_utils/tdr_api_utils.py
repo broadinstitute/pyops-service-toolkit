@@ -847,7 +847,8 @@ class TDR:
         return dataset_id
 
     def update_dataset_schema(  # type: ignore[return]
-            self, dataset_id: str,
+            self,
+            dataset_id: str,
             update_note: str,
             tables_to_add: Optional[list[dict]] = None,
             relationships_to_add: Optional[list[dict]] = None,
@@ -939,7 +940,7 @@ class TDR:
         uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}/files"
         return self._get_response_from_batched_endpoint(uri=uri, limit=limit)
 
-    def get_dataset_snapshots(self, dataset_id: str) -> list[dict]:
+    def get_dataset_snapshots(self, dataset_id: str) -> dict:
         """
         Returns snapshots belonging to specified datset.
 
@@ -947,7 +948,7 @@ class TDR:
         - dataset_id: uuid of dataset to query.
 
         **Returns:**
-        - list[dict]: A list of dictionaries containing the metadata of snapshots in the dataset.
+        - dict: A dictionaries containing a list of snapshots under 'items' and their  metadata.
         """
         uri = f"{self.TDR_LINK}/snapshots?datasetIds={dataset_id}"
         response = self.request_util.run_request(

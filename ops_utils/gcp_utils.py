@@ -3,6 +3,8 @@ import logging
 import io
 import hashlib
 import base64
+import subprocess
+
 from humanfriendly import format_size, parse_size
 from mimetypes import guess_type
 from typing import Optional, Any
@@ -523,15 +525,18 @@ class GCPCloudFunctions:
         content_str = content_bytes.decode(encoding)
         return content_str
 
-    def upload_blob(self, destination_path: str, source_file: str) -> None:
+    def upload_blob(self, destination_path: str, source_file: str, custom_metadata: Optional[dict] = None) -> None:
         """
         Upload a file to GCS.
 
         **Args:**
         - destination_path (str): The destination GCS path.
         - source_file (str): The source file path.
+        - custom_metadata (dict, optional): A dictionary of custom metadata to attach to the blob. Defaults to None.
         """
         blob = self.load_blob_from_full_path(destination_path)
+        if custom_metadata:
+            blob.metadata = custom_metadata
         blob.upload_from_filename(source_file)
 
     def get_object_md5(
@@ -704,3 +709,20 @@ class GCPCloudFunctions:
         """
         blob = self.load_blob_from_full_path(cloud_path)
         blob.upload_from_string(file_contents)
+
+    @staticmethod
+    def get_active_gcloud_account() -> str:
+        """
+        Get the active GCP email for the current account.
+
+        **Returns:**
+        - str: The active GCP account email.
+        """
+
+        result = subprocess.run(
+            args=["gcloud", "auth", "list", "--filter=status:ACTIVE", "--format=value(account)"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
