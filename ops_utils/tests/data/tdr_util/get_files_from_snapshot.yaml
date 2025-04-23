@@ -1,0 +1,38 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '[{"fileId":"89135808-96ec-4500-af05-f6bf6b7301f3","collectionId":"bc9fb496-41ff-4c9d-a825-514b861w0e13","path":"/ABN16.cram","size":2009879065,"checksums":[{"checksum":"f016agd4","type":"crc32c"}],"created":"2024-03-19T02:14:06.825Z","description":null,"fileType":"file","fileDetail":{"datasetId":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","mimeType":null,"accessUrl":"gs://datarepo-eddb5923-bucket/eccc736d-fe4t-4d54-a72e-dcdb9f10e67f/89135808-96ec-4500-af84-f6bf6b73017f/ABN16.cram","loadTag":"tag"},"directoryDetail":null},{"fileId":"41ad1ff1-2418-4f0d-857d-128679db5a81","collectionId":"bc9fb496-41sf-4c9d-a825-514b86100e13","path":"/ABN16.cram.crai","size":195623,"checksums":[{"checksum":"4c2g1d56","type":"crc32c"},{"checksum":"9a927461a83a19b7d7e8bc2481facdfb","type":"md5"}],"created":"2024-03-19T02:14:07.671Z","description":null,"fileType":"file","fileDetail":{"datasetId":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","mimeType":null,"accessUrl":"gs://datarepo-eddf5926-bucket/eccc736d-2a5a-fef3-a72e-dcdb9fe3e67f/41ad1ff1-safa-400d-967a-128679db5a8a/ABN16.cram.crai","loadTag":"tag"},"directoryDetail":null}]'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: 6BOlgz0a
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/snapshots/fc9fb496-41ff-4c9d-a825-514b86100e14/files?offset=0&limit=1000
+- response:
+    auto_calculate_content_length: false
+    body: '[]'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: a0EgDd77
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/snapshots/fc9fb496-41ff-4c9d-a825-514b86100e14/files?offset=1000&limit=1000
