@@ -16,7 +16,7 @@ OUTPUT_YAML = 'out.yaml'
 @_recorder.record(file_path=OUTPUT_YAML)
 def _get_yaml(requests_utils: RunRequest) -> None:
     tdr_util = TDR(request_util=requests_utils)
-    results = tdr_util.delete_dataset(dataset_id=DATASET_ID)
+    results = tdr_util.get_dataset_files(dataset_id=DATASET_ID)
     if results:
         print(results)
 
