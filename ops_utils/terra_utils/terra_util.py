@@ -864,7 +864,7 @@ class TerraWorkspace:
         """
 
         response = self.request_util.run_request(
-            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.billing_project}/entityTypes/{entity_to_delete}",
+            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",
             method=DELETE
         )
         if response.status_code in self.VALID_STATUS_CODES:
