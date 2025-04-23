@@ -1,2 +1,2 @@
-1.9.1
-- Adding branding to documentation
+1.10.0
+- Ensure version goes up on every commit
