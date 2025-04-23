@@ -1,0 +1,103 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"F_kU6za7TxGZUVEQC4-jjA","description":"Delete file from dataset
+      eccc736d-2a5a-4d54-a72e-dcdb9f10e67f file ae2438c7-23ef-46e3-80c7-d8a3ef72fe54","job_status":"running","status_code":202,"submitted":"2025-04-23T15:28:38.951875Z","completed":null,"class_name":"bio.terra.service.filedata.flight.delete.FileDeleteFlight","target_iam_resource":{"type":"dataset","id":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/F_kU6za7TxGZUVEQC4-jjA
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: 6JrdMAD8
+    method: DELETE
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/datasets/eccc736d-2a5a-4d54-a72e-dcdb9f10e67f/files/ae2438c7-23ef-46e3-80c7-d8a3ef72fe54
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"RmcXD_vCSbOnozAkVpC6WA","description":"Delete file from dataset
+      eccc736d-2a5a-4d54-a72e-dcdb9f10e67f file 67c43183-4109-4f24-9744-dfa77ccac72c","job_status":"running","status_code":202,"submitted":"2025-04-23T15:28:39.596377Z","completed":null,"class_name":"bio.terra.service.filedata.flight.delete.FileDeleteFlight","target_iam_resource":{"type":"dataset","id":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/RmcXD_vCSbOnozAkVpC6WA
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: ebo1xbPJ
+    method: DELETE
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/datasets/eccc736d-2a5a-4d54-a72e-dcdb9f10e67f/files/67c43183-4109-4f24-9744-dfa77ccac72c
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"F_kU6za7TxGZUVEQC4-jjA","description":"Delete file from dataset
+      eccc736d-2a5a-4d54-a72e-dcdb9f10e67f file ae2438c7-23ef-46e3-80c7-d8a3ef72fe54","job_status":"running","status_code":202,"submitted":"2025-04-23T15:28:38.951875Z","completed":null,"class_name":"bio.terra.service.filedata.flight.delete.FileDeleteFlight","target_iam_resource":{"type":"dataset","id":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/F_kU6za7TxGZUVEQC4-jjA
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: pP8AD8yz
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/F_kU6za7TxGZUVEQC4-jjA
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"F_kU6za7TxGZUVEQC4-jjA","description":"Delete file from dataset
+      eccc736d-2a5a-4d54-a72e-dcdb9f10e67f file ae2438c7-23ef-46e3-80c7-d8a3ef72fe54","job_status":"succeeded","status_code":200,"submitted":"2025-04-23T15:28:38.951875Z","completed":"2025-04-23T15:28:41.414621Z","class_name":"bio.terra.service.filedata.flight.delete.FileDeleteFlight","target_iam_resource":{"type":"dataset","id":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/F_kU6za7TxGZUVEQC4-jjA/result
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: 6zxJvz34
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/jobs/F_kU6za7TxGZUVEQC4-jjA
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"RmcXD_vCSbOnozAkVpC6WA","description":"Delete file from dataset
+      eccc736d-2a5a-4d54-a72e-dcdb9f10e67f file 67c43183-4109-4f24-9744-dfa77ccac72c","job_status":"succeeded","status_code":200,"submitted":"2025-04-23T15:28:39.596377Z","completed":"2025-04-23T15:28:43.319746Z","class_name":"bio.terra.service.filedata.flight.delete.FileDeleteFlight","target_iam_resource":{"type":"dataset","id":"eccc736d-2a5a-4d54-a72e-dcdb9f10e67f","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/RmcXD_vCSbOnozAkVpC6WA/result
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: e3NBLdrR
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/jobs/RmcXD_vCSbOnozAkVpC6WA

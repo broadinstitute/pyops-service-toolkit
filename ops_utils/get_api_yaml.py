@@ -7,6 +7,7 @@ import os
 
 BILLING_ID = "ce149ca7-608b-4d5d-9612-2a43a7378885"
 DATASET_ID = "eccc736d-2a5a-4d54-a72e-dcdb9f10e67f"
+TABLE = "test_table"
 DATASET_NAME = "ops_test_tdr_dataset"
 OUTPUT_YAML = 'out.yaml'
 
@@ -15,15 +16,7 @@ OUTPUT_YAML = 'out.yaml'
 @_recorder.record(file_path=OUTPUT_YAML)
 def _get_yaml(requests_utils: RunRequest) -> None:
     tdr_util = TDR(request_util=requests_utils)
-    results = tdr_util.get_or_create_dataset(
-        dataset_name=DATASET_NAME,
-        billing_profile=BILLING_ID,
-        schema={},
-        description="",
-        cloud_platform=GCP,
-        delete_existing=False,
-        continue_if_exists=True
-    )
+    results = tdr_util.delete_dataset(dataset_id=DATASET_ID)
     if results:
         print(results)
 
