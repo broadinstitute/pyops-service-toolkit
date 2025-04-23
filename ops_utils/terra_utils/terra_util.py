@@ -887,7 +887,7 @@ class TerraWorkspace:
 
         **Args:**
         - entity_type (str): The name of the entity table to save a new version for
-        - version_name (str): The name of the version to save
+        - version_name (str): What to name the new version
         """
         # Get the workspace metrics
         workspace_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type)

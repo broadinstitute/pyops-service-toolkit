@@ -713,7 +713,7 @@ class GCPCloudFunctions:
     @staticmethod
     def get_active_gcloud_account() -> str:
         """
-        Get the active GCP account for the current account.
+        Get the active GCP email for the current account.
 
         **Returns:**
         - str: The active GCP account email.
