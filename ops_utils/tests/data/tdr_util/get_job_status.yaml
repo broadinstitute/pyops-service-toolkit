@@ -1,0 +1,21 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"4Fp5px7uTV29KiMh89e6aA","description":"Create dataset ops_test_tdr_dataset","job_status":"succeeded","status_code":201,"submitted":"2025-04-22T14:27:16.867523Z","completed":"2025-04-22T14:28:05.989765Z","class_name":"bio.terra.service.dataset.flight.create.DatasetCreateFlight","target_iam_resource":{"type":"spend-profile","id":"ce149ca7-608b-4d5d-9612-2a43a7378885","action":"link"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA/result
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: e1VylgBk
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/jobs/4Fp5px7uTV29KiMh89e6aA

@@ -1,0 +1,20 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"total":1,"filteredTotal":1,"items":[{"id":"fc9fb496-41ff-4c9d-a825-514b86100e14","name":"test_snapshot","description":"testing snapshots","createdDate":"2024-04-11T18:18:18.570252Z","profileId":"ce149ca7-608b-4d5d-9612-2a43a7378885","storage":[{"region":"us-central1","cloudResource":"bigquery","cloudPlatform":"gcp"},{"region":"us-east4","cloudResource":"firestore","cloudPlatform":"gcp"},{"region":"us-central1","cloudResource":"bucket","cloudPlatform":"gcp"}],"secureMonitoringEnabled":false,"consentCode":null,"phsId":null,"cloudPlatform":"gcp","dataProject":"datarepo-b25d4c81","storageAccount":null,"selfHosted":false,"globalFileIds":false,"tags":[],"resourceLocks":{"exclusive":null,"shared":null},"duosId":null}],"roleMap":{"bc9fb496-41ff-4c9d-a825-514b86100ff3":["discoverer","aggregate_data_reader","reader"]},"errors":[]}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: eZQlnDzj
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/snapshots?datasetIds=eccc736d-2a5a-4d54-a72e-dcdb9f10e67f

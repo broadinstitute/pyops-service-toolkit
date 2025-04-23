@@ -1,2 +1,2 @@
-1.8.2
-- Add tests for TDR API utils
+1.8.3
+- Add more tests for TDR API utils
