@@ -1,2 +1,2 @@
-2.0.0
-- Remove duplicate functions that write to a GCP file
+3.0.0
+- Remove unused "cloud_type" parameter as a requirement to the BatchCopyAndIngest class
