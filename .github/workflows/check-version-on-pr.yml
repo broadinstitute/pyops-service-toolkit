@@ -42,3 +42,29 @@ jobs:
           else
             echo "✅ VERSION.txt has a version and release notes."
           fi
+          
+          echo "Comparing version numbers..."
+
+          # Extract the previous version from base branch
+          git show origin/${{ github.base_ref }}:VERSION.txt > old_version.txt
+          old_version=$(head -n 1 old_version.txt | tr -d '[:space:]')
+          new_version=$(head -n 1 VERSION.txt | tr -d '[:space:]')
+
+          echo "Old version: $old_version"
+          echo "New version: $new_version"
+
+          # Function to convert version to a sortable number (e.g., 4.1.5 -> 004001005)
+          version_to_number() {
+            IFS='.' read -r major minor patch <<< "$1"
+            printf "%03d%03d%03d\n" "$major" "$minor" "$patch"
+          }
+
+          old_ver_num=$(version_to_number "$old_version")
+          new_ver_num=$(version_to_number "$new_version")
+
+          if [ "$new_ver_num" -le "$old_ver_num" ]; then
+            echo "❌ VERSION.txt version must be incremented (new version must be greater than old version)."
+            exit 1
+          else
+            echo "✅ Version was incremented."
+          fi
