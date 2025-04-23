@@ -8,30 +8,32 @@ WORKBENCH_SERVER = "https://broadworkbench.atlassian.net/"
 """The default Broad workbench server address"""
 BROAD_INSTITUTE_SERVER = "https://broadinstitute.atlassian.net/"
 """The default Broad Jira server address"""
-# TODO this should be made to be more general and something that can be configured by a user
-DEFAULT_PROJECT_ID = "ops-team-metrics"
-"""The default GCP project ID used to locate the Jira API key"""
 
 
 class Jira:
     _JIRA_API_KEY_SECRET_NAME = "jira_api_key"
 
-    def __init__(self, server: str) -> None:
+    def __init__(self, server: str, gcp_project_id: str, jira_api_key_secret_name: str) -> None:
         """
         Initializes the Jira instance using the provided server
 
         **Args:**
         - server (str): The server URL to connect to. For example: `https://broadinstitute.atlassian.net/`
+        - gcp_project_id (str): The GCP project ID used to locate the Jira API key that is stored in SecretManager.
+        - jira_api_key_secret_name (str): The name of the Jira API key that is stored in SecretManager.
         """
 
-        self.jira = self._connect_to_jira(server)
+        self.server = server
+        """@private"""
+        self.gcp_project_id = gcp_project_id
+        """@private"""
+        self.jira_api_key_secret_name = jira_api_key_secret_name
+        """@private"""
+        self.jira = self._connect_to_jira()
         """@private"""
 
-    def _connect_to_jira(self, server: str) -> JIRA:
+    def _connect_to_jira(self) -> JIRA:
         """Obtains credentials and establishes the Jira connection. User must have token stored in ~/.jira_api_key"""
-
-        # Jira server and user details
-        jira_server = server
 
         if os.getenv("RUN_IN_CLOUD") == "yes":
             jira_user = f'{os.getenv("JIRA_USER")}@broadinstitute.org'
@@ -45,10 +47,10 @@ class Jira:
                 token = token_file.read().strip()
         except FileNotFoundError:
             client = secretmanager.SecretManagerServiceClient()
-            name = f"projects/{DEFAULT_PROJECT_ID}/secrets/{self._JIRA_API_KEY_SECRET_NAME}/versions/latest"
+            name = f"projects/{self.gcp_project_id}/secrets/{self.jira_api_key_secret_name}/versions/latest"
             token = client.access_secret_version(name=name).payload.data.decode("UTF-8")
 
-        return JIRA(server=jira_server, basic_auth=(jira_user, token))
+        return JIRA(server=self.server, basic_auth=(jira_user, token))
 
     def update_ticket_fields(self, issue_key: str, field_update_dict: dict) -> None:
         """
