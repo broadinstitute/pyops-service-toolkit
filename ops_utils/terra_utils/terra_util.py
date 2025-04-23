@@ -194,8 +194,6 @@ class TerraGroups:
 
 
 class TerraWorkspace:
-    VALID_STATUS_CODES = [200, 201]
-    """@private"""
 
     def __init__(self, billing_project: str, workspace_name: str, request_util: RunRequest):
         """
@@ -867,7 +865,7 @@ class TerraWorkspace:
             uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",
             method=DELETE
         )
-        if response.status_code in self.VALID_STATUS_CODES:
+        if response.status_code == 204:
             logging.info(
                 f"Successfully deleted entity table: '{entity_to_delete}' from workspace: "
                 f"'{self.billing_project}/{self.workspace_name}'"
