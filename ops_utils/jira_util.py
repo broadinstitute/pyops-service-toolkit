@@ -11,7 +11,12 @@ BROAD_INSTITUTE_SERVER = "https://broadinstitute.atlassian.net/"
 
 
 class Jira:
-    _JIRA_API_KEY_SECRET_NAME = "jira_api_key"
+    """
+    A class to assist in interacting with JIRA tickets. Provides functionality to help in updating tickets
+    (adding comments, updating ticket fields, and transitioning statuses). Also provides a way to query
+    existing JIRA tickets using certain filters. Assumes that an accessible JIRA API key is stored in
+    Google's SecretManger
+    """
 
     def __init__(self, server: str, gcp_project_id: str, jira_api_key_secret_name: str) -> None:
         """
