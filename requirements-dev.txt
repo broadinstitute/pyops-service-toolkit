@@ -5,3 +5,4 @@ backoff
 pytest
 httplib2
 pytz
+pydantic
