@@ -93,7 +93,7 @@ class TestTerraWorkspaceUtils:
     @responses.activate
     def test_upload_metadata_metadata(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/put_library_metadata.yaml")
-        with patch('ops_utils.terra_utils.terra_util.open', mock_open(read_data="entity:sample_id\tsample_alias\nRP-123_ABC\tABC")):
+        with patch('ops_utils.terra_util.open', mock_open(read_data="entity:sample_id\tsample_alias\nRP-123_ABC\tABC")):
             upload_metadata_res = self.workspace.upload_metadata_to_workspace_table("sample.tsv")
         assert upload_metadata_res
 

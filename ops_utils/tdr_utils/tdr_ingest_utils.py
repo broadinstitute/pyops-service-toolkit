@@ -46,7 +46,7 @@ class BatchIngest:
         - batch_size (int): The size of each batch for ingestion.
         - bulk_mode (bool): Flag indicating if bulk mode should be used.
         - cloud_type (str): The type of cloud (must be one of `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
-        - terra_workspace (`ops_utils.terra_utils.terra_util.TerraWorkspace`, optional): An instance of
+        - terra_workspace (`ops_utils.terra_util.TerraWorkspace`, optional): An instance of
         the TerraWorkspace class.
                 Used for Azure ingests so SAS token can be created. Defaults to None.
         - update_strategy (str, optional): The strategy for updating existing records. Defaults to `replace`.
@@ -615,7 +615,7 @@ class FilterAndBatchIngest:
                 Azure only. Defaults to `3600`.
         - schema_info (dict, optional): Schema information for the tables.
                 Used to validate ingest metrics match. Defaults to None.
-        - terra_workspace (`ops_utils.terra_utils.terra_util.TerraWorkspace`, optional): Instance of the
+        - terra_workspace (`ops_utils.terra_util.TerraWorkspace`, optional): Instance of the
          TerraWorkspace class.
                 Only used for Azure ingests to get token. Defaults to None.
         - skip_reformat (bool, optional): Whether to skip reformatting of metrics. Defaults to False.
@@ -703,7 +703,7 @@ class GetPermissionsForWorkspaceIngest:
         Initialize the GetPermissionsForWorkspaceIngest class.
 
         **Args:**
-        - terra_workspace (`ops_utils.terra_utils.terra_util.TerraWorkspace`): Instance of the TerraWorkspace class.
+        - terra_workspace (`ops_utils.terra_util.TerraWorkspace`): Instance of the TerraWorkspace class.
         - dataset_info (dict): Information about the dataset.
         - added_to_auth_domain (bool, optional): Flag indicating if the SA account
                 has been added to the auth domain. Defaults to `False`.

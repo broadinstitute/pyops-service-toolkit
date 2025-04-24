@@ -23,7 +23,7 @@ class TDR:
         Initialize the TDR class (A class to interact with the Terra Data Repository (TDR) API.)
 
         **Args:**
-        - request_util (`ops_utils.requests_utils.request_util.RunRequest`): Utility for making HTTP requests.
+        - request_util (`ops_utils.request_util.RunRequest`): Utility for making HTTP requests.
         """
         self.request_util = request_util
         """@private"""
