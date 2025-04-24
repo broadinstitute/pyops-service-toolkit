@@ -8,10 +8,10 @@ import time
 import zipfile
 import os
 
-from ops_utils import deprecated
-from ops_utils.gcp_utils import GCPCloudFunctions
-from ops_utils.vars import GCP
-from ops_utils.request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
+from . import deprecated
+from .gcp_utils import GCPCloudFunctions
+from .vars import GCP
+from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
 TERRA_LINK = "https://api.firecloud.org/api"
 """@private"""

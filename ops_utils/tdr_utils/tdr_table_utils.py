@@ -176,7 +176,7 @@ class SetUpTDRTables:
                 )
                 sys.exit(1)
         # Return schema info for all existing tables after creation
-        dataset_info = self.tdr.getdataset_info(dataset_id=self.dataset_id, info_to_include=["SCHEMA"])
+        dataset_info = self.tdr.get_dataset_info(dataset_id=self.dataset_id, info_to_include=["SCHEMA"])
         # Return dict with key being table name and value being dict of columns with key being
         # column name and value being column info
         return {

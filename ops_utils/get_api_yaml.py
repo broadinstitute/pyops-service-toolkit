@@ -1,8 +1,8 @@
 from responses import _recorder
-from ops_utils.request_util import RunRequest
-from ops_utils.token_util import Token
-from ops_utils.tdr_utils.tdr_api_utils import TDR
-from ops_utils.vars import GCP
+from .request_util import RunRequest
+from .token_util import Token
+from .tdr_utils.tdr_api_utils import TDR
+from .vars import GCP
 import os
 
 BILLING_ID = "ce149ca7-608b-4d5d-9612-2a43a7378885"

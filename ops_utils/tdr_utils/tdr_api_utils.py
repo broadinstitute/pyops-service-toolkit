@@ -7,7 +7,7 @@ from typing import Any, Optional, Union
 from urllib.parse import unquote
 from pydantic import ValidationError
 
-from ops_utils.request_util import GET, POST, DELETE, RunRequest
+from ..request_util import GET, POST, DELETE, RunRequest
 from ..tdr_api_schema.create_dataset_schema import CreateDatasetSchema
 from ..tdr_api_schema.update_dataset_schema import UpdateSchema
 from .tdr_job_utils import MonitorTDRJob, SubmitAndMonitorMultipleJobs
