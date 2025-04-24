@@ -45,7 +45,7 @@ class Csv:
                 )
             )
         logging.info(f'Creating {self.file_path}')
-        with open(self.file_path, 'w') as f:
+        with open(self.file_path, 'w', newline='') as f:
             writer = csv.DictWriter(
                 f, fieldnames=header_list, delimiter='\t', quotechar="'", extrasaction='ignore')
             writer.writeheader()
@@ -86,6 +86,7 @@ class Csv:
                 f, delimiter=self.delimiter, fieldnames=headers_list)
             return [row for row in reader]
 
+    # TODO add test for this
     def get_header_order_from_tsv(self) -> Sequence[str]:
         """
         Get the header order from a TSV file.
