@@ -56,7 +56,6 @@ class TestBigQueryUtils(unittest.TestCase):
         mock_delete_existing_records.assert_called_once_with(self.table_id)
         self.assertEqual(self.mock_client_instance.get_table.call_count, 2)  # Once before insert, once after
 
-
     def test_query_table(self):
         # Mock the BQ client "query" call
         mock_query_job = MagicMock()
