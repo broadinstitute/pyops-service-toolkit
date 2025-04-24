@@ -1,4 +1,2 @@
-5.0.0
-**This release includes breaking changes** 
-- Make dataset spelling consistent throughout the codebase
-- Move request_util and terra_util up a level in the directory structure
+5.1.0
+- Add unit tests for the Csv utilities class
