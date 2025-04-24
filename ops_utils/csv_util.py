@@ -45,7 +45,7 @@ class Csv:
                 )
             )
         logging.info(f'Creating {self.file_path}')
-        with open(self.file_path, 'w') as f:
+        with open(self.file_path, 'w', newline='') as f:
             writer = csv.DictWriter(
                 f, fieldnames=header_list, delimiter='\t', quotechar="'", extrasaction='ignore')
             writer.writeheader()
