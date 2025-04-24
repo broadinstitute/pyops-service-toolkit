@@ -18,7 +18,7 @@ required when making changes, _especially_ breaking changes.
 If there is functionality that you believe should be shared that is not currently available, please add it! If
 the functionality is interacting with an external service that we already have code for, please add the new function(s)
 to the appropriate utility file. For example, if creating new Terra functionality, it should be added to
-[terra_util.py](ops_utils/terra_utils/terra_util.py). If adding functionality that interacts with a service that we
+[terra_util.py](ops_utils/terra_util.py). If adding functionality that interacts with a service that we
 do not already have support for (or just does not belong in a category that already exists), add a new file under
 [ops_utils](ops_utils). With your submitted PR, be sure to update the [VERSION.txt](VERSION.txt) appropriately by
 incrementing the version and adding release notes. See [README.txt](README.md#versioning) for more information

@@ -1,5 +1,4 @@
-4.0.0
+5.0.0
 **This release includes breaking changes** 
-- Make the Jira utilities configurable so that the Jira API key can be stored in any GCP project  
-    - Add required parameter `gcp_project_id` to `Jira` class
-    - Add required parameter `jira_api_key_secret_name` to `Jira` class 
+- Make dataset spelling consistent throughout the codebase
+- Move request_util and terra_util up a level in the directory structure

@@ -2,8 +2,8 @@ from typing import Any, Optional
 import requests
 import backoff
 
-from ..token_util import Token
-from ..vars import ARG_DEFAULTS
+from .token_util import Token
+from .vars import ARG_DEFAULTS
 
 GET = "GET"
 """Method used for API GET endpoints"""
