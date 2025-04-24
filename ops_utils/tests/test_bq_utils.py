@@ -20,8 +20,7 @@ class TestBigQueryUtils(unittest.TestCase):
         self.fake_query_result = [{"columnA": "foo", "columnB": "bar"}, {"columnA": "baz", "columnB": "qux"}]
         self.sample_data = [{"col1": "val1", "col2": "val2"}, {"col1": "val3", "col2": "val4"}]
 
-    @patch("ops_utils.bq_utils.BigQueryUtil._delete_existing_records")
-    def test_upload_data_to_table(self, mock_delete_existing_records):
+    def test_upload_data_to_table(self):
         mock_table = MagicMock()
         mock_table.num_rows = 0
         self.mock_client_instance.get_table.return_value = mock_table
@@ -36,6 +35,27 @@ class TestBigQueryUtils(unittest.TestCase):
         self.mock_client_instance.get_table.assert_called_with(self.table_id)
         self.mock_client_instance.insert_rows_json.assert_called_once_with(self.table_id, self.sample_data)
         self.assertEqual(self.mock_client_instance.get_table.call_count, 2)  # Once before insert, once after
+
+    @patch("ops_utils.bq_utils.BigQueryUtil._delete_existing_records")
+    def test_upload_data_to_table_delete_existing_data(self, mock_delete_existing_records):
+        mock_table = MagicMock()
+        mock_table.num_rows = 0
+        self.mock_client_instance.get_table.return_value = mock_table
+
+        mock_delete_existing_records.return_value = None
+
+        # Mock insert_rows_json to return no errors
+        self.mock_client_instance.insert_rows_json.return_value = []
+
+        # Run the method
+        self.bq_util.upload_data_to_table(table_id=self.table_id, rows=self.sample_data, delete_existing_data=True)
+
+        # Assertions
+        self.mock_client_instance.get_table.assert_called_with(self.table_id)
+        self.mock_client_instance.insert_rows_json.assert_called_once_with(self.table_id, self.sample_data)
+        mock_delete_existing_records.assert_called_once_with(self.table_id)
+        self.assertEqual(self.mock_client_instance.get_table.call_count, 2)  # Once before insert, once after
+
 
     def test_query_table(self):
         # Mock the BQ client "query" call
