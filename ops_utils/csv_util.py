@@ -86,7 +86,6 @@ class Csv:
                 f, delimiter=self.delimiter, fieldnames=headers_list)
             return [row for row in reader]
 
-    # TODO add test for this
     def get_header_order_from_tsv(self) -> Sequence[str]:
         """
         Get the header order from a TSV file.
