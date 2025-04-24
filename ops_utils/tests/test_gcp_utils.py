@@ -3,7 +3,6 @@ from ops_utils.gcp_utils import GCPCloudFunctions
 from unittest.mock import MagicMock, mock_open, patch
 
 
-
 class TestGCPUtils:
     gcp_client = GCPCloudFunctions()
     
@@ -63,9 +62,9 @@ class TestGCPUtils:
 
     @responses.activate
     def test_upload_blob(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.upload_blob()
-        pass    
+        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/upload_blob.yaml")
+        with patch('google.cloud.storage.blob.open', mock_open(read_data=b"test data here")):
+            self.gcp_client.upload_blob(destination_path='gs://test_bucket/uploaded_blob.txt', source_file='source_file.txt')
 
     @responses.activate
     def test_get_md5(self):
