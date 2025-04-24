@@ -3,7 +3,7 @@ import responses
 from unittest.mock import MagicMock
 from ops_utils.request_util import RunRequest
 from ops_utils.tdr_utils.tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
-from ..vars import GCP
+from ops_utils.vars import GCP
 import json
 
 mock_token = MagicMock()
