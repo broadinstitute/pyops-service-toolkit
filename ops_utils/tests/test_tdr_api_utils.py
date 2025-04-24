@@ -1,7 +1,7 @@
 import responses
 
-from unittest.mock import MagicMock, mock_open, patch
-from ops_utils.requests_utils.request_util import RunRequest
+from unittest.mock import MagicMock
+from ops_utils.request_util import RunRequest
 from ops_utils.tdr_utils.tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
 from ops_utils.vars import GCP
 import json
@@ -167,9 +167,9 @@ class TestTerraWorkspaceUtils:
         assert table_metrics[0]['sample_id'] == "sample1"
 
     @responses.activate
-    def test_get_data_set_sample_ids(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_data_set_sample_ids.yaml")
-        sample_ids = self.tdr_util.get_data_set_sample_ids(
+    def test_get_dataset_sample_ids(self):
+        responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_dataset_sample_ids.yaml")
+        sample_ids = self.tdr_util.get_dataset_sample_ids(
             dataset_id=TEST_DATASET_ID,
             target_table_name=TABLE_NAME,
             entity_id="sample_id"
@@ -178,9 +178,9 @@ class TestTerraWorkspaceUtils:
         assert "sample1" in sample_ids
 
     @responses.activate
-    def test_get_data_set_file_uuids_from_metadata(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_data_set_file_uuids_from_metadata.yaml")
-        file_uuids = self.tdr_util.get_data_set_file_uuids_from_metadata(dataset_id=TEST_DATASET_ID)
+    def test_get_dataset_file_uuids_from_metadata(self):
+        responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_dataset_file_uuids_from_metadata.yaml")
+        file_uuids = self.tdr_util.get_dataset_file_uuids_from_metadata(dataset_id=TEST_DATASET_ID)
         assert len(file_uuids) == 3
         assert "99bf3bbd-5610-4c93-90a1-48d0cf168a6d" in file_uuids
 
