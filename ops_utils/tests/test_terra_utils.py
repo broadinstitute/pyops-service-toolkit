@@ -9,10 +9,16 @@ request_util = RunRequest(token=mock_token)
 
 
 class TestTerraWorkspaceUtils:
-    workspace = TerraWorkspace(workspace_name="test_workspace",
-                               billing_project="test_billing_project", request_util=request_util)
-    azure_workspace = TerraWorkspace(workspace_name="azure_workspace",
-                                     billing_project="Azure_billing_project", request_util=request_util)
+    workspace = TerraWorkspace(
+        workspace_name="test_workspace",
+        billing_project="test_billing_project",
+        request_util=request_util
+    )
+    azure_workspace = TerraWorkspace(
+        workspace_name="azure_workspace",
+        billing_project="Azure_billing_project",
+        request_util=request_util
+    )
 
     @responses.activate
     def test_get_workspace(self):
