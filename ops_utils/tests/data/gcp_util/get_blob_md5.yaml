@@ -1,0 +1,73 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"name":"uploaded_test_file.txt"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: CN+46Mug8YwDEAE=
+      Expires: Thu, 24 Apr 2025 20:55:09 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwrRBhXOTRJ3zuvnJR0WklArimrv2r0Y1ZWZDTtZHiDK0SH9AVH3isj_zm7EdB4bOXw90aD7DbU
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/uploaded_test_file.txt?userProject=operations-portal-427515&fields=name&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#object","id":"test_bucket/uploaded_test_file.txt/1745517817764959","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_test_file.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/uploaded_test_file.txt?generation=1745517817764959&alt=media","name":"uploaded_test_file.txt","bucket":"test_bucket","generation":"1745517817764959","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"16","md5Hash":"58gkHzRR7wU/SFT4+qHPcQ==","crc32c":"pZDSFQ==","etag":"CN+46Mug8YwDEAE=","timeCreated":"2025-04-24T18:03:37.770Z","updated":"2025-04-24T18:03:37.770Z","timeStorageClassUpdated":"2025-04-24T18:03:37.770Z","timeFinalized":"2025-04-24T18:03:37.770Z"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: CN+46Mug8YwDEAE=
+      Expires: Thu, 24 Apr 2025 20:55:09 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwo8-vqXqEy8M0MVwcGZQX1CNpeHBasc3RYsX4DstSwZyIt-d8Kyszht2MJ1jK7htAvI
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/uploaded_test_file.txt?userProject=operations-portal-427515&projection=noAcl&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: 'test
+
+
+      data
+
+
+      here'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      Content-Disposition: attachment
+      Content-Range: bytes 0-15/16
+      ETag: CN+46Mug8YwDEAE=
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Last-Modified: Thu, 24 Apr 2025 18:03:37 GMT
+      Pragma: no-cache
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwql5NLvhndiD3KGpSUnS-MuMU9-HQctV9B0UepJVibYKXoCY2PJfLDMWWiveLUyuupF
+      X-Goog-Generation: '1745517817764959'
+      X-Goog-Hash: crc32c=pZDSFQ==
+      X-Goog-Metageneration: '1'
+      X-Goog-Storage-Class: STANDARD
+      X-Goog-Stored-Content-Encoding: identity
+      X-Goog-Stored-Content-Length: '16'
+    method: GET
+    status: 206
+    url: https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/uploaded_test_file.txt?generation=1745517817764959&alt=media&userProject=operations-portal-427515
+- response:
+    auto_calculate_content_length: false
+    body: Request range not satisfiable
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0
+      Content-Range: bytes */16
+      Expires: Thu, 24 Apr 2025 20:55:10 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwr3IRaMdVFgej5cb0Z9FEIS4BsvwgyzF5ZPtSzgEk6_IpT1S4OXWJNLzQGlpe-_Cdt4
+    method: GET
+    status: 416
+    url: https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/uploaded_test_file.txt?generation=1745517817764959&alt=media&userProject=operations-portal-427515

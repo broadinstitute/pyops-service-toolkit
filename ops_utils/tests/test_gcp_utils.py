@@ -68,9 +68,9 @@ class TestGCPUtils:
 
     @responses.activate
     def test_get_md5(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.get_object_md5()
-        pass    
+        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/get_blob_md5.yaml")
+        md5 = self.gcp_client.get_object_md5(file_path='gs://test_bucket/uploaded_test_file.txt')
+        assert md5 == "e7c8241f3451ef053f4854f8faa1cf71"
 
     @responses.activate
     def test_copy_to_cloud(self):
