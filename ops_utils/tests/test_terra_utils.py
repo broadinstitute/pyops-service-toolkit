@@ -1,18 +1,24 @@
 import responses
 
 from unittest.mock import MagicMock, mock_open, patch
-from ops_utils.requests_utils.request_util import RunRequest
-from ops_utils.terra_utils.terra_util import Terra, TerraGroups, TerraWorkspace
+from ops_utils.request_util import RunRequest
+from ops_utils.terra_util import TerraWorkspace
 
 mock_token = MagicMock()
 request_util = RunRequest(token=mock_token)
 
 
 class TestTerraWorkspaceUtils:
-    workspace = TerraWorkspace(workspace_name="test_workspace",
-                               billing_project="test_billing_project", request_util=request_util)
-    azure_workspace = TerraWorkspace(workspace_name="azure_workspace",
-                                     billing_project="Azure_billing_project", request_util=request_util)
+    workspace = TerraWorkspace(
+        workspace_name="test_workspace",
+        billing_project="test_billing_project",
+        request_util=request_util
+    )
+    azure_workspace = TerraWorkspace(
+        workspace_name="azure_workspace",
+        billing_project="Azure_billing_project",
+        request_util=request_util
+    )
 
     @responses.activate
     def test_get_workspace(self):
@@ -87,7 +93,7 @@ class TestTerraWorkspaceUtils:
     @responses.activate
     def test_upload_metadata_metadata(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/put_library_metadata.yaml")
-        with patch('ops_utils.terra_utils.terra_util.open', mock_open(read_data="entity:sample_id\tsample_alias\nRP-123_ABC\tABC")):
+        with patch('ops_utils.terra_util.open', mock_open(read_data="entity:sample_id\tsample_alias\nRP-123_ABC\tABC")):
             upload_metadata_res = self.workspace.upload_metadata_to_workspace_table("sample.tsv")
         assert upload_metadata_res
 

@@ -7,7 +7,7 @@ from typing import Any, Optional, Union
 from urllib.parse import unquote
 from pydantic import ValidationError
 
-from ..requests_utils.request_util import GET, POST, DELETE, RunRequest
+from ..request_util import GET, POST, DELETE, RunRequest
 from ..tdr_api_schema.create_dataset_schema import CreateDatasetSchema
 from ..tdr_api_schema.update_dataset_schema import UpdateSchema
 from .tdr_job_utils import MonitorTDRJob, SubmitAndMonitorMultipleJobs
@@ -23,7 +23,7 @@ class TDR:
         Initialize the TDR class (A class to interact with the Terra Data Repository (TDR) API.)
 
         **Args:**
-        - request_util (`ops_utils.requests_utils.request_util.RunRequest`): Utility for making HTTP requests.
+        - request_util (`ops_utils.request_util.RunRequest`): Utility for making HTTP requests.
         """
         self.request_util = request_util
         """@private"""
@@ -595,7 +595,7 @@ class TDR:
                 yield record
             search_request["offset"] += query_limit  # type: ignore[operator]
 
-    def get_data_set_sample_ids(self, dataset_id: str, target_table_name: str, entity_id: str) -> list[str]:
+    def get_dataset_sample_ids(self, dataset_id: str, target_table_name: str, entity_id: str) -> list[str]:
         """
         Get existing IDs from a dataset.
 
@@ -607,8 +607,8 @@ class TDR:
         **Returns:**
         - list[str]: A list of entity IDs from the specified table.
         """
-        data_set_metadata = self._yield_dataset_metrics(dataset_id=dataset_id, target_table_name=target_table_name)
-        return [str(sample_dict[entity_id]) for sample_dict in data_set_metadata]
+        dataset_metadata = self._yield_dataset_metrics(dataset_id=dataset_id, target_table_name=target_table_name)
+        return [str(sample_dict[entity_id]) for sample_dict in dataset_metadata]
 
     def get_job_status(self, job_id: str) -> requests.Response:
         """
@@ -624,7 +624,7 @@ class TDR:
         response = self.request_util.run_request(uri=uri, method=GET)
         return response
 
-    def get_data_set_file_uuids_from_metadata(self, dataset_id: str) -> list[str]:
+    def get_dataset_file_uuids_from_metadata(self, dataset_id: str) -> list[str]:
         """
         Get all file UUIDs from the metadata of a dataset.
 
@@ -634,21 +634,21 @@ class TDR:
         **Returns:**
         - list[str]: A list of file UUIDs from the dataset metadata.
         """
-        data_set_info = self.get_dataset_info(dataset_id=dataset_id, info_to_include=["SCHEMA"])
+        dataset_info = self.get_dataset_info(dataset_id=dataset_id, info_to_include=["SCHEMA"])
         all_metadata_file_uuids = []
         tables = 0
-        for table in data_set_info["schema"]["tables"]:
+        for table in dataset_info["schema"]["tables"]:
             tables += 1
             table_name = table["name"]
             logging.info(f"Getting all file information for {table_name}")
             # Get just columns where datatype is fileref
             file_columns = [column["name"] for column in table["columns"] if column["datatype"] == "fileref"]
-            data_set_metrics = self.get_dataset_table_metrics(dataset_id=dataset_id, target_table_name=table_name)
+            dataset_metrics = self.get_dataset_table_metrics(dataset_id=dataset_id, target_table_name=table_name)
             # Get unique list of file uuids
             file_uuids = list(
                 set(
                     [
-                        value for metric in data_set_metrics for key, value in metric.items() if key in file_columns
+                        value for metric in dataset_metrics for key, value in metric.items() if key in file_columns
                     ]
                 )
             )
@@ -717,10 +717,10 @@ class TDR:
         - query_limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `1000`.
         - check_intervals (int, optional): The interval in seconds to wait between status checks. Defaults to `15`.
         """
-        data_set_metrics = self.get_dataset_table_metrics(
+        dataset_metrics = self.get_dataset_table_metrics(
             dataset_id=dataset_id, target_table_name=table_name, query_limit=query_limit
         )
-        row_ids = [metric["datarepo_row_id"] for metric in data_set_metrics]
+        row_ids = [metric["datarepo_row_id"] for metric in dataset_metrics]
         self.soft_delete_entries(
             dataset_id=dataset_id,
             table_name=table_name,
@@ -762,21 +762,21 @@ class TDR:
         **Raises:**
         - ValueError: If multiple datasets with the same name are found under the billing profile.
         """
-        existing_data_sets = self.check_if_dataset_exists(dataset_name, billing_profile)
-        if existing_data_sets:
+        existing_datasets = self.check_if_dataset_exists(dataset_name, billing_profile)
+        if existing_datasets:
             if not continue_if_exists:
                 raise ValueError(
                     f"Run with continue_if_exists=True to use the existing dataset {dataset_name}"
                 )
-            # If delete_existing is True, delete the existing dataset and set existing_data_sets to an empty list
+            # If delete_existing is True, delete the existing dataset and set existing_datasets to an empty list
             if delete_existing:
                 logging.info(f"Deleting existing dataset {dataset_name}")
-                self.delete_dataset(existing_data_sets[0]["id"])
-                existing_data_sets = []
+                self.delete_dataset(existing_datasets[0]["id"])
+                existing_datasets = []
             # If not delete_existing and continue_if_exists then grab existing datasets id
             else:
-                dataset_id = existing_data_sets[0]["id"]
-        if not existing_data_sets:
+                dataset_id = existing_datasets[0]["id"]
+        if not existing_datasets:
             logging.info("Did not find existing dataset")
             # Create dataset
             dataset_id = self.create_dataset(
@@ -1001,7 +1001,7 @@ class FilterOutSampleIdsAlreadyInDataset:
             f"dataset {self.dataset_id}"
         )
 
-        data_set_sample_ids = self.tdr.get_data_set_sample_ids(
+        dataset_sample_ids = self.tdr.get_dataset_sample_ids(
             dataset_id=self.dataset_id,
             target_table_name=self.target_table_name,
             entity_id=self.filter_entity_id
@@ -1010,7 +1010,7 @@ class FilterOutSampleIdsAlreadyInDataset:
         filtered_ingest_metrics = [
             row
             for row in self.ingest_metrics
-            if str(row[self.filter_entity_id]) not in data_set_sample_ids
+            if str(row[self.filter_entity_id]) not in dataset_sample_ids
         ]
         if len(filtered_ingest_metrics) < len(self.ingest_metrics):
             logging.info(
