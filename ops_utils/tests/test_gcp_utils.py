@@ -1,9 +1,11 @@
-from enum import auto
+import os
 from ops_utils.vars import GCP
 import responses
 from ops_utils.gcp_utils import GCPCloudFunctions
 from unittest.mock import MagicMock, mock_open, patch
 from google.auth import credentials
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "test_creds.json"
 
 MOCK_CREDENTIALS = MagicMock(spec=credentials.CredentialsWithQuotaProject)
 MOCK_CREDENTIALS.with_quota_project.return_value = MOCK_CREDENTIALS
