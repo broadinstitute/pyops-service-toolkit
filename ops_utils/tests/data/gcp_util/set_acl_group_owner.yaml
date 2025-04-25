@@ -1,0 +1,58 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"name":"uploaded_blob.txt"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: COOD74G384wDEAE=
+      Expires: Fri, 25 Apr 2025 14:53:49 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwrpDXc3v37t1qSNR93Xzz0EuZZIN_peDXao4S8dvCxA4tmWT7W7oqAAY3LljpwHSvoQ
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt?userProject=operations-portal-427515&fields=name&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#object","id":"test_bucket/uploaded_blob.txt/1745592556175843","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/uploaded_blob.txt?generation=1745592556175843&alt=media","name":"uploaded_blob.txt","bucket":"test_bucket","generation":"1745592556175843","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"14","md5Hash":"mq/oXoiL3RnmqpfnDc0ONw==","crc32c":"QhdJhQ==","etag":"COOD74G384wDEAE=","timeCreated":"2025-04-25T14:49:16.178Z","updated":"2025-04-25T14:49:16.178Z","timeStorageClassUpdated":"2025-04-25T14:49:16.178Z","timeFinalized":"2025-04-25T14:49:16.178Z"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: COOD74G384wDEAE=
+      Expires: Fri, 25 Apr 2025 14:53:49 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwr59rOjn99yibR8LS2qljqEgXB0bpvyh21Pkt546tnEmBBBOPRq7shRZtrZbmWtbqWq
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt?userProject=operations-portal-427515&projection=noAcl&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#objectAccessControls","items":[{"kind":"storage#objectAccessControl","object":"uploaded_blob.txt","generation":"1745592556175843","id":"test_bucket/uploaded_blob.txt/1745592556175843/project-owners-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl/project-owners-144387593883","bucket":"test_bucket","entity":"project-owners-144387593883","role":"OWNER","etag":"COOD74G384wDEAE=","projectTeam":{"projectNumber":"144387593883","team":"owners"}},{"kind":"storage#objectAccessControl","object":"uploaded_blob.txt","generation":"1745592556175843","id":"test_bucket/uploaded_blob.txt/1745592556175843/project-editors-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl/project-editors-144387593883","bucket":"test_bucket","entity":"project-editors-144387593883","role":"OWNER","etag":"COOD74G384wDEAE=","projectTeam":{"projectNumber":"144387593883","team":"editors"}},{"kind":"storage#objectAccessControl","object":"uploaded_blob.txt","generation":"1745592556175843","id":"test_bucket/uploaded_blob.txt/1745592556175843/project-viewers-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl/project-viewers-144387593883","bucket":"test_bucket","entity":"project-viewers-144387593883","role":"READER","etag":"COOD74G384wDEAE=","projectTeam":{"projectNumber":"144387593883","team":"viewers"}},{"kind":"storage#objectAccessControl","object":"uploaded_blob.txt","generation":"1745592556175843","id":"test_bucket/uploaded_blob.txt/1745592556175843/user-test@broadinstitute.org","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl/user-test@broadinstitute.org","bucket":"test_bucket","entity":"user-test@broadinstitute.org","role":"OWNER","email":"test@broadinstitute.org","etag":"COOD74G384wDEAE="}]}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: COOD74G384wDEAE=
+      Expires: Fri, 25 Apr 2025 14:53:49 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwpCQWkQQa67GhqDIzi4WrYSfbBRRHzMHDwlPkDn6azfh8OHOQHP6Z_JmRli_aAU_rI4
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl?userProject=operations-portal-427515&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#object","id":"test_bucket/uploaded_blob.txt/1745592556175843","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/uploaded_blob.txt?generation=1745592556175843&alt=media","name":"uploaded_blob.txt","bucket":"test_bucket","generation":"1745592556175843","metageneration":"2","contentType":"text/plain","storageClass":"STANDARD","size":"14","md5Hash":"mq/oXoiL3RnmqpfnDc0ONw==","crc32c":"QhdJhQ==","etag":"COOD74G384wDEAI=","timeCreated":"2025-04-25T14:49:16.178Z","updated":"2025-04-25T14:53:49.465Z","timeStorageClassUpdated":"2025-04-25T14:49:16.178Z","timeFinalized":"2025-04-25T14:49:16.178Z","acl":[{"kind":"storage#objectAccessControl","object":"uploaded_blob.txt","generation":"1745592556175843","id":"test_bucket/uploaded_blob.txt/1745592556175843/project-owners-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl/project-owners-144387593883","bucket":"test_bucket","entity":"project-owners-144387593883","role":"OWNER","etag":"COOD74G384wDEAI=","projectTeam":{"projectNumber":"144387593883","team":"owners"}},{"kind":"storage#objectAccessControl","object":"uploaded_blob.txt","generation":"1745592556175843","id":"test_bucket/uploaded_blob.txt/1745592556175843/project-editors-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl/project-editors-144387593883","bucket":"test_bucket","entity":"project-editors-144387593883","role":"OWNER","etag":"COOD74G384wDEAI=","projectTeam":{"projectNumber":"144387593883","team":"editors"}},{"kind":"storage#objectAccessControl","object":"uploaded_blob.txt","generation":"1745592556175843","id":"test_bucket/uploaded_blob.txt/1745592556175843/project-viewers-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl/project-viewers-144387593883","bucket":"test_bucket","entity":"project-viewers-144387593883","role":"READER","etag":"COOD74G384wDEAI=","projectTeam":{"projectNumber":"144387593883","team":"viewers"}},{"kind":"storage#objectAccessControl","object":"uploaded_blob.txt","generation":"1745592556175843","id":"test_bucket/uploaded_blob.txt/1745592556175843/user-test@broadinstitute.org","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl/user-test@broadinstitute.org","bucket":"test_bucket","entity":"user-test@broadinstitute.org","role":"OWNER","email":"test@broadinstitute.org","etag":"COOD74G384wDEAI="},{"kind":"storage#objectAccessControl","object":"uploaded_blob.txt","generation":"1745592556175843","id":"test_bucket/uploaded_blob.txt/1745592556175843/group-ops_toolbox_users@firecloud.org","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt/acl/group-ops_toolbox_users@firecloud.org","bucket":"test_bucket","entity":"group-ops_toolbox_users@firecloud.org","role":"OWNER","email":"ops_toolbox_users@firecloud.org","etag":"COOD74G384wDEAI="}],"owner":{"entity":"user-test@broadinstitute.org"}}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      ETag: COOD74G384wDEAI=
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma: no-cache
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwqax12WW8zH7vTAU8ORzHKHnfjYkYPUXoIVLFAmgL6PhEKT-bk52VpqhXii-MDVe2D2
+    method: PATCH
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt?projection=full&userProject=operations-portal-427515&prettyPrint=false

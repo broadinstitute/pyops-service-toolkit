@@ -73,45 +73,29 @@ class TestGCPUtils:
         assert md5 == "e7c8241f3451ef053f4854f8faa1cf71"
 
     @responses.activate
-    def test_copy_to_cloud(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.copy_onprem_to_cloud()
-        pass    
+    def test_set_acl_public(self):
+        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/set_blob_acl_public.yaml")
+        self.gcp_client.set_acl_public_read(cloud_path="gs://test_bucket/dummy_file.txt")
+    
+    @responses.activate
+    def test_acl_group_owner(self):
+        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/set_acl_group_owner.yaml")
+        self.gcp_client.set_acl_group_owner(cloud_path="gs://test_bucket/uploaded_blob.txt", group_email='test_group@firecloud.org')
 
     @responses.activate
-    def test_set_acl_public(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.set_acl_public_read()
-        pass    
-
-    def test_acl_group_owner(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.set_acl_group_owner()
-        pass
-
     def test_metadata_cache_control(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.set_metadata_cache_control
-        pass        
+        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/set_metadata_cache.yaml")
+        self.gcp_client.set_metadata_cache_control(cloud_path="gs://test_bucket/uploaded_blob.txt",cache_control="private, max-age=0, no-store")
 
-
+    @responses.activate
     def test_get_most_recent_blob_content(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.get_file_contents_of_most_recent_blob_in_bucket()
-        pass        
+        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/read_newest_blob.yaml")
+        data = self.gcp_client.get_file_contents_of_most_recent_blob_in_bucket(bucket_name="test_bucket")
+        assert data
 
 
+    @responses.activate
     def test_write_to_gcp_file(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.write_to_gcp_file
+        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/write_to_blob.yaml")
+        self.gcp_client.write_to_gcp_file(cloud_path='gs://test_bucket/blob_to_write.txt', file_contents="test data here")
         pass        
-
-    def test_multithread_validation(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.loop_and_log_validation_files_multithreaded()
-        pass
-
-    def test_move_copy_files(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/")
-        self.gcp_client.move_or_copy_multiple_files()
-        pass    

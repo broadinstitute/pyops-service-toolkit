@@ -1,0 +1,43 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#objects","items":[{"kind":"storage#object","id":"test_bucket/dummy_file.txt/1745587687978514","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/dummy_file.txt?generation=1745587687978514&alt=media","name":"dummy_file.txt","bucket":"test_bucket","generation":"1745587687978514","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"20","md5Hash":"rV8KlfhsQgQNXkN4XnZrCw==","crc32c":"MPshmA==","etag":"CJLsw/Ck84wDEAE=","timeCreated":"2025-04-25T13:28:08.065Z","updated":"2025-04-25T13:28:08.065Z","timeStorageClassUpdated":"2025-04-25T13:28:08.065Z","timeFinalized":"2025-04-25T13:28:08.065Z"},{"kind":"storage#object","id":"test_bucket/file001.bin/1745515264854268","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/file001.bin","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/file001.bin?generation=1745515264854268&alt=media","name":"file001.bin","bucket":"test_bucket","generation":"1745515264854268","metageneration":"1","contentType":"application/octet-stream","storageClass":"STANDARD","size":"21788","md5Hash":"1JrFnf5kSXMto/DqQd+y5g==","contentLanguage":"en","crc32c":"9154Bw==","etag":"CPyRv4qX8YwDEAE=","timeCreated":"2025-04-24T17:21:04.871Z","updated":"2025-04-24T17:21:04.871Z","timeStorageClassUpdated":"2025-04-24T17:21:04.871Z","timeFinalized":"2025-04-24T17:21:04.871Z"},{"kind":"storage#object","id":"test_bucket/file002.bin/1745516426723948","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/file002.bin","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/file002.bin?generation=1745516426723948&alt=media","name":"file002.bin","bucket":"test_bucket","generation":"1745516426723948","metageneration":"1","contentType":"application/octet-stream","storageClass":"STANDARD","size":"21788","md5Hash":"1JrFnf5kSXMto/DqQd+y5g==","contentLanguage":"en","crc32c":"9154Bw==","etag":"COyEwrSb8YwDEAE=","timeCreated":"2025-04-24T17:40:26.728Z","updated":"2025-04-24T17:40:26.728Z","timeStorageClassUpdated":"2025-04-24T17:40:26.728Z","timeFinalized":"2025-04-24T17:40:26.728Z"},{"kind":"storage#object","id":"test_bucket/file003.bin/1745516430388614","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/file003.bin","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/file003.bin?generation=1745516430388614&alt=media","name":"file003.bin","bucket":"test_bucket","generation":"1745516430388614","metageneration":"1","contentType":"application/octet-stream","storageClass":"STANDARD","size":"21788","md5Hash":"1JrFnf5kSXMto/DqQd+y5g==","contentLanguage":"en","crc32c":"9154Bw==","etag":"CIbbobab8YwDEAE=","timeCreated":"2025-04-24T17:40:30.392Z","updated":"2025-04-24T17:40:30.392Z","timeStorageClassUpdated":"2025-04-24T17:40:30.392Z","timeFinalized":"2025-04-24T17:40:30.392Z"},{"kind":"storage#object","id":"test_bucket/file004_moved.bin/1745516523398073","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/file004_moved.bin","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/file004_moved.bin?generation=1745516523398073&alt=media","name":"file004_moved.bin","bucket":"test_bucket","generation":"1745516523398073","metageneration":"1","contentType":"application/octet-stream","storageClass":"STANDARD","size":"21788","md5Hash":"1JrFnf5kSXMto/DqQd+y5g==","contentLanguage":"en","crc32c":"9154Bw==","etag":"CLnHzuKb8YwDEAE=","timeCreated":"2025-04-24T17:42:03.404Z","updated":"2025-04-24T17:42:03.404Z","timeStorageClassUpdated":"2025-04-24T17:42:03.404Z","timeFinalized":"2025-04-24T17:42:03.404Z"},{"kind":"storage#object","id":"test_bucket/uploaded_blob.txt/1745526238926551","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_blob.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/uploaded_blob.txt?generation=1745526238926551&alt=media","name":"uploaded_blob.txt","bucket":"test_bucket","generation":"1745526238926551","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"14","md5Hash":"mq/oXoiL3RnmqpfnDc0ONw==","crc32c":"QhdJhQ==","etag":"CNetq/u/8YwDEAE=","timeCreated":"2025-04-24T20:23:58.933Z","updated":"2025-04-24T20:23:58.933Z","timeStorageClassUpdated":"2025-04-24T20:23:58.933Z","timeFinalized":"2025-04-24T20:23:58.933Z"},{"kind":"storage#object","id":"test_bucket/uploaded_test_file.txt/1745517817764959","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/uploaded_test_file.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/uploaded_test_file.txt?generation=1745517817764959&alt=media","name":"uploaded_test_file.txt","bucket":"test_bucket","generation":"1745517817764959","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"16","md5Hash":"58gkHzRR7wU/SFT4+qHPcQ==","crc32c":"pZDSFQ==","etag":"CN+46Mug8YwDEAE=","timeCreated":"2025-04-24T18:03:37.770Z","updated":"2025-04-24T18:03:37.770Z","timeStorageClassUpdated":"2025-04-24T18:03:37.770Z","timeFinalized":"2025-04-24T18:03:37.770Z"}]}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      Expires: Fri, 25 Apr 2025 15:01:21 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwpq6VviHcrp964dli7eHjawhJ5VTBa3D3T2HMmz0-wjaZcUOSrYwKn6wf92JL-R-1v4VGiNBm0
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o?projection=noAcl&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: 'file
+
+
+      contents
+
+
+      here'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      Content-Disposition: attachment
+      ETag: CJLsw/Ck84wDEAE=
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Last-Modified: Fri, 25 Apr 2025 13:28:08 GMT
+      Pragma: no-cache
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwpJGTkr7u4GO1ZRCfozTqYjEQvbhJt8sQgPbhWcIBHlCAmdh1QZARbtqUtrsWA9zT8RoB3oYNA
+      X-Goog-Generation: '1745587687978514'
+      X-Goog-Hash: crc32c=MPshmA==,md5=rV8KlfhsQgQNXkN4XnZrCw==
+      X-Goog-Metageneration: '1'
+      X-Goog-Storage-Class: STANDARD
+      X-Goog-Stored-Content-Encoding: identity
+      X-Goog-Stored-Content-Length: '20'
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/dummy_file.txt?generation=1745587687978514&alt=media

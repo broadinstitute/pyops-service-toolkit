@@ -1,0 +1,58 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"name":"dummy_file.txt"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: CMit+IC384wDEAE=
+      Expires: Fri, 25 Apr 2025 14:51:03 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwpvfRjAy0fqPtOuypZgl6QzD8VXnJ3cCH-opnR1ALqtkxWNmYbfPLBa0fN1qubkXs2k
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt?userProject=operations-portal-427515&fields=name&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#object","id":"test_bucket/dummy_file.txt/1745592554231496","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/dummy_file.txt?generation=1745592554231496&alt=media","name":"dummy_file.txt","bucket":"test_bucket","generation":"1745592554231496","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"20","md5Hash":"rV8KlfhsQgQNXkN4XnZrCw==","crc32c":"MPshmA==","etag":"CMit+IC384wDEAE=","timeCreated":"2025-04-25T14:49:14.233Z","updated":"2025-04-25T14:49:14.233Z","timeStorageClassUpdated":"2025-04-25T14:49:14.233Z","timeFinalized":"2025-04-25T14:49:14.233Z"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: CMit+IC384wDEAE=
+      Expires: Fri, 25 Apr 2025 14:51:04 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwot0KvhWa8WzTsJz9TcSzwevufJdjs4HBo5cRazKfQ9O_bc0UGZrwOTogNwvRAwcD4u
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt?userProject=operations-portal-427515&projection=noAcl&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#objectAccessControls","items":[{"kind":"storage#objectAccessControl","object":"dummy_file.txt","generation":"1745592554231496","id":"test_bucket/dummy_file.txt/1745592554231496/project-owners-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl/project-owners-144387593883","bucket":"test_bucket","entity":"project-owners-144387593883","role":"OWNER","etag":"CMit+IC384wDEAE=","projectTeam":{"projectNumber":"144387593883","team":"owners"}},{"kind":"storage#objectAccessControl","object":"dummy_file.txt","generation":"1745592554231496","id":"test_bucket/dummy_file.txt/1745592554231496/project-editors-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl/project-editors-144387593883","bucket":"test_bucket","entity":"project-editors-144387593883","role":"OWNER","etag":"CMit+IC384wDEAE=","projectTeam":{"projectNumber":"144387593883","team":"editors"}},{"kind":"storage#objectAccessControl","object":"dummy_file.txt","generation":"1745592554231496","id":"test_bucket/dummy_file.txt/1745592554231496/project-viewers-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl/project-viewers-144387593883","bucket":"test_bucket","entity":"project-viewers-144387593883","role":"READER","etag":"CMit+IC384wDEAE=","projectTeam":{"projectNumber":"144387593883","team":"viewers"}},{"kind":"storage#objectAccessControl","object":"dummy_file.txt","generation":"1745592554231496","id":"test_bucket/dummy_file.txt/1745592554231496/user-test@broadinstitute.org","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl/user-test@broadinstitute.org","bucket":"test_bucket","entity":"user-test@broadinstitute.org","role":"OWNER","email":"test@broadinstitute.org","etag":"CMit+IC384wDEAE="}]}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: CMit+IC384wDEAE=
+      Expires: Fri, 25 Apr 2025 14:51:04 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwo-dANzJw6Mv2UYAy_dFG77AXes7Y-Q9eYf1bRv9VvLx8UTHwBhLUBXhM9vPoRn4QGQ
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl?userProject=operations-portal-427515&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#object","id":"test_bucket/dummy_file.txt/1745592554231496","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/dummy_file.txt?generation=1745592554231496&alt=media","name":"dummy_file.txt","bucket":"test_bucket","generation":"1745592554231496","metageneration":"2","contentType":"text/plain","storageClass":"STANDARD","size":"20","md5Hash":"rV8KlfhsQgQNXkN4XnZrCw==","crc32c":"MPshmA==","etag":"CMit+IC384wDEAI=","timeCreated":"2025-04-25T14:49:14.233Z","updated":"2025-04-25T14:51:04.356Z","timeStorageClassUpdated":"2025-04-25T14:49:14.233Z","timeFinalized":"2025-04-25T14:49:14.233Z","acl":[{"kind":"storage#objectAccessControl","object":"dummy_file.txt","generation":"1745592554231496","id":"test_bucket/dummy_file.txt/1745592554231496/project-owners-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl/project-owners-144387593883","bucket":"test_bucket","entity":"project-owners-144387593883","role":"OWNER","etag":"CMit+IC384wDEAI=","projectTeam":{"projectNumber":"144387593883","team":"owners"}},{"kind":"storage#objectAccessControl","object":"dummy_file.txt","generation":"1745592554231496","id":"test_bucket/dummy_file.txt/1745592554231496/project-editors-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl/project-editors-144387593883","bucket":"test_bucket","entity":"project-editors-144387593883","role":"OWNER","etag":"CMit+IC384wDEAI=","projectTeam":{"projectNumber":"144387593883","team":"editors"}},{"kind":"storage#objectAccessControl","object":"dummy_file.txt","generation":"1745592554231496","id":"test_bucket/dummy_file.txt/1745592554231496/project-viewers-144387593883","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl/project-viewers-144387593883","bucket":"test_bucket","entity":"project-viewers-144387593883","role":"READER","etag":"CMit+IC384wDEAI=","projectTeam":{"projectNumber":"144387593883","team":"viewers"}},{"kind":"storage#objectAccessControl","object":"dummy_file.txt","generation":"1745592554231496","id":"test_bucket/dummy_file.txt/1745592554231496/user-test@broadinstitute.org","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl/user-test@broadinstitute.org","bucket":"test_bucket","entity":"user-test@broadinstitute.org","role":"OWNER","email":"test@broadinstitute.org","etag":"CMit+IC384wDEAI="},{"kind":"storage#objectAccessControl","object":"dummy_file.txt","generation":"1745592554231496","id":"test_bucket/dummy_file.txt/1745592554231496/allUsers","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt/acl/allUsers","bucket":"test_bucket","entity":"allUsers","role":"READER","etag":"CMit+IC384wDEAI="}],"owner":{"entity":"user-test@broadinstitute.org"}}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      ETag: CMit+IC384wDEAI=
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma: no-cache
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwrkEYNttAvblGJk5LsK0bsBR1ug8-ImIO9iX0_gtkiYlRb8fSpYMeF1k6BSrjHWkPWP
+    method: PATCH
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/dummy_file.txt?projection=full&userProject=operations-portal-427515&prettyPrint=false
