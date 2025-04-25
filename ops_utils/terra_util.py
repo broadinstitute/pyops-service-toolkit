@@ -8,10 +8,10 @@ import time
 import zipfile
 import os
 
-from .. import deprecated
-from ..gcp_utils import GCPCloudFunctions
-from ..vars import GCP
-from ..requests_utils.request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
+from . import deprecated
+from .gcp_utils import GCPCloudFunctions
+from .vars import GCP
+from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
 TERRA_LINK = "https://api.firecloud.org/api"
 """@private"""
@@ -34,7 +34,7 @@ class Terra:
         Initialize the Terra class.
 
         **Args:**
-        - request_util (`ops_utils.requests_utils.request_util.RunRequest`): An instance of a
+        - request_util (`ops_utils.request_util.RunRequest`): An instance of a
             request utility class to handle HTTP requests.
         """
         self.request_util = request_util
@@ -86,7 +86,7 @@ class TerraGroups:
         Initialize the TerraGroups class.
 
         **Args:**
-        - request_util (`ops_utils.requests_utils.request_util.RunRequest`): An instance of a request
+        - request_util (`ops_utils.request_util.RunRequest`): An instance of a request
          utility class to handle HTTP requests.
         """
         self.request_util = request_util
@@ -113,7 +113,7 @@ class TerraGroups:
         - group (str): The name of the group.
         - email (str): The email of the user to remove.
         - role (str): The role of the user in the group
-            (must be one of `ops_utils.terra_utils.terra_utils.MEMBER` or `ops_utils.terra_utils.ADMIN`).
+            (must be one of `ops_utils.terra_utils.MEMBER` or `ops_utils.terra_utils.ADMIN`).
 
         **Returns:**
         - int: The response code
@@ -178,7 +178,7 @@ class TerraGroups:
         - group (str): The name of the group.
         - email (str): The email of the user to add.
         - role (str): The role of the user in the group
-            (must be one of `ops_utils.terra_utils.terra_utils.MEMBER` or `ops_utils.terra_utils.ADMIN`).
+            (must be one of `ops_utils.terra_utils.MEMBER` or `ops_utils.terra_utils.ADMIN`).
         - continue_if_exists (bool, optional): Whether to continue if the user is already in the group.
                 Defaults to `False`.
 
@@ -206,7 +206,7 @@ class TerraWorkspace:
         **Args:**
         - billing_project (str): The billing project associated with the workspace.
         - workspace_name (str): The name of the workspace.
-        - request_util (`ops_utils.requests_utils.request_util.RunRequest`): An instance of a
+        - request_util (`ops_utils.request_util.RunRequest`): An instance of a
             request utility class to handle HTTP requests.
         """
         self.billing_project = billing_project
@@ -481,16 +481,6 @@ class TerraWorkspace:
         sas_response_json = self._get_sas_token_json(
             sas_expiration_in_secs=sas_expiration_in_secs)
         return sas_response_json["token"]
-
-    # TODO check if this is needed since it's not currently called anywhere within this code base, or ops-terra-utils
-    def set_workspace_id(self, workspace_info: dict) -> None:
-        """
-        Set the workspace ID.
-
-        **Args:**
-        - workspace_info (dict): The dictionary containing workspace information.
-        """
-        self.workspace_id = workspace_info["workspace"]["workspaceId"]
 
     def get_workspace_bucket(self) -> str:
         """

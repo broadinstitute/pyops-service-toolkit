@@ -182,7 +182,6 @@ class BatchCopyAndIngest:
             rows_to_ingest: list[dict],
             tdr: TDR,
             target_table_name: str,
-            cloud_type: str,
             update_strategy: str,
             dataset_id: str,
             row_files_to_copy: list[list[dict]],
@@ -197,8 +196,6 @@ class BatchCopyAndIngest:
         - rows_to_ingest (list[dict]): The list of rows to ingest.
         - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): TDR instance for interacting with the TDR API.
         - target_table_name (str): The name of the target table.
-        - cloud_type (str): (str): Type of cloud storage (must be one of `ops_utils.vars.GCP`
-        or `ops_utils.vars.AZURE`).
         - update_strategy (str): Strategy for updating the data.
         - dataset_id (str): The dataset ID.
         - row_files_to_copy (list[list[dict]]): List of files to copy for each row.
@@ -212,9 +209,6 @@ class BatchCopyAndIngest:
         self.tdr = tdr
         """@private"""
         self.target_table_name = target_table_name
-        """@private"""
-        # TODO Remove cloud_type as it's not used
-        self.cloud_type = cloud_type
         """@private"""
         self.update_strategy = update_strategy
         """@private"""
