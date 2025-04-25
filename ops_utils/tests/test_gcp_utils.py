@@ -2,8 +2,12 @@ import responses
 import sys
 from ops_utils.gcp_utils import GCPCloudFunctions
 from unittest.mock import MagicMock, mock_open, patch
+from google.auth import credentials
 
 sys.modules['google.auth.default'] = MagicMock()
+MOCK_CREDENTIALS = MagicMock(spec=credentials.CredentialsWithQuotaProject)
+MOCK_CREDENTIALS.with_quota_project.return_value = MOCK_CREDENTIALS
+MagicMock("google.auth._cloud_sdk.get_application_default_credentials_path", autospec=True)
 
 class TestGCPUtils:
     gcp_client = GCPCloudFunctions()
