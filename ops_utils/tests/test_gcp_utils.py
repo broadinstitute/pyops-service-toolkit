@@ -3,15 +3,26 @@ from ops_utils.vars import GCP
 import responses
 from ops_utils.gcp_utils import GCPCloudFunctions
 from unittest.mock import MagicMock, mock_open, patch
-from google.cloud import storage
-from google.auth import default
-import sys
+from google.auth import credentials
 
-sys.modules['google.auth.default'] = MagicMock(spec=default)
-sys.modules['google.cloud.storage.Client'] = MagicMock(spec=storage.Client)
+MOCK_CREDENTIALS = MagicMock(spec=credentials.CredentialsWithQuotaProject)
+MOCK_CREDENTIALS.with_quota_project.return_value = MOCK_CREDENTIALS
+MOCK_CREDENTIALS.universe_domain = "googleapis.com"
+
+LOAD_FILE_PATCH = patch(
+    "google.auth._default.load_credentials_from_file",
+    return_value=(MOCK_CREDENTIALS, 'operations-portal-427515'),
+    autospec=True,
+)
+
+def create_gcp_client():
+    with LOAD_FILE_PATCH:
+        gcp_client = GCPCloudFunctions()
+    return gcp_client
 
 class TestGCPUtils:
-    gcp_client = GCPCloudFunctions()
+    
+    gcp_client = create_gcp_client()
     
     @responses.activate
     def test_load_file(self):
