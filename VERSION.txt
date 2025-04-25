@@ -1,2 +1,2 @@
-2.0.0
-- Remove duplicate functions that write to a GCP file
+6.2.1
+- Adding unit tests for gcp util
