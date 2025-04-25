@@ -482,16 +482,6 @@ class TerraWorkspace:
             sas_expiration_in_secs=sas_expiration_in_secs)
         return sas_response_json["token"]
 
-    # TODO check if this is needed since it's not currently called anywhere within this code base, or ops-terra-utils
-    def set_workspace_id(self, workspace_info: dict) -> None:
-        """
-        Set the workspace ID.
-
-        **Args:**
-        - workspace_info (dict): The dictionary containing workspace information.
-        """
-        self.workspace_id = workspace_info["workspace"]["workspaceId"]
-
     def get_workspace_bucket(self) -> str:
         """
         Get the workspace bucket name. Does not include the `gs://` prefix.

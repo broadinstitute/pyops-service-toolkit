@@ -1,2 +1,3 @@
-5.2.0
-- Add unit tests for the BigQueryUtils
+6.2.0
+This release includes breaking changes
+- Removed unused function `set_workspace_id` from `TerraWorkspace`
