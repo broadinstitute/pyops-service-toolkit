@@ -1,7 +1,9 @@
 import responses
+import sys
 from ops_utils.gcp_utils import GCPCloudFunctions
 from unittest.mock import MagicMock, mock_open, patch
 
+sys.modules['google.auth.default'] = MagicMock()
 
 class TestGCPUtils:
     gcp_client = GCPCloudFunctions()
@@ -98,4 +100,4 @@ class TestGCPUtils:
     def test_write_to_gcp_file(self):
         responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/write_to_blob.yaml")
         self.gcp_client.write_to_gcp_file(cloud_path='gs://test_bucket/blob_to_write.txt', file_contents="test data here")
-        pass        
+
