@@ -1,0 +1,219 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"result":[{"sample_id":"sample_a","test_file":"79c9e63a-3598-3504-b19f-3e8b03b805c3","column_c":"bbb","datarepo_row_id":"d40369de-bdb8-4046-b985-3f39ea84e24a","column_b":"eugneu","column_a":null}],"totalRowCount":1,"filteredRowCount":1}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: po52V5E7
+    method: POST
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/datasets/882da372-ab26-4598-b9d2-bca61806e6f7/data/sample
+- response:
+    auto_calculate_content_length: false
+    body: '{"result":[],"totalRowCount":1,"filteredRowCount":0}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: 6B58jAQO
+    method: POST
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/datasets/882da372-ab26-4598-b9d2-bca61806e6f7/data/sample
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"yG0423HlQNi7n8dz1QO1Xw","description":"Ingest tabular data to sample
+      in dataset id 882da372-ab26-4598-b9d2-bca61806e6f7","job_status":"running","status_code":202,"submitted":"2025-04-28T16:07:18.771056Z","completed":null,"class_name":"bio.terra.service.dataset.flight.ingest.DatasetIngestFlight","target_iam_resource":{"type":"dataset","id":"882da372-ab26-4598-b9d2-bca61806e6f7","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: pPmYWEqb
+    method: POST
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/datasets/882da372-ab26-4598-b9d2-bca61806e6f7/ingest
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"yG0423HlQNi7n8dz1QO1Xw","description":"Ingest tabular data to sample
+      in dataset id 882da372-ab26-4598-b9d2-bca61806e6f7","job_status":"running","status_code":202,"submitted":"2025-04-28T16:07:18.771056Z","completed":null,"class_name":"bio.terra.service.dataset.flight.ingest.DatasetIngestFlight","target_iam_resource":{"type":"dataset","id":"882da372-ab26-4598-b9d2-bca61806e6f7","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: pP4rX09Z
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"yG0423HlQNi7n8dz1QO1Xw","description":"Ingest tabular data to sample
+      in dataset id 882da372-ab26-4598-b9d2-bca61806e6f7","job_status":"running","status_code":202,"submitted":"2025-04-28T16:07:18.771056Z","completed":null,"class_name":"bio.terra.service.dataset.flight.ingest.DatasetIngestFlight","target_iam_resource":{"type":"dataset","id":"882da372-ab26-4598-b9d2-bca61806e6f7","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: e1N0B8yX
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"yG0423HlQNi7n8dz1QO1Xw","description":"Ingest tabular data to sample
+      in dataset id 882da372-ab26-4598-b9d2-bca61806e6f7","job_status":"running","status_code":202,"submitted":"2025-04-28T16:07:18.771056Z","completed":null,"class_name":"bio.terra.service.dataset.flight.ingest.DatasetIngestFlight","target_iam_resource":{"type":"dataset","id":"882da372-ab26-4598-b9d2-bca61806e6f7","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: e3kQn1je
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"yG0423HlQNi7n8dz1QO1Xw","description":"Ingest tabular data to sample
+      in dataset id 882da372-ab26-4598-b9d2-bca61806e6f7","job_status":"running","status_code":202,"submitted":"2025-04-28T16:07:18.771056Z","completed":null,"class_name":"bio.terra.service.dataset.flight.ingest.DatasetIngestFlight","target_iam_resource":{"type":"dataset","id":"882da372-ab26-4598-b9d2-bca61806e6f7","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: pQjRxq9J
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"yG0423HlQNi7n8dz1QO1Xw","description":"Ingest tabular data to sample
+      in dataset id 882da372-ab26-4598-b9d2-bca61806e6f7","job_status":"running","status_code":202,"submitted":"2025-04-28T16:07:18.771056Z","completed":null,"class_name":"bio.terra.service.dataset.flight.ingest.DatasetIngestFlight","target_iam_resource":{"type":"dataset","id":"882da372-ab26-4598-b9d2-bca61806e6f7","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: awnPyoyd
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"yG0423HlQNi7n8dz1QO1Xw","description":"Ingest tabular data to sample
+      in dataset id 882da372-ab26-4598-b9d2-bca61806e6f7","job_status":"running","status_code":202,"submitted":"2025-04-28T16:07:18.771056Z","completed":null,"class_name":"bio.terra.service.dataset.flight.ingest.DatasetIngestFlight","target_iam_resource":{"type":"dataset","id":"882da372-ab26-4598-b9d2-bca61806e6f7","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: e1qRnrOr
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"yG0423HlQNi7n8dz1QO1Xw","description":"Ingest tabular data to sample
+      in dataset id 882da372-ab26-4598-b9d2-bca61806e6f7","job_status":"running","status_code":202,"submitted":"2025-04-28T16:07:18.771056Z","completed":null,"class_name":"bio.terra.service.dataset.flight.ingest.DatasetIngestFlight","target_iam_resource":{"type":"dataset","id":"882da372-ab26-4598-b9d2-bca61806e6f7","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Vary: Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: eZ8dMlZ4
+    method: GET
+    status: 202
+    url: https://data.terra.bio/api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"yG0423HlQNi7n8dz1QO1Xw","description":"Ingest tabular data to sample
+      in dataset id 882da372-ab26-4598-b9d2-bca61806e6f7","job_status":"succeeded","status_code":200,"submitted":"2025-04-28T16:07:18.771056Z","completed":"2025-04-28T16:07:54.197983Z","class_name":"bio.terra.service.dataset.flight.ingest.DatasetIngestFlight","target_iam_resource":{"type":"dataset","id":"882da372-ab26-4598-b9d2-bca61806e6f7","action":"ingest_data"}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Location: /api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw/result
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: aAd8qvvG
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/jobs/yG0423HlQNi7n8dz1QO1Xw

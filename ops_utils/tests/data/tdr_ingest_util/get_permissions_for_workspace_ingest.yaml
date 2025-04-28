@@ -1,0 +1,66 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"882da372-ab26-4598-b9d2-bca61806e6f7","name":"sn_testing","description":"","defaultProfileId":"ce149ca7-608b-4d5d-9612-2a43a7378885","dataProject":"datarepo-718e6a93","defaultSnapshotId":null,"schema":{"tables":[{"name":"ingestion_reference","columns":[{"name":"key","datatype":"string","array_of":false,"required":true},{"name":"value","datatype":"string","array_of":false,"required":true}],"primaryKey":["key"],"partitionMode":"none","datePartitionOptions":null,"intPartitionOptions":null,"rowCount":null}],"relationships":[],"assets":[]},"createdDate":"2025-04-28T14:43:18.922303Z","storage":[{"region":"us-central1","cloudResource":"bigquery","cloudPlatform":"gcp"},{"region":"us-east4","cloudResource":"firestore","cloudPlatform":"gcp"},{"region":"us-central1","cloudResource":"bucket","cloudPlatform":"gcp"}],"secureMonitoringEnabled":true,"phsId":null,"accessInformation":null,"cloudPlatform":null,"selfHosted":false,"properties":null,"ingestServiceAccount":"tdr-ingest-sa@datarepo-718e6a93.iam.gserviceaccount.com","predictableFileIds":true,"tags":[],"resourceLocks":{"exclusive":null,"shared":[]},"inheritSteward":false}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: 6B8n4lnm
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/datasets/882da372-ab26-4598-b9d2-bca61806e6f7?include=
+- response:
+    auto_calculate_content_length: false
+    body: '{"invitesSent":[],"usersNotFound":[],"usersUpdated":[]}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: authorization,content-type,accept,origin,x-app-id
+      Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '1728000'
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-control: no-store
+      Pragma: no-cache
+      Referrer-Policy: strict-origin-when-cross-origin
+      Strict-Transport-Security: max-age=31536000; includeSubDomains
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: 1; mode=block
+    method: PATCH
+    status: 200
+    url: https://api.firecloud.org/api/workspaces/ops-integration-billing/sn_testing_Staging/acl?inviteUsersNotFound=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"catalog":false,"workspaceSubmissionStats":{"runningSubmissionsCount":0},"accessLevel":"PROJECT_OWNER","owners":["samn@broadinstitute.org"],"workspace":{"attributes":{"dataset_name":"sn_testing","data_ingest_sa":"tdr-ingest-sa@datarepo-718e6a93.iam.gserviceaccount.com","auth_group":"AUTH_sn_testing","description":"#
+      Terra Support Articles: [Prepare data for submission to AnVIL](https://support.terra.bio/hc/en-us/articles/28500021527451-Prepare-data-for-submission-to-AnVIL)\n","dataset_id":"882da372-ab26-4598-b9d2-bca61806e6f7"},"authorizationDomain":[{"membersGroupName":"AUTH_sn_testing"}],"billingAccount":"billingAccounts/01E530-84B082-ED5441","bucketName":"fc-secure-e3595d39-4029-45ff-81cf-28be21a98c53","cloudPlatform":"Gcp","completedCloneWorkspaceFileTransfer":"2025-04-28T14:41:11.688Z","createdBy":"samn@broadinstitute.org","createdDate":"2025-04-28T14:41:11.688Z","googleProject":"terra-9c823ebd","googleProjectNumber":"268973302749","isLocked":false,"lastModified":"2025-04-28T14:50:24.924Z","name":"sn_testing_Staging","namespace":"ops-integration-billing","state":"Ready","workflowCollectionName":"e3595d39-4029-45ff-81cf-28be21a98c53","workspaceId":"e3595d39-4029-45ff-81cf-28be21a98c53","workspaceType":"rawls","workspaceVersion":"v2"},"canShare":true,"bucketOptions":{"location":"US-CENTRAL1","requesterPays":false},"canCompute":true,"policies":[]}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: authorization,content-type,accept,origin,x-app-id
+      Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '1728000'
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000, h3=":443"; ma=2592000,h3-29=":443";
+        ma=2592000
+      Cache-control: no-store
+      Pragma: no-cache
+      Referrer-Policy: strict-origin-when-cross-origin
+      Strict-Transport-Security: max-age=31536000; includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding
+      Via: 1.1 google, 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: 1; mode=block
+    method: GET
+    status: 200
+    url: https://api.firecloud.org/api/workspaces/ops-integration-billing/sn_testing_Staging
