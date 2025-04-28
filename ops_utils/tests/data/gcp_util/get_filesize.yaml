@@ -1,0 +1,29 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"name":"file001.bin"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: CPyRv4qX8YwDEAE=
+      Expires: Thu, 24 Apr 2025 17:48:40 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwpekRBYxrdGMIgszS2NtKHC7C-IZUC-hHRw8T735iAbZJfHMiO2AAWfBZoRhx8ftnDt
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/file001.bin?userProject=operations-portal-427515&fields=name&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#object","id":"test_bucket/file001.bin/1745515264854268","selfLink":"https://www.googleapis.com/storage/v1/b/test_bucket/o/file001.bin","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/file001.bin?generation=1745515264854268&alt=media","name":"file001.bin","bucket":"test_bucket","generation":"1745515264854268","metageneration":"1","contentType":"application/octet-stream","storageClass":"STANDARD","size":"21788","md5Hash":"1JrFnf5kSXMto/DqQd+y5g==","contentLanguage":"en","crc32c":"9154Bw==","etag":"CPyRv4qX8YwDEAE=","timeCreated":"2025-04-24T17:21:04.871Z","updated":"2025-04-24T17:21:04.871Z","timeStorageClassUpdated":"2025-04-24T17:21:04.871Z","timeFinalized":"2025-04-24T17:21:04.871Z"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: CPyRv4qX8YwDEAE=
+      Expires: Thu, 24 Apr 2025 17:48:40 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwqNnjk6wDp2Zi-GadThdw0pI3QPAtwCCLJ7PMmDqGC0uo7o_SwqS7oWSVqaf8esWrSj
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/file001.bin?userProject=operations-portal-427515&projection=noAcl&prettyPrint=false

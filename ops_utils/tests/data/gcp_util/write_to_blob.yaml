@@ -1,0 +1,41 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"error":{"code":404,"message":"No such object: test_bucket/blob_to_write.txt","errors":[{"message":"No
+      such object: test_bucket/blob_to_write.txt","domain":"global","reason":"notFound"}]}}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma: no-cache
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwpYJSpGsNlBh17ncXqBmCU_6hWZlifQpAN6ipdrlb7bBC9up9Lfl-baAIxNwdeHXQL1
+    method: GET
+    status: 404
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o/blob_to_write.txt?userProject=operations-portal-427515&fields=name&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"test_bucket/blob_to_write.txt/1745593600109725\"\
+      ,\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/test_bucket/o/blob_to_write.txt\"\
+      ,\n  \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/test_bucket/o/blob_to_write.txt?generation=1745593600109725&alt=media\"\
+      ,\n  \"name\": \"blob_to_write.txt\",\n  \"bucket\": \"test_bucket\",\n\
+      \  \"generation\": \"1745593600109725\",\n  \"metageneration\": \"1\",\n  \"\
+      contentType\": \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n  \"size\"\
+      : \"14\",\n  \"md5Hash\": \"vLrQ6JkgmdfYKJKKN1ebFQ==\",\n  \"crc32c\": \"Qcfj8Q==\"\
+      ,\n  \"etag\": \"CJ3Z0/O684wDEAE=\",\n  \"timeCreated\": \"2025-04-25T15:06:40.113Z\"\
+      ,\n  \"updated\": \"2025-04-25T15:06:40.113Z\",\n  \"timeStorageClassUpdated\"\
+      : \"2025-04-25T15:06:40.113Z\",\n  \"timeFinalized\": \"2025-04-25T15:06:40.113Z\"\
+      \n}\n"
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      ETag: CJ3Z0/O684wDEAE=
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma: no-cache
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwr9oe1HTNf3sqn1IJDZ9KG30TUrgybHtykwmZ1D_TNknsrLIxnNirc4iAyEqXuOP7lMp908Akg
+    method: POST
+    status: 200
+    url: https://storage.googleapis.com/upload/storage/v1/b/test_bucket/o?uploadType=multipart&userProject=operations-portal-427515

@@ -1,0 +1,79 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"access_token\": \"token\"\
+      ,\n  \"expires_in\": 3599,\n  \"scope\": \"https://www.googleapis.com/auth/cloud-platform\
+      \ https://www.googleapis.com/auth/sqlservice.login openid https://www.googleapis.com/auth/userinfo.email\"\
+      ,\n  \"token_type\": \"Bearer\",\n  \"id_token\": \"token\"\
+      \n}"
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma: no-cache
+      Transfer-Encoding: chunked
+      Vary: Origin, X-Origin, Referer
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: '0'
+    method: POST
+    status: 200
+    url: https://oauth2.googleapis.com/token
+- response:
+    auto_calculate_content_length: false
+    body: '{"name":"file001.bin"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: CNzRo+GRlokDEAE=
+      Expires: Thu, 24 Apr 2025 17:21:04 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwpjkhof9MXRWh-V9hHV-Xh3TlOfSKTjOMom3adq0uXe2XPXpxR1pW18pqrMQNV3HNlq
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_src_path/o/file001.bin?userProject=operations-portal-427515&fields=name&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#object","id":"test_src_path/file001.bin/1729192960518364","selfLink":"https://www.googleapis.com/storage/v1/b/test_src_path/o/file001.bin","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/test_src_path/o/file001.bin?generation=1729192960518364&alt=media","name":"file001.bin","bucket":"test_src_path","generation":"1729192960518364","metageneration":"1","contentType":"application/octet-stream","storageClass":"STANDARD","size":"21788","md5Hash":"1JrFnf5kSXMto/DqQd+y5g==","contentLanguage":"en","crc32c":"9154Bw==","etag":"CNzRo+GRlokDEAE=","timeCreated":"2024-10-17T19:22:40.546Z","updated":"2024-10-17T19:22:40.546Z","timeStorageClassUpdated":"2024-10-17T19:22:40.546Z","timeFinalized":"2024-10-17T19:22:40.546Z"}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: private, max-age=0, must-revalidate, no-transform
+      ETag: CNzRo+GRlokDEAE=
+      Expires: Thu, 24 Apr 2025 17:21:04 GMT
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwrKRDX-AL7AijxjGzZVho8RwAizTgFi0gDyoqlfEgTrYY8iG_LnzZUnQUFMMBLNsNhf
+    method: GET
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_src_path/o/file001.bin?userProject=operations-portal-427515&projection=noAcl&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"error":{"code":404,"message":"No such object: dest_bucket/file001.bin","errors":[{"message":"No
+      such object: dest_bucket/file001.bin","domain":"global","reason":"notFound"}]}}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma: no-cache
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2Vwp3DC_4nGzIYApVUw9wDH0TP_uQmtMczMFzuQeo_B9uCn55LDUbU1s6UsOUoxhc0tl6JyVgrqk
+    method: GET
+    status: 404
+    url: https://storage.googleapis.com/storage/v1/b/dest_bucket/o/file001.bin?userProject=operations-portal-427515&fields=name&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"storage#rewriteResponse","totalBytesRewritten":"21788","objectSize":"21788","done":true,"resource":{"kind":"storage#object","id":"dest_bucket/file001.bin/1745515264854268","selfLink":"https://www.googleapis.com/storage/v1/b/dest_bucket/o/file001.bin","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/dest_bucket/o/file001.bin?generation=1745515264854268&alt=media","name":"file001.bin","bucket":"dest_bucket","generation":"1745515264854268","metageneration":"1","contentType":"application/octet-stream","storageClass":"STANDARD","size":"21788","md5Hash":"1JrFnf5kSXMto/DqQd+y5g==","contentLanguage":"en","crc32c":"9154Bw==","etag":"CPyRv4qX8YwDEAE=","timeCreated":"2025-04-24T17:21:04.871Z","updated":"2025-04-24T17:21:04.871Z","timeStorageClassUpdated":"2025-04-24T17:21:04.871Z","timeFinalized":"2025-04-24T17:21:04.871Z"}}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma: no-cache
+      Vary: Origin, X-Origin
+      X-GUploader-UploadID: AAO2VwotUrmfVM6IfVJYPBZ72l7MN9kFuZL0wh--EShLnT3gueeUTFzT3x8cCHuNUfdahcOR
+    method: POST
+    status: 200
+    url: https://storage.googleapis.com/storage/v1/b/test_src_path/o/file001.bin/rewriteTo/b/dest_bucket/o/file001.bin?userProject=operations-portal-427515&sourceGeneration=1729192960518364&prettyPrint=false
