@@ -6,8 +6,6 @@ import os
 from typing import Optional, Union
 from datetime import datetime, timedelta
 
-from .vars import GCP
-
 
 class Token:
     def __init__(self, token_file: Optional[str] = None) -> None:
