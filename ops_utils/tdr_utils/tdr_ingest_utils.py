@@ -57,8 +57,10 @@ class BatchIngest:
                 ingested for testing. Defaults to `False`.
         - load_tag (str, optional): A tag to identify the load. Used so future ingests
                 can pick up where left off. Defaults to None.
-        - file_to_uuid_dict (dict, optional): A dictionary mapping source file paths to UUIDs. If used
-                will make ingest much quicker since no ingest or look up of file needed. Defaults to None.
+        - file_to_uuid_dict (dict, optional): Only useful for self-hosted dataset. Can get from
+            create_file_uuid_dict_for_ingest_for_experimental_self_hosted_dataset. A dictionary mapping
+            source file paths to UUIDs. If used will make ingest much quicker since no ingest
+            or look up of file needed. Defaults to None.
         - schema_info (dict, optional): Schema information for the tables. Validates ingest data matches up
                 with schema info. Defaults to None.
         - skip_reformat (bool, optional): Flag indicating if reformatting should be skipped. Defaults to `False`.
@@ -283,7 +285,7 @@ class StartAndMonitorIngest:
 
 class ReformatMetricsForIngest:
     """
-
+    A class to reformat metrics for ingestion into TDR (Terra Data Repository).
     """
 
     def __init__(
@@ -314,8 +316,10 @@ class ReformatMetricsForIngest:
         - cloud_type (str): The type of cloud (must be one of `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
         - storage_container (str, optional): The storage container name. For Azure only. Defaults to None.
         - sas_token_string (str, optional): The SAS token string for Azure. Defaults to None.
-        - file_to_uuid_dict (dict, optional): A dictionary mapping file paths to UUIDs. Speeds up ingest
-                dramatically as it can skip uploading files or looking up file UUIDs in TDR. Defaults to None.
+        - file_to_uuid_dict (dict, optional): Only useful for self-hosted dataset. Can get from
+            create_file_uuid_dict_for_ingest_for_experimental_self_hosted_dataset. A dictionary mapping
+            source file paths to UUIDs. If used will make ingest much quicker since no ingest
+            or look up of file needed. Defaults to None.
         - schema_info (dict, optional): Schema information for the tables. Defaults to None.
         """
         self.ingest_metadata = ingest_metadata
@@ -514,8 +518,12 @@ class ReformatMetricsForIngest:
 
 
 class ConvertTerraTableInfoForIngest:
-
-    def __init__(self, table_metadata: list[dict], tdr_row_id: str = 'sample_id', columns_to_ignore: list[str] = []):
+    def __init__(
+            self,
+            table_metadata: list[dict],
+            columns_to_ignore: list[str] = [],
+            tdr_row_id: Optional[str] = None
+    ):
         """
         Initialize the ConvertTerraTableInfoForIngest class.
         Converts each row of table metadata into a dictionary that can be ingested into TDR.
@@ -542,13 +550,18 @@ class ConvertTerraTableInfoForIngest:
         ```
         **Args:**
         - table_metadata (list[dict]): The metadata of the table to be converted.
-        - tdr_row_id (str): The row ID to be used in the TDR. Defaults to `sample_id`.
+        - tdr_row_id (str): The row ID to be used in the TDR. Defaults to {entityType}_id.
         - columns_to_ignore (list[str]): List of columns to ignore during conversion. Defaults to an empty list.
         """
         self.table_metadata = table_metadata
         """@private"""
-        self.tdr_row_id = tdr_row_id
-        """@private"""
+        if table_metadata:
+            self.tdr_row_id = tdr_row_id if tdr_row_id else f'{table_metadata[0]["entityType"]}_id'
+            """@private"""
+        else:
+            # Won't be used if table_metadata is empty but will be set to empty string
+            self.tdr_row_id = ""
+            """@private"""
         self.columns_to_ignore = columns_to_ignore
         """@private"""
 
@@ -609,8 +622,10 @@ class FilterAndBatchIngest:
         - update_strategy (str): The update strategy to use.
         - load_tag (str): The load tag for ingest. Used to make future ingests of the same files go faster.
         - test_ingest (bool, optional): Whether to run a test ingest. Defaults to False.
-        - file_to_uuid_dict (dict, optional): A dictionary mapping source files to UUIDs.
-                If supplied makes ingest run faster due to just linking to already ingested file UUID. Defaults to None.
+        - file_to_uuid_dict (dict, optional): Only useful for self-hosted dataset. Can get from
+            create_file_uuid_dict_for_ingest_for_experimental_self_hosted_dataset. A dictionary mapping
+            source file paths to UUIDs. If used will make ingest much quicker since no ingest
+            or look up of file needed. Defaults to None.
         - sas_expire_in_secs (int, optional): The expiration time for SAS tokens in seconds.
                 Azure only. Defaults to `3600`.
         - schema_info (dict, optional): Schema information for the tables.
