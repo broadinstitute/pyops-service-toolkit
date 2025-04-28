@@ -2,7 +2,6 @@ import json
 import logging
 import re
 from typing import Any, Optional
-from urllib.parse import urlparse
 import requests
 import time
 import zipfile
@@ -10,7 +9,6 @@ import os
 
 from . import deprecated
 from .gcp_utils import GCPCloudFunctions
-from .vars import GCP
 from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
 TERRA_LINK = "https://api.firecloud.org/api"

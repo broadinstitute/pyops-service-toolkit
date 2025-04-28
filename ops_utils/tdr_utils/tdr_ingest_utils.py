@@ -7,7 +7,7 @@ import math
 from typing import Optional, Any
 from dateutil import parser
 
-from ..vars import GCP, ARG_DEFAULTS
+from ..vars import ARG_DEFAULTS
 
 from .tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
 from .tdr_job_utils import MonitorTDRJob
@@ -133,10 +133,10 @@ class BatchIngest:
                 reformatted_batch = metrics_batch
             else:
                 reformatted_batch = ReformatMetricsForIngest(
-                ingest_metadata=metrics_batch,
-                file_to_uuid_dict=self.file_to_uuid_dict,
-                schema_info=self.schema_info
-            ).run()
+                    ingest_metadata=metrics_batch,
+                    file_to_uuid_dict=self.file_to_uuid_dict,
+                    schema_info=self.schema_info
+                ).run()
 
             if self.load_tag:
                 load_tag = self.load_tag
