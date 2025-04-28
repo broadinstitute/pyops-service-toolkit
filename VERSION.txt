@@ -1,2 +1,2 @@
-7.0.1
-- Adding tests for tdr_ingest_utils
+7.1.0
+- Added tests for `Token` utilities class
