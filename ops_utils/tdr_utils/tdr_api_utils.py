@@ -11,7 +11,7 @@ from ..request_util import GET, POST, DELETE, RunRequest
 from ..tdr_api_schema.create_dataset_schema import CreateDatasetSchema
 from ..tdr_api_schema.update_dataset_schema import UpdateSchema
 from .tdr_job_utils import MonitorTDRJob, SubmitAndMonitorMultipleJobs
-from ..vars import ARG_DEFAULTS
+from ..vars import ARG_DEFAULTS, GCP
 
 
 class TDR:
@@ -734,7 +734,6 @@ class TDR:
             billing_profile: str,
             schema: dict,
             description: str,
-            cloud_platform: str,
             delete_existing: bool = False,
             continue_if_exists: bool = False,
             additional_properties_dict: Optional[dict] = None
@@ -747,8 +746,6 @@ class TDR:
         - billing_profile (str): The billing profile ID.
         - schema (dict): The schema of the dataset.
         - description (str): The description of the dataset.
-        - cloud_platform (str): The cloud platform for the dataset (must be one of
-        `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
         - additional_properties_dict (Optional[dict], optional): Additional properties
                 for the dataset. Defaults to None.
         - delete_existing (bool, optional): Whether to delete the existing dataset if found.
@@ -781,7 +778,6 @@ class TDR:
             # Create dataset
             dataset_id = self.create_dataset(
                 schema=schema,
-                cloud_platform=cloud_platform,
                 dataset_name=dataset_name,
                 description=description,
                 profile_id=billing_profile,
@@ -792,7 +788,6 @@ class TDR:
     def create_dataset(  # type: ignore[return]
             self,
             schema: dict,
-            cloud_platform: str,
             dataset_name: str,
             description: str,
             profile_id: str,
@@ -803,8 +798,6 @@ class TDR:
 
         **Args:**
         - schema (dict): The schema of the dataset.
-        - cloud_platform (str): The cloud platform for the dataset (must be one of
-        `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
         - dataset_name (str): The name of the dataset.
         - description (str): The description of the dataset.
         - profile_id (str): The billing profile ID.
@@ -822,7 +815,7 @@ class TDR:
             "description": description,
             "defaultProfileId": profile_id,
             "region": "us-central1",
-            "cloudPlatform": cloud_platform,
+            "cloudPlatform": GCP,
             "schema": schema
         }
 

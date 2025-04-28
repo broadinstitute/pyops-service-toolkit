@@ -2,7 +2,6 @@ from responses import _recorder
 from ops_utils.request_util import RunRequest
 from ops_utils.token_util import Token
 from ops_utils.tdr_utils.tdr_api_utils import TDR
-from ops_utils.vars import GCP
 import os
 import logging
 
@@ -32,7 +31,7 @@ if __name__ == '__main__':
         os.remove(OUTPUT_YAML)
     except FileNotFoundError:
         pass
-    token = Token(cloud=GCP)
+    token = Token()
     requests_utils = RunRequest(token=token, max_retries=1, max_backoff_time=10)
     _get_yaml(requests_utils)
     print(f'wrote to {OUTPUT_YAML}')

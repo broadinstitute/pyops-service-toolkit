@@ -32,7 +32,6 @@ class Policy(BaseModel):
 
 class CloudPlatformEnum(str, Enum):
     gcp = "gcp"
-    azure = "azure"
 
 
 class CreateDatasetSchema(BaseModel):
