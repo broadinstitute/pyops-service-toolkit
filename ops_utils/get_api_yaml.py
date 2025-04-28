@@ -32,7 +32,7 @@ if __name__ == '__main__':
         os.remove(OUTPUT_YAML)
     except FileNotFoundError:
         pass
-    token = Token(cloud=GCP)
+    token = Token()
     requests_utils = RunRequest(token=token, max_retries=1, max_backoff_time=10)
     _get_yaml(requests_utils)
     print(f'wrote to {OUTPUT_YAML}')

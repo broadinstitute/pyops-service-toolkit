@@ -1,7 +1,5 @@
 GCP = "gcp"
 """To be used anytime a "cloud type" should be defined as 'GCP'"""
-AZURE = "azure"
-"""To be used anytime a "cloud type" should be defined as 'Azure'"""
 ARG_DEFAULTS = {
     "max_retries": 5,
     "max_backoff_time": 5 * 60,

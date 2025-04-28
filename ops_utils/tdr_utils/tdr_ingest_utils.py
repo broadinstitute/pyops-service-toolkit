@@ -7,7 +7,7 @@ import math
 from typing import Optional, Any
 from dateutil import parser
 
-from ..vars import GCP, AZURE, ARG_DEFAULTS
+from ..vars import GCP, ARG_DEFAULTS
 
 from .tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
 from .tdr_job_utils import MonitorTDRJob
@@ -23,11 +23,8 @@ class BatchIngest:
             dataset_id: str,
             batch_size: int,
             bulk_mode: bool,
-            cloud_type: str,
-            terra_workspace: Optional[TerraWorkspace] = None,
             update_strategy: str = "replace",
             waiting_time_to_poll: int = ARG_DEFAULTS["waiting_time_to_poll"],  # type: ignore[assignment]
-            sas_expire_in_secs: int = 3600,
             test_ingest: bool = False,
             load_tag: Optional[str] = None,
             file_to_uuid_dict: Optional[dict] = None,
@@ -45,14 +42,8 @@ class BatchIngest:
         - dataset_id (str): The ID of the dataset.
         - batch_size (int): The size of each batch for ingestion.
         - bulk_mode (bool): Flag indicating if bulk mode should be used.
-        - cloud_type (str): The type of cloud (must be one of `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
-        - terra_workspace (`ops_utils.terra_util.TerraWorkspace`, optional): An instance of
-        the TerraWorkspace class.
-                Used for Azure ingests so SAS token can be created. Defaults to None.
         - update_strategy (str, optional): The strategy for updating existing records. Defaults to `replace`.
         - waiting_time_to_poll (int, optional): The time to wait between polling for job status. Defaults to `90`.
-        - sas_expire_in_secs (int, optional): The expiration time for SAS tokens in seconds.
-                Azure only. Defaults to `3600`.
         - test_ingest (bool, optional): Flag indicating if only the first batch should be
                 ingested for testing. Defaults to `False`.
         - load_tag (str, optional): A tag to identify the load. Used so future ingests
@@ -73,11 +64,6 @@ class BatchIngest:
         """@private"""
         self.dataset_id = dataset_id
         """@private"""
-        self.cloud_type = cloud_type
-        """@private"""
-        # terra_workspace only used if ingesting Azure data where you need to create sas tokens from workspace
-        self.terra_workspace = terra_workspace
-        """@private"""
         self.batch_size = int(batch_size)
         """@private"""
         self.update_strategy = update_strategy
@@ -85,8 +71,6 @@ class BatchIngest:
         self.bulk_mode = bulk_mode
         """@private"""
         self.waiting_time_to_poll = waiting_time_to_poll
-        """@private"""
-        self.sas_expire_in_secs = sas_expire_in_secs
         """@private"""
         # Used if you want to run first batch and then exit after success
         self.test_ingest = test_ingest
@@ -134,38 +118,6 @@ class BatchIngest:
 
         return updated_metadata
 
-    def _reformat_metadata(self, metrics_batch: list[dict]) -> list[dict]:
-        """
-        Reformat the metadata for ingestion based on the cloud type.
-
-        Args:
-            metrics_batch (list[dict]): A batch of metrics to be reformatted.
-
-        Returns:
-            list[dict]: The reformatted batch of metrics.
-        """
-        if self.cloud_type == AZURE:
-            sas_token = self.terra_workspace.retrieve_sas_token(  # type: ignore[union-attr]
-                sas_expiration_in_secs=self.sas_expire_in_secs)
-            cloud_container = self.terra_workspace.storage_container  # type: ignore[union-attr]
-            return ReformatMetricsForIngest(
-                ingest_metadata=metrics_batch,
-                cloud_type=self.cloud_type,
-                storage_container=cloud_container,
-                sas_token_string=sas_token,
-                file_to_uuid_dict=self.file_to_uuid_dict,
-                schema_info=self.schema_info
-            ).run()
-        elif self.cloud_type == GCP:
-            return ReformatMetricsForIngest(
-                ingest_metadata=metrics_batch,
-                cloud_type=self.cloud_type,
-                file_to_uuid_dict=self.file_to_uuid_dict,
-                schema_info=self.schema_info
-            ).run()
-        else:
-            raise ValueError(f"Cloud type {self.cloud_type} not supported. Must be {GCP} or {AZURE}")
-
     def run(self) -> None:
         """
         Run the batch ingestion process.
@@ -180,7 +132,11 @@ class BatchIngest:
             if self.skip_reformat:
                 reformatted_batch = metrics_batch
             else:
-                reformatted_batch = self._reformat_metadata(metrics_batch)
+                reformatted_batch = ReformatMetricsForIngest(
+                ingest_metadata=metrics_batch,
+                file_to_uuid_dict=self.file_to_uuid_dict,
+                schema_info=self.schema_info
+            ).run()
 
             if self.load_tag:
                 load_tag = self.load_tag
@@ -291,15 +247,12 @@ class ReformatMetricsForIngest:
     def __init__(
             self,
             ingest_metadata: list[dict],
-            cloud_type: str,
-            storage_container: Optional[str] = None,
-            sas_token_string: Optional[str] = None,
             file_to_uuid_dict: Optional[dict] = None,
             schema_info: Optional[dict] = None
     ):
         """
         Initialize the ReformatMetricsForIngest class. This class is used to reformat metrics for ingest.
-        Assumes input JSON will be in the following format for GCP (or similar for Azure):
+        Assumes input JSON will be in the following format for GCP:
         ```
         {
             "file_name": blob.name,
@@ -313,9 +266,6 @@ class ReformatMetricsForIngest:
 
         **Args:**
         - ingest_metadata (list[dict]): The metadata to be ingested.
-        - cloud_type (str): The type of cloud (must be one of `ops_utils.vars.GCP` or `ops_utils.vars.AZURE`).
-        - storage_container (str, optional): The storage container name. For Azure only. Defaults to None.
-        - sas_token_string (str, optional): The SAS token string for Azure. Defaults to None.
         - file_to_uuid_dict (dict, optional): Only useful for self-hosted dataset. Can get from
             create_file_uuid_dict_for_ingest_for_experimental_self_hosted_dataset. A dictionary mapping
             source file paths to UUIDs. If used will make ingest much quicker since no ingest
@@ -324,13 +274,7 @@ class ReformatMetricsForIngest:
         """
         self.ingest_metadata = ingest_metadata
         """@private"""
-        self.cloud_type = cloud_type
-        """@private"""
-        self.sas_token_string = sas_token_string
-        """@private"""
-        self.file_prefix = {GCP: "gs://", AZURE: "https://"}[cloud_type]
-        """@private"""
-        self.workspace_storage_container = storage_container
+        self.file_prefix = "gs://"
         """@private"""
         self.file_to_uuid_dict = file_to_uuid_dict
         """@private"""
@@ -351,7 +295,8 @@ class ReformatMetricsForIngest:
             "mimeType": file_details["content_type"]
         }
 
-    def _format_relative_tdr_path(self, cloud_path: str) -> str:
+    @staticmethod
+    def _format_relative_tdr_path(cloud_path: str) -> str:
         """
         Format cloud path to TDR path.
 
@@ -361,17 +306,7 @@ class ReformatMetricsForIngest:
         Returns:
             str: The formatted TDR path.
         """
-        if self.cloud_type == GCP:
-            relative_path = "/".join(cloud_path.split("/")[3:])
-        else:
-            split_path = cloud_path.split("/")
-            file_path_storage_container = split_path[3]
-            if file_path_storage_container != self.workspace_storage_container:
-                raise ValueError(
-                    f"{cloud_path} storage container {file_path_storage_container} does not match workspace storage "
-                    f"container {self.workspace_storage_container}. SAS token will not work"
-                )
-            relative_path = "/".join(split_path[4:])
+        relative_path = "/".join(cloud_path.split("/")[3:])
         return f"/{relative_path}"
 
     def _check_and_format_file_path(self, column_value: str) -> tuple[Any, bool]:
@@ -399,10 +334,8 @@ class ReformatMetricsForIngest:
                             f"File {column_value} not found in file_to_uuid_dict, will attempt "
                             "to ingest as regular file and not use UUID"
                         )
-                # If not found in file_to_uuid_dict or file_to_uuid_dict not provided then will ingest as regular file
-                source_path = f"{column_value}{self.sas_token_string}" if self.cloud_type == AZURE else column_value
                 source_dest_mapping = {
-                    "sourcePath": source_path,
+                    "sourcePath": column_value,
                     "targetPath": self._format_relative_tdr_path(column_value)
                 }
                 return source_dest_mapping, valid
@@ -595,14 +528,11 @@ class FilterAndBatchIngest:
             ingest_waiting_time_poll: int,
             ingest_batch_size: int,
             bulk_mode: bool,
-            cloud_type: str,
             update_strategy: str,
             load_tag: str,
             test_ingest: bool = False,
             file_to_uuid_dict: Optional[dict] = None,
-            sas_expire_in_secs: int = 3600,
             schema_info: Optional[dict] = None,
-            terra_workspace: Optional[TerraWorkspace] = None,
             skip_reformat: bool = False
     ):
         """
@@ -618,7 +548,6 @@ class FilterAndBatchIngest:
         - ingest_waiting_time_poll (int): The waiting time to poll for ingest status.
         - ingest_batch_size (int): The batch size for ingest.
         - bulk_mode (bool): Whether to use bulk mode for ingest.
-        - cloud_type (str): The type of cloud (must be one of,`ops_utils.vars.GCP`, `ops_utils.vars.AZURE`).
         - update_strategy (str): The update strategy to use.
         - load_tag (str): The load tag for ingest. Used to make future ingests of the same files go faster.
         - test_ingest (bool, optional): Whether to run a test ingest. Defaults to False.
@@ -626,13 +555,8 @@ class FilterAndBatchIngest:
             create_file_uuid_dict_for_ingest_for_experimental_self_hosted_dataset. A dictionary mapping
             source file paths to UUIDs. If used will make ingest much quicker since no ingest
             or look up of file needed. Defaults to None.
-        - sas_expire_in_secs (int, optional): The expiration time for SAS tokens in seconds.
-                Azure only. Defaults to `3600`.
         - schema_info (dict, optional): Schema information for the tables.
                 Used to validate ingest metrics match. Defaults to None.
-        - terra_workspace (`ops_utils.terra_util.TerraWorkspace`, optional): Instance of the
-         TerraWorkspace class.
-                Only used for Azure ingests to get token. Defaults to None.
         - skip_reformat (bool, optional): Whether to skip reformatting of metrics. Defaults to False.
         """
         self.tdr = tdr
@@ -653,17 +577,11 @@ class FilterAndBatchIngest:
         """@private"""
         self.bulk_mode = bulk_mode
         """@private"""
-        self.cloud_type = cloud_type
-        """@private"""
         self.update_strategy = update_strategy
         """@private"""
         self.load_tag = load_tag
         """@private"""
         self.test_ingest = test_ingest
-        """@private"""
-        self.sas_expire_in_secs = sas_expire_in_secs
-        """@private"""
-        self.terra_workspace = terra_workspace
         """@private"""
         self.file_to_uuid_dict = file_to_uuid_dict
         """@private"""
@@ -701,7 +619,6 @@ class FilterAndBatchIngest:
                 dataset_id=self.dataset_id,
                 batch_size=self.ingest_batch_size,
                 bulk_mode=self.bulk_mode,
-                cloud_type=self.cloud_type,
                 update_strategy=self.update_strategy,
                 waiting_time_to_poll=self.ingest_waiting_time_poll,
                 test_ingest=self.test_ingest,

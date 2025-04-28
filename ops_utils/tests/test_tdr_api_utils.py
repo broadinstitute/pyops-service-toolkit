@@ -71,7 +71,6 @@ class TestTerraWorkspaceUtils:
                     }
                 ]
             },
-            cloud_platform=GCP,
             dataset_name=DATASET_NAME,
             description='Test Dataset',
             profile_id=BILLING_PROFILE
@@ -212,7 +211,6 @@ class TestTerraWorkspaceUtils:
             billing_profile=BILLING_PROFILE,
             schema={},
             description="",
-            cloud_platform=GCP,
             delete_existing=False,
             continue_if_exists=True
         )

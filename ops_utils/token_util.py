@@ -6,21 +6,16 @@ import os
 from typing import Optional, Union
 from datetime import datetime, timedelta
 
-from .vars import GCP, AZURE
+from .vars import GCP
 
 
 class Token:
-    def __init__(self, cloud: str, token_file: Optional[str] = None) -> None:
+    def __init__(self, token_file: Optional[str] = None) -> None:
         """Initialize the Token class
 
         **Args:**
-        - cloud (str): The type of cloud platform to be used. Must be one of `ops_utils.vars.GCP`
-        or `ops_utils.vars.AZURE`.
         - token_file (str, optional): The path to a file containing an existing token string.
         """
-
-        self.cloud = cloud
-        """@private"""
         self.expiry: Optional[datetime] = None
         """@private"""
         self.token_string: Optional[str] = ""
@@ -32,26 +27,15 @@ class Token:
                 self.token_string = f.read().rstrip()
         else:
             self.token_file = ""
-            # If not provided with a file must authenticate with either google or azure python libraries
-            if self.cloud == GCP:
-                # Only import libraries if needed
-                from oauth2client.client import GoogleCredentials
-                self.credentials = GoogleCredentials.get_application_default()
-                self.credentials = self.credentials.create_scoped(
-                    [
-                        "https://www.googleapis.com/auth/userinfo.profile",
-                        "https://www.googleapis.com/auth/userinfo.email",
-                        "https://www.googleapis.com/auth/devstorage.full_control"
-                    ]
-                )
-            elif self.cloud == AZURE:
-                # Only import libraries if needed
-                from azure.identity import DefaultAzureCredential
-                self.credentials = DefaultAzureCredential()
-                self.az_token = self.credentials.get_token(
-                    "https://management.azure.com/.default")
-            else:
-                raise ValueError(f"Cloud {self.cloud} not supported. Must be {GCP} or {AZURE}")
+            from oauth2client.client import GoogleCredentials
+            self.credentials = GoogleCredentials.get_application_default()
+            self.credentials = self.credentials.create_scoped(
+                [
+                    "https://www.googleapis.com/auth/userinfo.profile",
+                    "https://www.googleapis.com/auth/userinfo.email",
+                    "https://www.googleapis.com/auth/devstorage.full_control"
+                ]
+            )
 
     def _get_gcp_token(self) -> Union[str, None]:
         # Refresh token if it has not been set or if it is expired or close to expiry
@@ -66,14 +50,6 @@ class Token:
             logging.info(f"New token expires at {est_expiry} EST")
         return self.token_string
 
-    def _get_az_token(self) -> Union[str, None]:
-        # This is not working... Should also check about timezones once it does work
-        if not self.token_string or not self.expiry or self.expiry < datetime.now() - timedelta(minutes=10):
-            self.az_token = self.credentials.get_token("https://management.azure.com/.default")
-            self.token_string = self.az_token.token
-            self.expiry = datetime.fromtimestamp(self.az_token.expires_on)
-        return self.token_string
-
     def _get_sa_token(self) -> Union[str, None]:
         if not self.token_string or not self.expiry or self.expiry < datetime.now(pytz.UTC) + timedelta(minutes=5):
             SCOPES = ['https://www.googleapis.com/auth/userinfo.profile',
@@ -85,7 +61,7 @@ class Token:
 
     def get_token(self) -> str:
         """
-        Generates a token based on the cloud type provided with a set expiration time.
+        Generates a token with a set expiration time.
 
         **Returns:**
         - string: The generated token
@@ -94,11 +70,9 @@ class Token:
         # If token file provided then always return contents
         if self.token_file:
             return self.token_string  # type: ignore[return-value]
-        elif self.cloud == GCP:
+        else:
             # detect if this is running as a cloud run job
             if os.getenv("CLOUD_RUN_JOB"):
                 return self._get_sa_token()  # type: ignore[return-value]
             else:
                 return self._get_gcp_token()  # type: ignore[return-value]
-        else:
-            return self._get_az_token()  # type: ignore[return-value]

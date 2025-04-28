@@ -1,2 +1,2 @@
-7.0.1
-- Adding tests for tdr_ingest_utils
+8.0.0
+- Removing all Azure on TDR and Terra related code

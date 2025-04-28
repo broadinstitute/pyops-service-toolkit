@@ -328,59 +328,6 @@ class TerraWorkspace:
         response = self.request_util.run_request(uri=url, method=GET)
         return json.loads(response.text)
 
-    def _set_resource_id_and_storage_container(self) -> None:
-        """
-        Get and set the resource ID and storage container for the workspace.
-
-        Raises:
-            ValueError: If no resource ID is found.
-        """
-        url = f"{WORKSPACE_LINK}/{self.workspace_id}/resources?offset=0&limit=10&resource=AZURE_STORAGE_CONTAINER"
-        logging.info(
-            f"Getting resource ID for {self.billing_project}/{self.workspace_name}")
-        response = self.request_util.run_request(uri=url, method=GET)
-        for resource_entry in response.json()["resources"]:
-            storage_container_name = resource_entry["resourceAttributes"][
-                "azureStorageContainer"]["storageContainerName"]
-            # Check if storage container name is sc- and set resource ID and storage_container_name as bucket
-            if storage_container_name.startswith("sc-"):
-                self.resource_id = resource_entry["metadata"]["resourceId"]
-                self.storage_container = storage_container_name
-                return None
-
-        raise ValueError(
-            f"No resource ID found for {self.billing_project}/{self.workspace_name} - "
-            f"{self.workspace_id}: {json.dumps(response.json(), indent=4)}"
-        )
-
-    def set_azure_terra_variables(self) -> None:
-        """
-        Get all needed variables and set them for a Terra on Azure workspace
-        """
-        workspace_info = self.get_workspace_info()
-        self.workspace_id = workspace_info["workspace"]["workspaceId"]
-        self._set_resource_id_and_storage_container()
-        self._set_account_url()
-        self._set_wds_url()
-
-    def _set_wds_url(self) -> None:
-        """
-        Get and set the WDS URL for the workspace.
-
-        Raises:
-            ValueError: If no WDS URL is found.
-        """
-        uri = f"{LEONARDO_LINK}/apps/v2/{self.workspace_id}?includeDeleted=false"
-        logging.info(
-            f"Getting WDS URL for {self.billing_project}/{self.workspace_name}")
-        response = self.request_util.run_request(uri=uri, method=GET)
-        for entries in json.loads(response.text):
-            if entries['appType'] == 'WDS' and entries['proxyUrls']['wds'] is not None:
-                self.wds_url = entries['proxyUrls']['wds']
-                return None
-        raise ValueError(
-            f"No WDS URL found for {self.billing_project}/{self.workspace_name} - {self.workspace_id}")
-
     def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False) -> list[dict]:
         """
         Get metrics for a specific entity type in the workspace (specifically for Terra on GCP).
@@ -443,44 +390,6 @@ class TerraWorkspace:
             logging.warning(f"Cell is a dict but no entityName or items found: {cell_value}")
             return cell_value
         return cell_value
-
-    def _get_sas_token_json(self, sas_expiration_in_secs: int) -> dict:
-        """
-        Get the SAS token JSON.
-
-        Args:
-            sas_expiration_in_secs (int): The expiration time for the SAS token in seconds.
-
-        Returns:
-            dict: The JSON response containing the SAS token.
-        """
-        url = f"{WORKSPACE_LINK}/{self.workspace_id}/resources/controlled/azure/storageContainer/{self.resource_id}/getSasToken?sasExpirationDuration={str(sas_expiration_in_secs)}"  # noqa: E501
-        response = self.request_util.run_request(uri=url, method=POST)
-        return json.loads(response.text)
-
-    def _set_account_url(self) -> None:
-        """
-        Set the account URL for the Azure workspace.
-        """
-        # Can only get account URL after setting resource ID and from getting a sas token
-        sas_token_json = self._get_sas_token_json(sas_expiration_in_secs=1)
-        parsed_url = urlparse(sas_token_json["url"])
-        # Set url to be https://account_name.blob.core.windows.net
-        self.account_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
-
-    def retrieve_sas_token(self, sas_expiration_in_secs: int) -> str:
-        """
-        Retrieve the SAS token for the workspace.
-
-        **Args:**
-        - sas_expiration_in_secs (int): The expiration time for the SAS token in seconds.
-
-        **Returns:**
-        - str: The SAS token.
-        """
-        sas_response_json = self._get_sas_token_json(
-            sas_expiration_in_secs=sas_expiration_in_secs)
-        return sas_response_json["token"]
 
     def get_workspace_bucket(self) -> str:
         """
@@ -626,7 +535,6 @@ class TerraWorkspace:
             auth_domain: list[dict] = [],
             attributes: dict = {},
             continue_if_exists: bool = False,
-            cloud_platform: str = GCP
     ) -> Optional[dict]:
         """
         Create a new workspace in Terra.
@@ -636,8 +544,6 @@ class TerraWorkspace:
                 like `[{"membersGroupName": "some_auth_domain"}]`. Defaults to an empty list.
         - attributes (dict, optional): A dictionary of attributes for the workspace. Defaults to an empty dictionary.
         - continue_if_exists (bool, optional): Whether to continue if the workspace already exists. Defaults to `False`.
-        - cloud_platform (str, optional): The cloud platform for the new workspace (must be one of `ops_utils.vars.GCP`
-        or `ops_utils.vars.AZURE`). Defaults to `ops_utils.vars.GCP`.
 
         **Returns:**
         - dict: The response from the Terra API containing the workspace details.
@@ -647,7 +553,7 @@ class TerraWorkspace:
             "name": self.workspace_name,
             "authorizationDomain": auth_domain,
             "attributes": attributes,
-            "cloudPlatform": cloud_platform
+            "cloudPlatform": GCP
         }
         # If workspace already exists then continue if exists
         accept_return_codes = [409] if continue_if_exists else []

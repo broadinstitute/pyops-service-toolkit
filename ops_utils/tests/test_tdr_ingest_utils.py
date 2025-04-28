@@ -67,7 +67,6 @@ class TestTDRIngestUtils:
             ingest_waiting_time_poll=5,
             ingest_batch_size=2,
             bulk_mode=False,
-            cloud_type=GCP,
             update_strategy="replace",
             load_tag="test_load_tag",
             test_ingest=False,
