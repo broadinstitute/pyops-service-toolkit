@@ -1,2 +1,2 @@
-8.0.0
-- Removing all Azure on TDR and Terra related code
+8.1.0
+- Added tests for `Token` utilities class
