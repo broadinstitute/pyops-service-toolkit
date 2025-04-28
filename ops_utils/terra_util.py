@@ -8,6 +8,7 @@ import zipfile
 import os
 
 from . import deprecated
+from .vars import GCP
 from .gcp_utils import GCPCloudFunctions
 from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
