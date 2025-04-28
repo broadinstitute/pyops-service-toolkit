@@ -1,8 +1,8 @@
 import unittest
+import os
 from unittest.mock import patch, MagicMock
 
 from ops_utils.token_util import Token
-from ops_utils.vars import GCP
 
 
 class TestToken(unittest.TestCase):
@@ -60,3 +60,32 @@ class TestToken(unittest.TestCase):
         # Assertions
         self.assertEqual(token, "fake-token")
         mock_get_gcp_token.assert_called_once()
+
+    @patch("ops_utils.token_util.requests.get")
+    def test_get_sa_token(self, mock_requests_get):
+        fake_response = MagicMock()
+        fake_token = "fake-sa-token"
+        fake_response.json.return_value = {"access_token": fake_token}
+        mock_requests_get.return_value = fake_response
+
+        # Call the method
+        res = self.gcp_token._get_sa_token()
+
+        # Assertions
+        SCOPES = ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
+        url = f"http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token?scopes={','.join(SCOPES)}"  # noqa: E501
+
+        self.assertEqual(res, fake_token)
+        mock_requests_get.assert_called_once_with(url, headers={'Metadata-Flavor': 'Google'})
+        self.assertEqual(self.gcp_token.token_string, fake_token)
+
+    @patch.dict(os.environ, {"CLOUD_RUN_JOB": 'true'})
+    @patch("ops_utils.token_util.Token._get_sa_token")
+    def test_get_token_sa_token(self, sa_token_patch):
+        sa_token_patch.return_value = "fake-sa-token"
+
+        # Call the method
+        self.gcp_token.get_token()
+
+        # Assert that the SA token method was called if CLOUD_RUN_JOB env is set
+        sa_token_patch.assert_called_once()
