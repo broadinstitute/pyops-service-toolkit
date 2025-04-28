@@ -601,22 +601,6 @@ class GCPCloudFunctions:
             logging.info(f"MD5 (base64) for {file_path}: {md5}")
         return md5
 
-    def copy_onprem_to_cloud(self, onprem_src_path: str, cloud_dest_path: str) -> None:
-        """
-        Copy a file from an on-premises location to GCS.
-
-        **Args:**
-        - onprem_src_path (str): The source path of the file on-premises.
-        - cloud_dest_path (str): The destination GCS path.
-
-        **Raises:**
-        - Exception: If the source file does not exist or the user does not have permission to access it.
-        """
-        if not os.path.isfile(onprem_src_path):
-            raise Exception(f"{onprem_src_path} does not exist or user does not have permission to it")
-        dest_blob = self.load_blob_from_full_path(cloud_dest_path)
-        dest_blob.upload_from_filename(onprem_src_path)
-
     def set_acl_public_read(self, cloud_path: str) -> None:
         """
         Set the file in the bucket to be publicly readable.
