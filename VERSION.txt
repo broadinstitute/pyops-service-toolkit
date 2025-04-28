@@ -1,2 +1,2 @@
-6.3.1
-- Adding unit tests for gcp util
+7.0.0
+- *Breaking Change*: Removing `copy_onprem_to_cloud` method from gcp_utils.
