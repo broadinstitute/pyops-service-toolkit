@@ -518,7 +518,12 @@ class ReformatMetricsForIngest:
 
 
 class ConvertTerraTableInfoForIngest:
-    def __init__(self, table_metadata: list[dict], columns_to_ignore: list[str] = [], tdr_row_id: Optional[str] = None,):
+    def __init__(
+            self,
+            table_metadata: list[dict],
+            columns_to_ignore: list[str] = [],
+            tdr_row_id: Optional[str] = None
+    ):
         """
         Initialize the ConvertTerraTableInfoForIngest class.
         Converts each row of table metadata into a dictionary that can be ingested into TDR.
@@ -554,7 +559,8 @@ class ConvertTerraTableInfoForIngest:
             self.tdr_row_id = tdr_row_id if tdr_row_id else f'{table_metadata[0]["entityType"]}_id'
             """@private"""
         else:
-            self.tdr_row_id = None
+            # Won't be used if table_metadata is empty but will be set to empty string
+            self.tdr_row_id = ""
             """@private"""
         self.columns_to_ignore = columns_to_ignore
         """@private"""

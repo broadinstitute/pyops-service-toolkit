@@ -1,5 +1,3 @@
-import sys
-
 from responses import _recorder
 from ops_utils.request_util import RunRequest
 from ops_utils.token_util import Token
@@ -38,9 +36,3 @@ if __name__ == '__main__':
     requests_utils = RunRequest(token=token, max_retries=1, max_backoff_time=10)
     _get_yaml(requests_utils)
     print(f'wrote to {OUTPUT_YAML}')
-
-
-
-
-
-
