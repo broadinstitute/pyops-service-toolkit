@@ -160,16 +160,13 @@ class InferTDRSchema:
         Returns:
             str: The TDR data type.
         """
-        az_filref_regex = "^https.*sc-.*"
         gcp_fileref_regex = "^gs://.*"
 
         # Find potential file references
         if isinstance(value_for_header, str):
-            az_match = re.search(pattern=az_filref_regex,
-                                 string=value_for_header)
             gcp_match = re.search(
                 pattern=gcp_fileref_regex, string=value_for_header)
-            if az_match or gcp_match:
+            if gcp_match:
                 return self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"]
 
         # Tried to use this to parse datetimes, but it was turning too many
@@ -185,9 +182,8 @@ class InferTDRSchema:
             # check for potential list of filerefs
             for v in value_for_header:
                 if isinstance(v, str):
-                    az_match = re.search(pattern=az_filref_regex, string=v)
                     gcp_match = re.search(pattern=gcp_fileref_regex, string=v)
-                    if az_match or gcp_match:
+                    if gcp_match:
                         return self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"]
             non_none_entry_in_list = [a for a in value_for_header if a is not None][0]
             return self.PYTHON_TDR_DATA_TYPE_MAPPING[type(non_none_entry_in_list)]

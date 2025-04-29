@@ -14,11 +14,6 @@ class TestTerraWorkspaceUtils:
         billing_project="test_billing_project",
         request_util=request_util
     )
-    azure_workspace = TerraWorkspace(
-        workspace_name="azure_workspace",
-        billing_project="Azure_billing_project",
-        request_util=request_util
-    )
 
     @responses.activate
     def test_get_workspace(self):
@@ -96,15 +91,3 @@ class TestTerraWorkspaceUtils:
         with patch('ops_utils.terra_util.open', mock_open(read_data="entity:sample_id\tsample_alias\nRP-123_ABC\tABC")):
             upload_metadata_res = self.workspace.upload_metadata_to_workspace_table("sample.tsv")
         assert upload_metadata_res
-
-    @responses.activate
-    def test_set_azure_terra_vars(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/terra_util/set_az_vars.yaml")
-        self.azure_workspace.set_azure_terra_variables()
-        assert self.azure_workspace
-
-    @responses.activate
-    def test_leave_workspace(self):
-        responses._add_from_file(file_path="ops_utils/tests/data/terra_util/leave_workspace.yaml")
-        self.workspace.leave_workspace(ignore_direct_access_error=True)
-        assert self.azure_workspace

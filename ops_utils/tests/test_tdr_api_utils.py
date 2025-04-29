@@ -3,7 +3,6 @@ import responses
 from unittest.mock import MagicMock
 from ops_utils.request_util import RunRequest
 from ops_utils.tdr_utils.tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
-from ops_utils.vars import GCP
 import json
 
 mock_token = MagicMock()
@@ -71,7 +70,6 @@ class TestTerraWorkspaceUtils:
                     }
                 ]
             },
-            cloud_platform=GCP,
             dataset_name=DATASET_NAME,
             description='Test Dataset',
             profile_id=BILLING_PROFILE
@@ -212,7 +210,6 @@ class TestTerraWorkspaceUtils:
             billing_profile=BILLING_PROFILE,
             schema={},
             description="",
-            cloud_platform=GCP,
             delete_existing=False,
             continue_if_exists=True
         )
