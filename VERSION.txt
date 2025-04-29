@@ -1,2 +1,2 @@
-8.1.0
-- Added tests for `Token` utilities class
+8.2.0
+- Added tests for `TestSetUpTDRTables` utilities class
