@@ -309,6 +309,7 @@ class InferTDRSchema:
         all_none_columns_dropped_df = metadata_df.dropna(axis=1, how="all")
         cleaned_metadata = all_none_columns_dropped_df.to_dict(orient="records")
         key_value_type_mappings = self._reformat_metadata(cleaned_metadata)
+        print(key_value_type_mappings)
 
         # check to see if all values corresponding to a header are of the same type
         disparate_header_info = self._check_type_consistency(key_value_type_mappings)

@@ -1,2 +1,2 @@
-8.2.0
-- Added tests for `TestSetUpTDRTables` utilities class
+8.3.0
+- Added tests for `InferTDRSchema` utilities class
