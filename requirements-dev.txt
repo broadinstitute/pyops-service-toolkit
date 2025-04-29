@@ -10,4 +10,7 @@ humanfriendly
 google-cloud-storage==2.17.0
 google-cloud-bigquery
 google-api-python-client
+google-cloud-secret-manager
+jira
 oauth2client
+

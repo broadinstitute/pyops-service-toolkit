@@ -1,0 +1,28 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: ''
+    content_type: text/plain
+    headers:
+      Atl-Request-Id: 77b21c85-b1a4-41df-95f2-31d1e02a594b
+      Atl-Traceid: 77b21c85b1a441df95f231d1e02a594b
+      Cache-Control: no-cache, no-store, no-transform
+      Nel: '{"failure_fraction": 0.001, "include_subdomains": true, "max_age": 600,
+        "report_to": "endpoint-1"}'
+      Report-To: '{"endpoints": [{"url": "https://dz8aopenkvv6s.cloudfront.net"}],
+        "group": "endpoint-1", "include_subdomains": true, "max_age": 600}'
+      Server-Timing: cdn-upstream-layer;desc="EDGE",cdn-upstream-dns;dur=0,cdn-upstream-connect;dur=0,cdn-upstream-fbl;dur=511,atl-edge;dur=446,atl-edge-internal;dur=20,atl-edge-upstream;dur=426,atl-edge-pop;desc="aws-us-west-2",cdn-cache-miss,cdn-pop;desc="BOS50-P1",cdn-rid;desc="4z4hD7lP-Xr0bYen0RMK1DgWVItS5yZf74o7EJdQKv75K1lyz5SBeg==",cdn-downstream-fbl;dur=537
+      Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+      Timing-Allow-Origin: '*'
+      Vary: Accept-Encoding
+      Via: 1.1 3634ddf502e9036a10712990f5db1922.cloudfront.net (CloudFront)
+      X-Aaccountid: account_guid
+      X-Amz-Cf-Id: 4z4hD7lP-Xr0bYen0RMK1DgWVItS5yZf74o7EJdQKv75K1lyz5SBeg==
+      X-Amz-Cf-Pop: BOS50-P1
+      X-Arequestid: 3f9a3760886aeeee85d31c3f87738ddb
+      X-Cache: Miss from cloudfront
+      X-Content-Type-Options: nosniff
+      X-Xss-Protection: 1; mode=block
+    method: POST
+    status: 204
+    url: https://broadinstitute.atlassian.net/rest/api/2/issue/POD-2674/transitions

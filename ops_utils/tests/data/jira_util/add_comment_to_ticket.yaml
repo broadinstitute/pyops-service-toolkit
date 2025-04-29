@@ -1,0 +1,33 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"self":"https://broadinstitute.atlassian.net/rest/api/2/issue/550983/comment/1495773","id":"1495773","author":{"self":"https://broadinstitute.atlassian.net/rest/api/2/user?accountId=guid","accountId":"guid","emailAddress":"user@broadinstitute.org","avatarUrls":{"48x48":"https://secure.gravatar.com/avatar/2a4f35f074e617f3a6e0ed847c3877df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJS-0.png","24x24":"https://secure.gravatar.com/avatar/2a4f35f074e617f3a6e0ed847c3877df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJS-0.png","16x16":"https://secure.gravatar.com/avatar/2a4f35f074e617f3a6e0ed847c3877df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJS-0.png","32x32":"https://secure.gravatar.com/avatar/2a4f35f074e617f3a6e0ed847c3877df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJS-0.png"},"displayName":"displayname
+      ","active":true,"timeZone":"America/New_York","accountType":"atlassian"},"body":"test
+      comment","updateAuthor":{"self":"https://broadinstitute.atlassian.net/rest/api/2/user?accountId=guid","accountId":"guid","emailAddress":"user@broadinstitute.org","avatarUrls":{"48x48":"https://secure.gravatar.com/avatar/2a4f35f074e617f3a6e0ed847c3877df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJS-0.png","24x24":"https://secure.gravatar.com/avatar/2a4f35f074e617f3a6e0ed847c3877df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJS-0.png","16x16":"https://secure.gravatar.com/avatar/2a4f35f074e617f3a6e0ed847c3877df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJS-0.png","32x32":"https://secure.gravatar.com/avatar/2a4f35f074e617f3a6e0ed847c3877df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJS-0.png"},"displayName":"displayname
+      ","active":true,"timeZone":"America/New_York","accountType":"atlassian"},"created":"2025-04-28T16:39:17.409-0400","updated":"2025-04-28T16:39:17.409-0400","jsdPublic":true}'
+    content_type: text/plain
+    headers:
+      Atl-Request-Id: 958d7e29-d4fc-4f30-b748-31720d3fcff3
+      Atl-Traceid: 958d7e29d4fc4f30b74831720d3fcff3
+      Cache-Control: no-cache, no-store, no-transform
+      Location: https://broadinstitute.atlassian.net/rest/api/2/issue/550983/comment/1495773
+      Nel: '{"failure_fraction": 0.001, "include_subdomains": true, "max_age": 600,
+        "report_to": "endpoint-1"}'
+      Report-To: '{"endpoints": [{"url": "https://dz8aopenkvv6s.cloudfront.net"}],
+        "group": "endpoint-1", "include_subdomains": true, "max_age": 600}'
+      Server-Timing: cdn-upstream-layer;desc="EDGE",cdn-upstream-dns;dur=0,cdn-upstream-connect;dur=0,cdn-upstream-fbl;dur=409,atl-edge;dur=340,atl-edge-internal;dur=18,atl-edge-upstream;dur=323,atl-edge-pop;desc="aws-us-west-2",cdn-cache-miss,cdn-pop;desc="BOS50-P1",cdn-rid;desc="PDY3hwK_BSn6-EsjFbAB0zULK6DagwZ_xFtIhTxOBaklI13vqx8Fmg==",cdn-downstream-fbl;dur=415
+      Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+      Timing-Allow-Origin: '*'
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding
+      Via: 1.1 e88ba146e70cb232a8169a449cfa5954.cloudfront.net (CloudFront)
+      X-Aaccountid: guid
+      X-Amz-Cf-Id: PDY3hwK_BSn6-EsjFbAB0zULK6DagwZ_xFtIhTxOBaklI13vqx8Fmg==
+      X-Amz-Cf-Pop: BOS50-P1
+      X-Arequestid: 22cd22b6be8f581ce2ea719465fd3417
+      X-Cache: Miss from cloudfront
+      X-Content-Type-Options: nosniff
+      X-Xss-Protection: 1; mode=block
+    method: POST
+    status: 201
+    url: https://broadinstitute.atlassian.net/rest/api/2/issue/POD-2674/comment
