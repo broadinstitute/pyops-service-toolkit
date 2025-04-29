@@ -1,2 +1,2 @@
-7.0.0
-- *Breaking Change*: Removing `copy_onprem_to_cloud` method from gcp_utils.
+8.1.1
+- Adding tests for Jira util
