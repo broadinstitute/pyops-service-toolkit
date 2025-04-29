@@ -1,7 +1,7 @@
 [![Auto Release](https://github.com/broadinstitute/pyops-service-toolkit/actions/workflows/auto-release.yml/badge.svg)](https://github.com/broadinstitute/pyops-service-toolkit/actions/workflows/auto-release.yml)
 [![Docs Site Build](https://github.com/broadinstitute/pyops-service-toolkit/actions/workflows/docs.yml/badge.svg)](https://github.com/broadinstitute/pyops-service-toolkit/actions/workflows/docs.yml)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-[![codecov](https://codecov.io/gh/broadinstitute/pyops-service-toolkit/graph/badge.svg?token=J2YT04WO3C)](https://app.codecov.io/gh/broadinstitute/pyops-service-toolkit/tree/main)
+[![codecov](https://codecov.io/gh/broadinstitute/pyops-service-toolkit/graph/badge.svg?token=J2YT04WO3C)](https://codecov.io/gh/broadinstitute/pyops-service-toolkit)
 
 
 # 🧰 pyops-service-toolkit
