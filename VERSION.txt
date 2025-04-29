@@ -1,2 +1,2 @@
-8.1.1
-- Adding tests for Jira util
+8.2.0
+- Added tests for `TestSetUpTDRTables` utilities class
