@@ -1,2 +1,2 @@
-8.4.0
+8.5.0
 - Added tests for thread pool executor utilities
