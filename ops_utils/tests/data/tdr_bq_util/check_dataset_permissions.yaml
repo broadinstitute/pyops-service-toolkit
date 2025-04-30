@@ -1,0 +1,56 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"access_token\": \"access_token\"\
+      ,\n  \"expires_in\": 3599,\n  \"scope\": \"https://www.googleapis.com/auth/cloud-platform\
+      \ https://www.googleapis.com/auth/sqlservice.login openid https://www.googleapis.com/auth/userinfo.email\"\
+      ,\n  \"token_type\": \"Bearer\",\n  \"id_token\": \"id_token\"\
+      \n}"
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma: no-cache
+      Transfer-Encoding: chunked
+      Vary: Origin, X-Origin, Referer
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: '0'
+    method: POST
+    status: 200
+    url: https://oauth2.googleapis.com/token
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"bigquery#job","etag":"7B5UYgWGfPsKbeFC+Mfafg==","id":"project_id:us-central1.c18237a5-7be7-4f5e-aa07-08b86827c8b0","selfLink":"https://bigquery.googleapis.com/bigquery/v2/projects/project_id/jobs/c18237a5-7be7-4f5e-aa07-08b86827c8b0?location=us-central1","user_email":"jscira@broadinstitute.org","configuration":{"query":{"query":"SELECT
+      1 FROM `project_id.bq_schema.INFORMATION_SCHEMA.TABLES`","destinationTable":{"projectId":"project_id","datasetId":"_2d30527e467efe54cdcd8ac9a358dc2e65a76c96","tableId":"anon12e1b20f_e6a7_4cab_a123_44c2f8d35306"},"writeDisposition":"WRITE_TRUNCATE","priority":"INTERACTIVE","useLegacySql":false},"jobType":"QUERY"},"jobReference":{"projectId":"project_id","jobId":"c18237a5-7be7-4f5e-aa07-08b86827c8b0","location":"us-central1"},"statistics":{"creationTime":"1746033233679","startTime":"1746033233799","endTime":"1746033234024","totalBytesProcessed":"10485760","query":{"queryPlan":[{"name":"S00:
+      Output","id":"0","startMs":"1746033233867","endMs":"1746033233927","waitRatioAvg":0.13043478260869565,"waitMsAvg":"3","waitRatioMax":0.13043478260869565,"waitMsMax":"3","readRatioAvg":0,"readMsAvg":"0","readRatioMax":0,"readMsMax":"0","computeRatioAvg":1,"computeMsAvg":"23","computeRatioMax":1,"computeMsMax":"23","writeRatioAvg":0.30434782608695654,"writeMsAvg":"7","writeRatioMax":0.30434782608695654,"writeMsMax":"7","shuffleOutputBytes":"90","shuffleOutputBytesSpilled":"0","recordsRead":"10","recordsWritten":"10","parallelInputs":"1","completedParallelInputs":"1","status":"COMPLETE","steps":[{"kind":"READ","substeps":["","FROM
+      project_id.bq_schema.INFORMATION_SCHEMA.TABLES"]},{"kind":"COMPUTE","substeps":["$1
+      := 1"]},{"kind":"WRITE","substeps":["$1","TO __stage00_output"]}],"slotMs":"93","computeMode":"BIGQUERY"}],"estimatedBytesProcessed":"10485760","timeline":[{"elapsedMs":"141","totalSlotMs":"93","pendingUnits":"0","completedUnits":"1","estimatedRunnableUnits":"0"}],"totalPartitionsProcessed":"0","totalBytesProcessed":"10485760","totalBytesBilled":"10485760","billingTier":1,"totalSlotMs":"93","cacheHit":false,"referencedTables":[{"projectId":"project_id","datasetId":"bq_schema","tableId":"INFORMATION_SCHEMA.TABLES"}],"statementType":"SELECT","transferredBytes":"0"},"totalSlotMs":"93","finalExecutionDurationMs":"84"},"status":{"state":"DONE"},"principal_subject":"user:jscira@broadinstitute.org","jobCreationReason":{"code":"REQUESTED"}}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      ETag: 7B5UYgWGfPsKbeFC+Mfafg==
+      Transfer-Encoding: chunked
+      Vary: Origin, X-Origin, Referer
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: '0'
+    method: POST
+    status: 200
+    url: https://bigquery.googleapis.com/bigquery/v2/projects/project_id/jobs?prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"bigquery#getQueryResultsResponse","etag":"qnM5MPy+woe330DR0JMdTA==","schema":{"fields":[{"name":"f0_","type":"INTEGER","mode":"NULLABLE"}]},"jobReference":{"projectId":"project_id","jobId":"c18237a5-7be7-4f5e-aa07-08b86827c8b0","location":"us-central1"},"totalRows":"10","pageToken":"BFUNBMEHSYAQAAASA4EAAEEAQCAAKGQIBAABB7X7777QOIFQVYKUVQIBBJXQUHAKCFSGC5DBOJSXA3ZNGU3TGNZRMU4DEEKGS5UQSSAAAAABEKK7GJSDGMBVGI3WKNBWG5SWMZJVGRRWIY3EHBQWGOLBGM2TQZDDGJSTMNLBG43GGOJWDISGIYZUHBSTEOBQFU2DIMBWFU2DOYRSFU4DGYTDFVQWKNDDGE3TGN3CMJQTMERIMFXG63RRGJSTCYRSGBTF6ZJWME3V6NDDMFRF6YJRGIZV6NBUMMZGMODEGM2TGMBWDISDCMTFGFRDEMDGFVSTMYJXFU2GGYLCFVQTCMRTFU2DIYZSMY4GIMZVGMYDM===","totalBytesProcessed":"10485760","jobComplete":true,"cacheHit":false}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      ETag: qnM5MPy+woe330DR0JMdTA==
+      Transfer-Encoding: chunked
+      Vary: Origin, X-Origin, Referer
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: '0'
+    method: GET
+    status: 200
+    url: https://bigquery.googleapis.com/bigquery/v2/projects/project_id/queries/c18237a5-7be7-4f5e-aa07-08b86827c8b0?maxResults=0&location=us-central1&prettyPrint=false

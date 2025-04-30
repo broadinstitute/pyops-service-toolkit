@@ -1,0 +1,22 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"dataset_guid","name":"ops_integration_test_dataset","description":null,"defaultProfileId":null,"dataProject":null,"defaultSnapshotId":null,"schema":{"tables":[{"name":"tmp_test_table","columns":[{"name":"col_1","datatype":"string","array_of":false,"required":false},{"name":"col_2","datatype":"string","array_of":false,"required":false},{"name":"col_3","datatype":"string","array_of":false,"required":false}],"primaryKey":[],"partitionMode":"none","datePartitionOptions":null,"intPartitionOptions":null,"rowCount":null},{"name":"samples","columns":[{"name":"sample_id","datatype":"string","array_of":false,"required":false},{"name":"individual_id","datatype":"string","array_of":false,"required":false},{"name":"cram","datatype":"string","array_of":false,"required":false},{"name":"alignment_method","datatype":"string","array_of":false,"required":false},{"name":"analyte_type","datatype":"string","array_of":false,"required":false},{"name":"data_processing_pipeline","datatype":"string","array_of":false,"required":false},{"name":"library_prep_kit_method","datatype":"string","array_of":false,"required":false},{"name":"reference_genome_build","datatype":"string","array_of":false,"required":false},{"name":"sequencing_assay","datatype":"string","array_of":false,"required":false},{"name":"sequencing_platform","datatype":"string","array_of":false,"required":false},{"name":"sequencing_strategy","datatype":"string","array_of":false,"required":false},{"name":"tissue_source","datatype":"string","array_of":false,"required":false}],"primaryKey":[],"partitionMode":"none","datePartitionOptions":null,"intPartitionOptions":null,"rowCount":null}],"relationships":[],"assets":[]},"createdDate":"2024-10-17T17:26:32.249213Z","storage":null,"secureMonitoringEnabled":false,"phsId":null,"accessInformation":{"bigQuery":{"datasetName":"datarepo_ops_integration_test_dataset","datasetId":"datarepo-id:datarepo_ops_integration_test_dataset","projectId":"datarepo-id","link":"https://console.cloud.google.com/bigquery?project=datarepo-id&ws=!datarepo_ops_integration_test_dataset&d=datarepo_ops_integration_test_dataset&p=datarepo-id&page=dataset","tables":[{"name":"tmp_test_table","id":"datarepo-id:datarepo_ops_integration_test_dataset.tmp_test_table","qualifiedName":"datarepo-id.datarepo_ops_integration_test_dataset.tmp_test_table","link":"https://console.cloud.google.com/bigquery?project=datarepo-id&ws=!datarepo_ops_integration_test_dataset&d=datarepo_ops_integration_test_dataset&p=datarepo-id&page=table&t=tmp_test_table","sampleQuery":"SELECT
+      * FROM `datarepo-id.datarepo_ops_integration_test_dataset.tmp_test_table`"},{"name":"samples","id":"datarepo-id:datarepo_ops_integration_test_dataset.samples","qualifiedName":"datarepo-id.datarepo_ops_integration_test_dataset.samples","link":"https://console.cloud.google.com/bigquery?project=datarepo-id&ws=!datarepo_ops_integration_test_dataset&d=datarepo_ops_integration_test_dataset&p=datarepo-id&page=table&t=samples","sampleQuery":"SELECT
+      * FROM `datarepo-id.datarepo_ops_integration_test_dataset.samples`"}]},"parquet":null},"cloudPlatform":null,"selfHosted":false,"properties":null,"ingestServiceAccount":null,"predictableFileIds":false,"tags":[],"resourceLocks":{"exclusive":null,"shared":[]},"inheritSteward":false}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: emA9X1Ne
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/datasets/dataset_guid?include=SCHEMA&include=ACCESS_INFORMATION

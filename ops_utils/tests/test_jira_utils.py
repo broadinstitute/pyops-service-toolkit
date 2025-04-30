@@ -20,11 +20,18 @@ def setup_jira_client_mock():
         mock_secret_manager.return_value.access_secret_version.return_value.payload.data = b'some_api_key'
         jira_client = Jira(server=BROAD_INSTITUTE_SERVER, gcp_project_id='ops-team-metrics', jira_api_key_secret_name='jira_api_key')
         return jira_client
-    
+
+def mock_jira_client():
+    with patch("ops_utils.jira_util.Jira._connect_to_jira", autospec=True) as mock_connect:
+        mock_connect.return_value = Jira(server=BROAD_INSTITUTE_SERVER, basic_auth=('test_user', 'test_token'))
+        return Jira(server=BROAD_INSTITUTE_SERVER, gcp_project_id='ops-team-metrics', jira_api_key_secret_name='jira_api_key')
+        
+
 
 class TestJiraUtils:
 
-    jira_client = setup_jira_client_mock()
+    #jira_client = setup_jira_client_mock()
+    jira_client = mock_jira_client()
 
     @responses.activate
     def test_jira_update_ticket_fields(self):
