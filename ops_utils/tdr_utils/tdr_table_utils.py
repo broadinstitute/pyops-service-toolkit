@@ -82,26 +82,6 @@ class SetUpTDRTables:
                     columns_to_update.append(column_dict)
         return columns_to_update
 
-    @staticmethod
-    def _compare_dataset_relationships(
-            reference_dataset_relationships: dict, target_dataset_relationships: list
-    ) -> list[dict]:
-        """
-        Compare dataset relationships between two datasets.
-
-        Args:
-            reference_dataset_relationships (dict): The reference dataset relationships.
-            target_dataset_relationships (list): The target dataset relationships.
-
-        Returns:
-            list[dict]: A list of relationships that need to be modified.
-        """
-        dataset_relationships_to_modify = []
-        for dataset in reference_dataset_relationships:
-            if dataset not in target_dataset_relationships:
-                dataset_relationships_to_modify.append(dataset)
-        return dataset_relationships_to_modify
-
     def run(self) -> dict:
         """
         Run the setup process to ensure tables are created or updated as needed.
