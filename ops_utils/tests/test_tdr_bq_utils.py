@@ -1,9 +1,11 @@
 from ops_utils.tdr_utils.tdr_bq_utils import GetTdrAssetInfo, TdrBq
 from ops_utils.tdr_utils.tdr_api_utils import TDR
 from ops_utils.request_util import RunRequest
-from ops_utils.token_util import Token
+import os
+import pytest
 import responses
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+
 
 def setup_tdr_client():
     mock_token = MagicMock()
@@ -11,7 +13,23 @@ def setup_tdr_client():
     tdr_client = TDR(request_util)
     return tdr_client
 
-class TestTdrBqUtils:
+@pytest.fixture()
+def gcloud_auth_test_setup():
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "test_creds.json"
+    mock_credentials = MagicMock()
+    mock_credentials.with_quota_project.return_value = mock_credentials
+    mock_credentials.universe_domain = "googleapis.com"
+    
+    with (
+        patch("google.cloud.secretmanager.SecretManagerServiceClient", autospec=True) as mock_secret_manager,
+        patch("google.auth._default.load_credentials_from_file", return_value=(mock_credentials, 'project_id'), autospec=True)
+    ):
+        mock_secret_manager.return_value.access_secret_version.return_value.payload.data = b'some_api_key'
+        yield mock_credentials
+
+
+@pytest.mark.usefixtures("gcloud_auth_test_setup")
+class TestTdrBqUtils():
     tdr_client = setup_tdr_client()
 
     @responses.activate
