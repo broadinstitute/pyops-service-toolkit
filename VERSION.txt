@@ -1,2 +1,2 @@
-8.3.0
-- Added tests for `InferTDRSchema` utilities class
+8.4.0
+- Added tests for thread pool executor utilities
