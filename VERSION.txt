@@ -1,2 +1,2 @@
-8.1.1
-- Adding tests for Jira util
+8.5.1
+- Adding tests for tdr bq util
