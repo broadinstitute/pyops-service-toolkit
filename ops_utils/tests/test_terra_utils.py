@@ -1,8 +1,11 @@
+import re
+import pytest
+import unittest
 import responses
-
 from unittest.mock import MagicMock, mock_open, patch
+
 from ops_utils.request_util import RunRequest
-from ops_utils.terra_util import TerraWorkspace
+from ops_utils.terra_util import TerraWorkspace, Terra, TerraGroups, RAWLS_LINK, SAM_LINK
 
 mock_token = MagicMock()
 request_util = RunRequest(token=mock_token)
@@ -91,3 +94,112 @@ class TestTerraWorkspaceUtils:
         with patch('ops_utils.terra_util.open', mock_open(read_data="entity:sample_id\tsample_alias\nRP-123_ABC\tABC")):
             upload_metadata_res = self.workspace.upload_metadata_to_workspace_table("sample.tsv")
         assert upload_metadata_res
+
+
+class TestTerra(unittest.TestCase):
+
+    @patch("ops_utils.terra_util.RunRequest")
+    def setUp(self, mock_request_util):
+        self.mock_request_util = mock_request_util
+
+        # Mock the RunRequest instance
+        self.mock_request_instance = MagicMock()
+        self.mock_request_instance.return_value = self.mock_request_util
+
+        # Instantiate the Terra class with the mocked request_util
+        self.terra = Terra(request_util=self.mock_request_instance)
+
+    def test_fetch_accessible_workspaces(self):
+        # Run the method
+        self.terra.fetch_accessible_workspaces(fields=None)
+
+        self.mock_request_instance.run_request.assert_called_once_with(
+            uri=f"{RAWLS_LINK}/workspaces?",
+            method="GET"
+        )
+
+    def test_get_pet_account_json(self):
+        # Run the method
+        self.terra.get_pet_account_json()
+
+        self.mock_request_instance.run_request.assert_called_once_with(
+            uri=f"{SAM_LINK}/google/v1/user/petServiceAccount/key",
+            method="GET"
+        )
+
+class TestTerraGroups(unittest.TestCase):
+
+    @patch("ops_utils.terra_util.RunRequest")
+    def setUp(self, mock_request_util):
+        self.mock_request_util = mock_request_util
+
+        # Mock the RunRequest instance
+        self.mock_request_instance = MagicMock()
+        self.mock_request_instance.return_value = self.mock_request_util
+
+        # Instantiate the TerraGroups class with the mocked request_util
+        self.terra_groups = TerraGroups(request_util=self.mock_request_instance)
+
+    def test_check_role_accepted_role(self):
+        res = self.terra_groups._check_role("member")
+        self.assertIsNone(res)
+
+    def test_check_role_non_accepted_role(self):
+        with pytest.raises(ValueError, match=re.escape("Role must be one of ['member', 'admin']")):
+            self.terra_groups._check_role("invalid_role")
+
+    def test_remove_user_from_group(self):
+        self.terra_groups.remove_user_from_group(group="fake-group", email="fake-email@fake.com", role="member")
+
+        self.mock_request_instance.run_request.assert_called_once_with(
+            uri=f"{SAM_LINK}/groups/v1/fake-group/member/fake-email@fake.com",
+            method="DELETE",
+        )
+
+    def test_create_group(self):
+        self.terra_groups.create_group(group_name="fake-group", continue_if_exists=False)
+
+        self.mock_request_instance.run_request.assert_called_once_with(
+            uri=f"{SAM_LINK}/groups/v1/fake-group",
+            method="POST",
+            accept_return_codes=[]
+        )
+
+    def test_create_group_already_exists(self):
+        self.terra_groups.create_group(group_name="fake-group", continue_if_exists=True)
+
+        self.mock_request_instance.run_request.assert_called_once_with(
+            uri=f"{SAM_LINK}/groups/v1/fake-group",
+            method="POST",
+            accept_return_codes=[409]
+        )
+
+    def test_delete_group(self):
+        self.terra_groups.delete_group(group_name="fake-group")
+
+        self.mock_request_instance.run_request.assert_called_once_with(
+            uri=f"{SAM_LINK}/groups/v1/fake-group",
+            method="DELETE",
+        )
+
+    def test_add_user_to_group(self):
+        self.terra_groups.add_user_to_group(
+            group="fake-group", email="fake-email@fake.com", role="member", continue_if_exists=False
+        )
+
+        self.mock_request_instance.run_request.assert_called_once_with(
+            uri=f"{SAM_LINK}/groups/v1/fake-group/member/fake-email@fake.com",
+            method="PUT",
+            accept_return_codes=[]
+        )
+
+    def test_add_user_to_group_already_exists(self):
+        self.terra_groups.add_user_to_group(
+            group="fake-group", email="fake-email@fake.com", role="member", continue_if_exists=True
+        )
+        self.mock_request_instance.run_request.assert_called_once_with(
+            uri=f"{SAM_LINK}/groups/v1/fake-group/member/fake-email@fake.com",
+            method="PUT",
+            accept_return_codes=[409]
+        )
+
