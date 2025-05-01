@@ -3,7 +3,6 @@ import warnings
 from ops_utils import comma_separated_list, deprecated
 
 
-
 @deprecated("Use an alternative function.")
 def deprecated_function(x):
     """A 'deprecated' function for testing purposes."""

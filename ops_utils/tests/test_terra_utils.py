@@ -127,6 +127,7 @@ class TestTerra(unittest.TestCase):
             method="GET"
         )
 
+
 class TestTerraGroups(unittest.TestCase):
 
     @patch("ops_utils.terra_util.RunRequest")
@@ -202,4 +203,3 @@ class TestTerraGroups(unittest.TestCase):
             method="PUT",
             accept_return_codes=[409]
         )
-
