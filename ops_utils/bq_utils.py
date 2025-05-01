@@ -1,3 +1,4 @@
+"""Module for BigQuery operations."""
 import logging
 from google.cloud import bigquery
 from google.api_core.exceptions import Forbidden
@@ -5,6 +6,8 @@ from typing import Optional
 
 
 class BigQueryUtil:
+    """Class to interact with Google BigQuery."""
+
     def __init__(self, project_id: Optional[str] = None):
         """
         Initialize the BigQuery utility with user's authentication.
@@ -22,7 +25,7 @@ class BigQueryUtil:
 
     def _delete_existing_records(self, table_id: str) -> None:
         """
-        Deletes all records from a BigQuery table.
+        Delete all records from a BigQuery table.
 
         Args:
             table_id (str): BigQuery table ID in the format 'project.dataset.table'.
@@ -35,7 +38,7 @@ class BigQueryUtil:
 
     def upload_data_to_table(self, table_id: str, rows: list[dict], delete_existing_data: bool = False) -> None:
         """
-        Uploads data directly from the provided list of dictionaries to a BigQuery table.
+        Upload data directly from the provided list of dictionaries to a BigQuery table.
 
         **Args:**
 
@@ -68,7 +71,7 @@ class BigQueryUtil:
 
     def query_table(self, query: str, to_dataframe: bool = False) -> list[dict]:
         """
-        Executes a SQL query on a BigQuery table and returns the results.
+        Execute a SQL query on a BigQuery table and returns the results.
 
         **Args:**
         - query (str): The SQL query to execute.
@@ -84,7 +87,7 @@ class BigQueryUtil:
 
     def check_permissions_to_project(self, raise_on_other_failure: bool = True) -> bool:
         """
-        Checks if the user has permission to access the project.
+        Check if the user has permission to access the project.
 
         **Args:**
         - raise_on_other_failure (bool): If True, raises an error if an unexpected error occurs. Default is True.
@@ -96,7 +99,7 @@ class BigQueryUtil:
 
     def check_permissions_for_query(self, query: str, raise_on_other_failure: bool = True) -> bool:
         """
-        Checks if the user has permission to run a specific query.
+        Check if the user has permission to run a specific query.
 
         **Args:**
         - query (str): SQL query to execute.
@@ -109,7 +112,7 @@ class BigQueryUtil:
 
     def _check_permissions(self, qry: str, raise_on_other_failure: bool = True) -> bool:
         """
-        Checks if the user has permission to run queries and access the project.
+        Check if the user has permission to run queries and access the project.
 
         Args:
             raise_on_other_failure (bool): If True, raises an error if an unexpected error occurs. Default is True.
