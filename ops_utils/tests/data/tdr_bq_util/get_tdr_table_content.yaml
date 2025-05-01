@@ -1,0 +1,129 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"access_token\": \"token\"\
+      ,\n  \"expires_in\": 3599,\n  \"scope\": \"openid https://www.googleapis.com/auth/sqlservice.login\
+      \ https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email\"\
+      ,\n  \"token_type\": \"Bearer\",\n  \"id_token\": \"id_token\"\
+      \n}"
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+      Expires: Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma: no-cache
+      Transfer-Encoding: chunked
+      Vary: Origin, X-Origin, Referer
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: '0'
+    method: POST
+    status: 200
+    url: https://oauth2.googleapis.com/token
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"bigquery#job","etag":"25Q58JTO/GK9DxT9+lapxg==","id":"project_id:us-central1.job_id","selfLink":"https://bigquery.googleapis.com/bigquery/v2/projects/project_id/jobs/job_id?location=us-central1","user_email":"username@broadinstitute.org","configuration":{"query":{"query":"SELECT
+      *  FROM `project_id.test_dataset.tmp_test_table`","destinationTable":{"projectId":"project_id","datasetId":"_2d30527e467efe54cdcd8ac9a358dc2e65a76c96","tableId":"anond5b928f96ebed9d79cd979e14bf04ec3d582457e12573092c1ae5fb734ad45fe"},"writeDisposition":"WRITE_TRUNCATE","priority":"INTERACTIVE","useLegacySql":false},"jobType":"QUERY"},"jobReference":{"projectId":"project_id","jobId":"job_id","location":"us-central1"},"statistics":{"creationTime":"1746042296976","startTime":"1746042297357","endTime":"1746042297838","totalBytesProcessed":"955","query":{"queryPlan":[{"name":"S00:
+      Input","id":"0","startMs":"1746042297486","endMs":"1746042297562","waitRatioAvg":0.015151515151515152,"waitMsAvg":"1","waitRatioMax":0.015151515151515152,"waitMsMax":"1","readRatioAvg":0.95454545454545459,"readMsAvg":"63","readRatioMax":0.95454545454545459,"readMsMax":"63","computeRatioAvg":0.13636363636363635,"computeMsAvg":"9","computeRatioMax":0.13636363636363635,"computeMsMax":"9","writeRatioAvg":0.07575757575757576,"writeMsAvg":"5","writeRatioMax":0.07575757575757576,"writeMsMax":"5","shuffleOutputBytes":"50","shuffleOutputBytesSpilled":"0","recordsRead":"4","recordsWritten":"1","parallelInputs":"1","completedParallelInputs":"1","status":"COMPLETE","steps":[{"kind":"READ","substeps":["$50:datarepo_transaction_id,
+      $51:datarepo_transaction_status","FROM project_id.test_dataset.datarepo_transactions","WHERE
+      equal($51, ''active'')"]},{"kind":"COMPUTE","substeps":["$210 := 1"]},{"kind":"WRITE","substeps":["$50,
+      $210","TO __stage00_output"]}],"slotMs":"109","computeMode":"BIGQUERY"},{"name":"S01:
+      Input","id":"1","startMs":"1746042297530","endMs":"1746042297562","waitRatioAvg":0.51515151515151514,"waitMsAvg":"34","waitRatioMax":0.51515151515151514,"waitMsMax":"34","readRatioAvg":0.30303030303030304,"readMsAvg":"20","readRatioMax":0.30303030303030304,"readMsMax":"20","computeRatioAvg":0.18181818181818182,"computeMsAvg":"12","computeRatioMax":0.18181818181818182,"computeMsMax":"12","writeRatioAvg":0.07575757575757576,"writeMsAvg":"5","writeRatioMax":0.07575757575757576,"writeMsMax":"5","shuffleOutputBytes":"50","shuffleOutputBytesSpilled":"0","recordsRead":"4","recordsWritten":"1","parallelInputs":"1","completedParallelInputs":"1","status":"COMPLETE","steps":[{"kind":"READ","substeps":["$40:datarepo_transaction_id,
+      $41:datarepo_transaction_status","FROM project_id.test_dataset.datarepo_transactions","WHERE
+      equal($41, ''active'')"]},{"kind":"COMPUTE","substeps":["$190 := 1"]},{"kind":"WRITE","substeps":["$40,
+      $190","TO __stage01_output"]}],"slotMs":"57","computeMode":"BIGQUERY"},{"name":"S02:
+      Input","id":"2","startMs":"1746042297562","endMs":"1746042297580","waitRatioAvg":1,"waitMsAvg":"66","waitRatioMax":1,"waitMsMax":"66","readRatioAvg":0.030303030303030304,"readMsAvg":"2","readRatioMax":0.030303030303030304,"readMsMax":"2","computeRatioAvg":0.13636363636363635,"computeMsAvg":"9","computeRatioMax":0.13636363636363635,"computeMsMax":"9","writeRatioAvg":0.045454545454545456,"writeMsAvg":"3","writeRatioMax":0.045454545454545456,"writeMsMax":"3","shuffleOutputBytes":"9","shuffleOutputBytesSpilled":"0","recordsRead":"4","recordsWritten":"1","parallelInputs":"1","completedParallelInputs":"1","status":"COMPLETE","steps":[{"kind":"READ","substeps":["$1:datarepo_transaction_id,
+      $2:datarepo_transaction_status","FROM project_id.test_dataset.datarepo_transactions","WHERE
+      equal($2, ''active'')"]},{"kind":"AGGREGATE","substeps":["$100 := SUM($140)"]},{"kind":"COMPUTE","substeps":["$140
+      := if(is_null($1), 1, 0)"]},{"kind":"WRITE","substeps":["$100","TO __stage02_output"]}],"slotMs":"22","computeMode":"BIGQUERY"},{"name":"S03:
+      Aggregate","id":"3","startMs":"1746042297562","endMs":"1746042297591","inputStages":["2"],"waitRatioAvg":1,"waitMsAvg":"66","waitRatioMax":1,"waitMsMax":"66","readRatioAvg":0,"readMsAvg":"0","readRatioMax":0,"readMsMax":"0","computeRatioAvg":0.045454545454545456,"computeMsAvg":"3","computeRatioMax":0.045454545454545456,"computeMsMax":"3","writeRatioAvg":0.18181818181818182,"writeMsAvg":"12","writeRatioMax":0.18181818181818182,"writeMsMax":"12","shuffleOutputBytes":"9","shuffleOutputBytesSpilled":"0","recordsRead":"1","recordsWritten":"1","parallelInputs":"1","completedParallelInputs":"1","status":"COMPLETE","steps":[{"kind":"READ","substeps":["$100","FROM
+      __stage02_output"]},{"kind":"AGGREGATE","substeps":["$60 := SUM($100)"]},{"kind":"WRITE","substeps":["$60","TO
+      __stage03_output"]}],"slotMs":"32","computeMode":"BIGQUERY"},{"name":"S04: Coalesce","id":"4","startMs":"1746042297573","endMs":"1746042297617","inputStages":["1"],"waitRatioAvg":0.10606060606060606,"waitMsAvg":"7","waitRatioMax":0.12121212121212122,"waitMsMax":"8","readRatioAvg":0,"readMsAvg":"0","readRatioMax":0,"readMsMax":"0","computeRatioAvg":0.090909090909090912,"computeMsAvg":"6","computeRatioMax":0.18181818181818182,"computeMsMax":"12","writeRatioAvg":0.15151515151515152,"writeMsAvg":"10","writeRatioMax":0.30303030303030304,"writeMsMax":"20","shuffleOutputBytes":"50","shuffleOutputBytesSpilled":"0","recordsRead":"1","recordsWritten":"1","parallelInputs":"100","completedParallelInputs":"100","status":"COMPLETE","steps":[{"kind":"READ","substeps":["FROM
+      __stage01_output"]}],"slotMs":"3641","computeMode":"BIGQUERY"},{"name":"S05:
+      Join+","id":"5","startMs":"1746042297578","endMs":"1746042297624","inputStages":["4"],"waitRatioAvg":0.10606060606060606,"waitMsAvg":"7","waitRatioMax":0.10606060606060606,"waitMsMax":"7","readRatioAvg":0.030303030303030304,"readMsAvg":"2","readRatioMax":0.030303030303030304,"readMsMax":"2","computeRatioAvg":0.07575757575757576,"computeMsAvg":"5","computeRatioMax":0.07575757575757576,"computeMsMax":"5","writeRatioAvg":0.045454545454545456,"writeMsAvg":"3","writeRatioMax":0.045454545454545456,"writeMsMax":"3","shuffleOutputBytes":"1050","shuffleOutputBytesSpilled":"0","recordsRead":"7","recordsWritten":"6","parallelInputs":"1","completedParallelInputs":"1","status":"COMPLETE","steps":[{"kind":"READ","substeps":["$20:datarepo_row_id,
+      $21:datarepo_transaction_id, $22:col_1, $23:col_2, $24:col_3","FROM project_id.test_dataset.datarepo_raw_tmp_test_table_57b43cb3_518b_4b2f_83b7_1b991bc74d89"]},{"kind":"READ","substeps":["$40,
+      $190","FROM __stage04_output"]},{"kind":"AGGREGATE","substeps":["GROUP BY $240
+      := $235","$110 := ANY_VALUE($150)","$111 := ANY_VALUE($230)","$112 := ANY_VALUE($231)","$113
+      := ANY_VALUE($232)","$114 := ANY_VALUE($233)","$115 := ANY_VALUE($234)"]},{"kind":"COMPUTE","substeps":["$150
+      := not(is_null($236))"]},{"kind":"JOIN","substeps":["$230 := $20, $231 := $21,
+      $232 := $22, $233 := $23, $234 := $24, $235 := $181, $236 := $190","LEFT OUTER
+      HASH JOIN EACH  WITH ALL  ON $180 = $40"]},{"kind":"COMPUTE","substeps":["$180
+      := coalesce($21, '''')","$181 := UNIQUE_ROW_ID()"]},{"kind":"WRITE","substeps":["$110,
+      $111, $112, $113, $114, $115, $240","TO __stage05_output","BY HASH($240)"]}],"slotMs":"20","computeMode":"BIGQUERY"},{"name":"S06:
+      Coalesce","id":"6","startMs":"1746042297573","endMs":"1746042297619","inputStages":["0"],"waitRatioAvg":0.060606060606060608,"waitMsAvg":"4","waitRatioMax":0.10606060606060606,"waitMsMax":"7","readRatioAvg":0,"readMsAvg":"0","readRatioMax":0,"readMsMax":"0","computeRatioAvg":0.090909090909090912,"computeMsAvg":"6","computeRatioMax":0.21212121212121213,"computeMsMax":"14","writeRatioAvg":0.10606060606060606,"writeMsAvg":"7","writeRatioMax":0.31818181818181818,"writeMsMax":"21","shuffleOutputBytes":"50","shuffleOutputBytesSpilled":"0","recordsRead":"1","recordsWritten":"1","parallelInputs":"100","completedParallelInputs":"100","status":"COMPLETE","steps":[{"kind":"READ","substeps":["FROM
+      __stage00_output"]}],"slotMs":"3266","computeMode":"BIGQUERY"},{"name":"S07:
+      Join+","id":"7","startMs":"1746042297583","endMs":"1746042297620","inputStages":["6"],"waitRatioAvg":0.060606060606060608,"waitMsAvg":"4","waitRatioMax":0.060606060606060608,"waitMsMax":"4","readRatioAvg":0,"readMsAvg":"0","readRatioMax":0,"readMsMax":"0","computeRatioAvg":0.045454545454545456,"computeMsAvg":"3","computeRatioMax":0.045454545454545456,"computeMsMax":"3","writeRatioAvg":0.045454545454545456,"writeMsAvg":"3","writeRatioMax":0.045454545454545456,"writeMsMax":"3","shuffleOutputBytes":"0","shuffleOutputBytesSpilled":"0","recordsRead":"0","recordsWritten":"0","parallelInputs":"1","completedParallelInputs":"1","status":"COMPLETE","steps":[{"kind":"READ","substeps":["$30:datarepo_row_id,
+      $31:datarepo_transaction_id","FROM project_id.test_dataset.datarepo_sd_tmp_test_table_3c02036e_0b89_432b_ba54_98002a00bf8d"]},{"kind":"READ","substeps":["$50,
+      $210","FROM __stage06_output"]},{"kind":"AGGREGATE","substeps":["GROUP BY $270
+      := $262","$130 := ANY_VALUE($170)","$131 := ANY_VALUE($260)","$132 := ANY_VALUE($261)"]},{"kind":"COMPUTE","substeps":["$170
+      := not(is_null($263))"]},{"kind":"JOIN","substeps":["$260 := $30, $261 := $31,
+      $262 := $201, $263 := $210","LEFT OUTER HASH JOIN EACH  WITH ALL  ON $200 =
+      $50"]},{"kind":"COMPUTE","substeps":["$200 := coalesce($31, '''')","$201 :=
+      UNIQUE_ROW_ID()"]},{"kind":"WRITE","substeps":["$130, $131, $132, $270","TO
+      __stage07_output","BY HASH($270)"]}],"slotMs":"9","computeMode":"BIGQUERY"},{"name":"S08:
+      Aggregate+","id":"8","startMs":"1746042297638","endMs":"1746042297665","inputStages":["3","7"],"waitRatioAvg":0.015151515151515152,"waitMsAvg":"1","waitRatioMax":0.015151515151515152,"waitMsMax":"1","readRatioAvg":0,"readMsAvg":"0","readRatioMax":0,"readMsMax":"0","computeRatioAvg":0.090909090909090912,"computeMsAvg":"6","computeRatioMax":0.090909090909090912,"computeMsMax":"6","writeRatioAvg":0.25757575757575757,"writeMsAvg":"17","writeRatioMax":0.25757575757575757,"writeMsMax":"17","shuffleOutputBytes":"0","shuffleOutputBytesSpilled":"0","recordsRead":"1","recordsWritten":"0","parallelInputs":"1","completedParallelInputs":"1","status":"COMPLETE","steps":[{"kind":"READ","substeps":["$60","FROM
+      __stage03_output"]},{"kind":"READ","substeps":["$130, $131, $132, $270","FROM
+      __stage07_output"]},{"kind":"FILTER","substeps":["not(if($90, 1, if(or(is_null($80),
+      and(equal($80, 0), not(is_null(coalesce($92, ''''))))), 0, NULL)))"]},{"kind":"AGGREGATE","substeps":["GROUP
+      BY $280 := $270","$90 := ANY_VALUE($130)","$91 := ANY_VALUE($131)","$92 := ANY_VALUE($132)"]},{"kind":"WRITE","substeps":["$91","TO
+      __stage08_output"]}],"slotMs":"29","computeMode":"BIGQUERY"},{"name":"S09: Coalesce","id":"9","startMs":"1746042297667","endMs":"1746042297717","inputStages":["8"],"waitRatioAvg":0.015151515151515152,"waitMsAvg":"1","waitRatioMax":0.10606060606060606,"waitMsMax":"7","readRatioAvg":0,"readMsAvg":"0","readRatioMax":0,"readMsMax":"0","computeRatioAvg":0.090909090909090912,"computeMsAvg":"6","computeRatioMax":0.21212121212121213,"computeMsMax":"14","writeRatioAvg":0.18181818181818182,"writeMsAvg":"12","writeRatioMax":0.56060606060606055,"writeMsMax":"37","shuffleOutputBytes":"0","shuffleOutputBytesSpilled":"0","recordsRead":"0","recordsWritten":"0","parallelInputs":"100","completedParallelInputs":"100","status":"COMPLETE","steps":[{"kind":"READ","substeps":["FROM
+      __stage08_output"]}],"slotMs":"3540","computeMode":"BIGQUERY"},{"name":"S0A:
+      Output","id":"10","startMs":"1746042297679","endMs":"1746042297734","inputStages":["3","9","5"],"waitRatioAvg":0.030303030303030304,"waitMsAvg":"2","waitRatioMax":0.030303030303030304,"waitMsMax":"2","readRatioAvg":0,"readMsAvg":"0","readRatioMax":0,"readMsMax":"0","computeRatioAvg":0.12121212121212122,"computeMsAvg":"8","computeRatioMax":0.12121212121212122,"computeMsMax":"8","writeRatioAvg":0.07575757575757576,"writeMsAvg":"5","writeRatioMax":0.07575757575757576,"writeMsMax":"5","shuffleOutputBytes":"588","shuffleOutputBytesSpilled":"0","recordsRead":"7","recordsWritten":"6","parallelInputs":"1","completedParallelInputs":"1","status":"COMPLETE","steps":[{"kind":"READ","substeps":["$60","FROM
+      __stage03_output"]},{"kind":"READ","substeps":["$110, $111, $112, $113, $114,
+      $115, $240","FROM __stage05_output"]},{"kind":"READ","substeps":["$91","FROM
+      __stage09_output"]},{"kind":"FILTER","substeps":["is_null($294)"]},{"kind":"JOIN","substeps":["$290
+      := $71, $291 := $73, $292 := $74, $293 := $75, $294 := $91","LEFT OUTER HASH
+      JOIN EACH  WITH ALL  ON $71 = $91"]},{"kind":"FILTER","substeps":["not(if($70,
+      1, if(or(is_null($60), and(equal($60, 0), not(is_null(coalesce($72, ''''))))),
+      0, NULL)))"]},{"kind":"AGGREGATE","substeps":["GROUP BY $250 := $240","$70 :=
+      ANY_VALUE($110)","$71 := ANY_VALUE($111)","$72 := ANY_VALUE($112)","$73 := ANY_VALUE($113)","$74
+      := ANY_VALUE($114)","$75 := ANY_VALUE($115)"]},{"kind":"WRITE","substeps":["$290,
+      $291, $292, $293","TO __stage0A_output"]}],"slotMs":"30","computeMode":"BIGQUERY"}],"estimatedBytesProcessed":"955","timeline":[{"elapsedMs":"386","totalSlotMs":"10760","pendingUnits":"0","completedUnits":"308","estimatedRunnableUnits":"0"}],"totalPartitionsProcessed":"0","totalBytesProcessed":"955","totalBytesBilled":"31457280","billingTier":1,"totalSlotMs":"10760","cacheHit":false,"referencedTables":[{"projectId":"project_id","datasetId":"test_dataset","tableId":"datarepo_sd_tmp_test_table_3c02036e_0b89_432b_ba54_98002a00bf8d"},{"projectId":"project_id","datasetId":"test_dataset","tableId":"datarepo_transactions"},{"projectId":"project_id","datasetId":"test_dataset","tableId":"datarepo_raw_tmp_test_table_57b43cb3_518b_4b2f_83b7_1b991bc74d89"}],"statementType":"SELECT","searchStatistics":{"indexUsageMode":"UNUSED","indexUnusedReasons":[{"code":"INDEX_CONFIG_NOT_AVAILABLE","message":"There
+      is no index configuration for the base table `project_id:test_dataset.datarepo_raw_tmp_test_table_57b43cb3_518b_4b2f_83b7_1b991bc74d89`.","baseTable":{"projectId":"project_id","datasetId":"test_dataset","tableId":"datarepo_raw_tmp_test_table_57b43cb3_518b_4b2f_83b7_1b991bc74d89"}},{"code":"INDEX_CONFIG_NOT_AVAILABLE","message":"There
+      is no index configuration for the base table `project_id:test_dataset.datarepo_sd_tmp_test_table_3c02036e_0b89_432b_ba54_98002a00bf8d`.","baseTable":{"projectId":"project_id","datasetId":"test_dataset","tableId":"datarepo_sd_tmp_test_table_3c02036e_0b89_432b_ba54_98002a00bf8d"}},{"code":"INDEX_CONFIG_NOT_AVAILABLE","message":"There
+      is no index configuration for the base table `project_id:test_dataset.datarepo_transactions`.","baseTable":{"projectId":"project_id","datasetId":"test_dataset","tableId":"datarepo_transactions"}}]},"transferredBytes":"0","metadataCacheStatistics":{"tableMetadataCacheUsage":[{"tableReference":{"projectId":"project_id","datasetId":"test_dataset","tableId":"datarepo_sd_tmp_test_table_3c02036e_0b89_432b_ba54_98002a00bf8d"},"unusedReason":"OTHER_REASON","explanation":"Table
+      does not have CMETA."},{"tableReference":{"projectId":"project_id","datasetId":"test_dataset","tableId":"datarepo_transactions"},"unusedReason":"OTHER_REASON","explanation":"Table
+      does not have CMETA."},{"tableReference":{"projectId":"project_id","datasetId":"test_dataset","tableId":"datarepo_raw_tmp_test_table_57b43cb3_518b_4b2f_83b7_1b991bc74d89"},"unusedReason":"OTHER_REASON","explanation":"Table
+      does not have CMETA."}]}},"totalSlotMs":"10760","finalExecutionDurationMs":"282"},"status":{"state":"DONE"},"principal_subject":"user:username@broadinstitute.org","jobCreationReason":{"code":"REQUESTED"}}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      ETag: 25Q58JTO/GK9DxT9+lapxg==
+      Transfer-Encoding: chunked
+      Vary: Origin, X-Origin, Referer
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: '0'
+    method: POST
+    status: 200
+    url: https://bigquery.googleapis.com/bigquery/v2/projects/project_id/jobs?prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"kind":"bigquery#getQueryResultsResponse","etag":"8byauFx10odkVO6EwmKfUA==","schema":{"fields":[{"name":"datarepo_row_id","type":"STRING","mode":"NULLABLE"},{"name":"col_1","type":"STRING","mode":"NULLABLE"},{"name":"col_2","type":"STRING","mode":"NULLABLE"},{"name":"col_3","type":"STRING","mode":"NULLABLE"}]},"jobReference":{"projectId":"project_id","jobId":"job_id","location":"us-central1"},"totalRows":"6","pageToken":"pg_token","totalBytesProcessed":"955","jobComplete":true,"cacheHit":false}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      ETag: 8byauFx10odkVO6EwmKfUA==
+      Transfer-Encoding: chunked
+      Vary: Origin, X-Origin, Referer
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: '0'
+    method: GET
+    status: 200
+    url: https://bigquery.googleapis.com/bigquery/v2/projects/project_id/queries/job_id?maxResults=0&location=us-central1&prettyPrint=false
+- response:
+    auto_calculate_content_length: false
+    body: '{"jobReference":{"projectId":"project_id","jobId":"job_id","location":"us-central1"},"totalRows":"6","rows":[{"f":[{"v":"0897e282-46be-42b8-9d44-bca0d024f6a1"},{"v":"ex_data_col_1_1"},{"v":"ex_data_col_2_1"},{"v":"ex_data_col_3_1"}]},{"f":[{"v":"5bb24b48-dd17-41d7-88c5-dc9fcf840b67"},{"v":"ex_data_col_1_1"},{"v":"ex_data_col_2_1"},{"v":"ex_data_col_3_1"}]},{"f":[{"v":"a27ce2fe-ce55-42b7-a6c2-8fca8e774245"},{"v":"ex_data_col_1_2"},{"v":"ex_data_col_2_2"},{"v":"ex_data_col_3_2"}]},{"f":[{"v":"46284012-9198-4ec2-97b2-299f3f6a11f0"},{"v":"ex_data_col_1_2"},{"v":"ex_data_col_2_2"},{"v":"ex_data_col_3_2"}]},{"f":[{"v":"3ad96b8b-0575-4161-869d-5a9e40e0a1fa"},{"v":"ex_data_col_1_3"},{"v":"ex_data_col_2_3"},{"v":"ex_data_col_3_3"}]},{"f":[{"v":"cb9b061e-9623-4ef5-8ed7-594e4e84a55b"},{"v":"ex_data_col_1_3"},{"v":"ex_data_col_2_3"},{"v":"ex_data_col_3_3"}]}]}'
+    content_type: text/plain
+    headers:
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      ETag: NdyOxQG6V3+dnmxmVQA3vg==
+      Transfer-Encoding: chunked
+      Vary: Origin, X-Origin, Referer
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: '0'
+    method: GET
+    status: 200
+    url: https://bigquery.googleapis.com/bigquery/v2/projects/project_id/queries/job_id?fields=jobReference%2CtotalRows%2CpageToken%2Crows&location=us-central1&formatOptions.useInt64Timestamp=True&prettyPrint=false

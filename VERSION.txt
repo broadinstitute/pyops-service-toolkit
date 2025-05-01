@@ -1,2 +1,2 @@
-8.5.0
-- Added tests for thread pool executor utilities
+8.5.1
+- Adding tests for tdr bq util

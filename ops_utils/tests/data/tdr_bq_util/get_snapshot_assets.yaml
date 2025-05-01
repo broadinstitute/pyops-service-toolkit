@@ -1,0 +1,24 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"id":"snapshot_guid","name":"Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339","description":"Full
+      View Snapshot of Dataset with Dataset name ops_integration_test_dataset, and
+      Dataset id 0981274b-61e3-4efb-99f2-eaea57075612.","createdDate":"2025-04-29T20:39:04.203785Z","consentCode":null,"source":null,"tables":[{"name":"tmp_test_table","columns":[{"name":"col_1","datatype":"string","array_of":false,"required":false},{"name":"col_2","datatype":"string","array_of":false,"required":false},{"name":"col_3","datatype":"string","array_of":false,"required":false}],"primaryKey":[],"partitionMode":"none","datePartitionOptions":null,"intPartitionOptions":null,"rowCount":6},{"name":"samples","columns":[{"name":"sample_id","datatype":"string","array_of":false,"required":false},{"name":"individual_id","datatype":"string","array_of":false,"required":false},{"name":"cram","datatype":"string","array_of":false,"required":false},{"name":"alignment_method","datatype":"string","array_of":false,"required":false},{"name":"analyte_type","datatype":"string","array_of":false,"required":false},{"name":"data_processing_pipeline","datatype":"string","array_of":false,"required":false},{"name":"library_prep_kit_method","datatype":"string","array_of":false,"required":false},{"name":"reference_genome_build","datatype":"string","array_of":false,"required":false},{"name":"sequencing_assay","datatype":"string","array_of":false,"required":false},{"name":"sequencing_platform","datatype":"string","array_of":false,"required":false},{"name":"sequencing_strategy","datatype":"string","array_of":false,"required":false},{"name":"tissue_source","datatype":"string","array_of":false,"required":false}],"primaryKey":[],"partitionMode":"none","datePartitionOptions":null,"intPartitionOptions":null,"rowCount":10}],"relationships":[],"profileId":null,"dataProject":null,"accessInformation":{"bigQuery":{"datasetName":"Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339","datasetId":"datarepo-8f24f608:Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339","projectId":"datarepo-8f24f608","link":"https://console.cloud.google.com/bigquery?project=datarepo-8f24f608&ws=!Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339&d=Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339&p=datarepo-8f24f608&page=dataset","tables":[{"name":"tmp_test_table","id":"datarepo-8f24f608:Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339.tmp_test_table","qualifiedName":"datarepo-8f24f608.Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339.tmp_test_table","link":"https://console.cloud.google.com/bigquery?project=datarepo-8f24f608&ws=!Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339&d=Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339&p=datarepo-8f24f608&page=table&t=tmp_test_table","sampleQuery":"SELECT
+      * FROM `datarepo-8f24f608.Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339.tmp_test_table`"},{"name":"samples","id":"datarepo-8f24f608:Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339.samples","qualifiedName":"datarepo-8f24f608.Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339.samples","link":"https://console.cloud.google.com/bigquery?project=datarepo-8f24f608&ws=!Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339&d=Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339&p=datarepo-8f24f608&page=table&t=samples","sampleQuery":"SELECT
+      * FROM `datarepo-8f24f608.Full_View_Snapshot_of_ops_integration_test_dataset_1745959108339.samples`"}]},"parquet":null},"creationInformation":null,"cloudPlatform":"gcp","properties":null,"duosFirecloudGroup":null,"globalFileIds":false,"compactIdPrefix":null,"tags":[],"resourceLocks":{"exclusive":null,"shared":null}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,Accept,Referer,X-App-Id,Origin
+      Access-Control-Allow-Methods: GET,POST,DELETE,PUT,PATCH,OPTIONS,HEAD
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control: no-cache,no-store,must-revalidate
+      Strict-Transport-Security: max-age=31536000;includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding,Origin
+      Via: 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Request-ID: plPWOor9
+    method: GET
+    status: 200
+    url: https://data.terra.bio/api/repository/v1/snapshots/snapshot_guid?include=TABLES&include=RELATIONSHIPS&include=ACCESS_INFORMATION
