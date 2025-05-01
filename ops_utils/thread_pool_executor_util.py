@@ -1,10 +1,12 @@
+"""Module to handle multi-threaded job execution with retries."""
 from concurrent import futures
 from typing import Callable, Any, Optional, Tuple
 import logging
 
 
 class MultiThreadedJobs:
-
+    """Class to handle multi-threaded job execution with retries."""
+    
     def execute_with_retries(
             self,
             function: Callable,
