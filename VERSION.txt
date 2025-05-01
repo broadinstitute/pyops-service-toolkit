@@ -1,2 +1,5 @@
-8.5.1
-- Adding tests for tdr bq util
+8.6.0
+- Configure Codecov to use configuration file
+- Update Codecov GitHub Action
+- Add more unit tests to boost coverage
+- Update Codecov minimum to 80%
