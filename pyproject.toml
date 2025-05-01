@@ -48,3 +48,18 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["."]
 exclude = ["ops_utils.tests*"]  # empty by default
+
+
+[tool.ruff]
+exclude = [
+    "ops_utils/tests"
+]
+line-length = 120
+namespace-packages = ["ops_utils"]
+
+# Linting rule selection, https://docs.astral.sh/ruff/rules/
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
