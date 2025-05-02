@@ -1,3 +1,5 @@
+"""Utility classes for TDR schema."""
+
 import logging
 import re
 import time
@@ -8,9 +10,7 @@ from typing import Any, Optional
 
 
 class InferTDRSchema:
-    """
-    A class to infer the schema for a table in TDR (Terra Data Repository) based on input metadata.
-    """
+    """A class to infer the schema for a table in TDR (Terra Data Repository) based on input metadata."""
 
     PYTHON_TDR_DATA_TYPE_MAPPING = {
         str: "string",

@@ -1,3 +1,4 @@
+"""Module for renaming files in TDR and updating metadata."""
 import logging
 import os
 from typing import Optional, Tuple
@@ -8,6 +9,8 @@ from ..vars import ARG_DEFAULTS
 
 
 class GetRowAndFileInfoForReingest:
+    """Class to obtain file and row information for re-ingesting files in TDR."""
+
     def __init__(
             self,
             table_schema_info: dict,
@@ -92,6 +95,7 @@ class GetRowAndFileInfoForReingest:
     ) -> Tuple[Optional[dict], Optional[list[dict]]]:
         """
         Go through each row and check each cell if it is a file and if it needs to be re-ingested.
+
         If so, create a new row dict with the new file path.
 
         Args:
@@ -154,6 +158,7 @@ class GetRowAndFileInfoForReingest:
     def get_new_copy_and_ingest_list(self) -> Tuple[list[dict], list[list]]:
         """
         Get the list of rows to re-ingest and files to copy to temporary storage.
+
         Iterates through the table metrics, identifies the rows and files that need to be re-ingested,
         and prepares lists of these rows and files.
 
@@ -177,6 +182,8 @@ class GetRowAndFileInfoForReingest:
 
 
 class BatchCopyAndIngest:
+    """Class to perform batch copy and ingest of files to TDR."""
+
     def __init__(
             self,
             rows_to_ingest: list[dict],
@@ -225,8 +232,9 @@ class BatchCopyAndIngest:
 
     def run(self) -> None:
         """
-        Run the batch copy and ingest process. Batches the rows to copy files and
-        ingests them into the dataset. Also deletes the temporary files after ingestion.
+        Run the batch copy and ingest process. 
+        
+        Batches the rows to copy files and ingests them into the dataset. Also deletes the temporary files after ingestion.
         """
         # Batch through rows to copy files down and ingest so if script fails partway through large
         # copy and ingest it will have copied over and ingested some of the files already

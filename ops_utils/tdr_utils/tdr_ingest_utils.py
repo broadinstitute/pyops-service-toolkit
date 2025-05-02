@@ -1,3 +1,5 @@
+"""Classes and functions for ingesting data into TDR."""
+
 import json
 import logging
 import sys
@@ -15,6 +17,8 @@ from ..terra_util import TerraWorkspace
 
 
 class BatchIngest:
+    """A class to handle batch ingestion of metadata into TDR (Terra Data Repository)."""
+
     def __init__(
             self,
             ingest_metadata: list[dict],
@@ -32,8 +36,7 @@ class BatchIngest:
             skip_reformat: bool = False
     ):
         """
-        Initialize the BatchIngest class. (A class to handle batch ingestion of metadata into
-        TDR (Terra Data Repository).)
+        Initialize the BatchIngest class. 
 
         **Args:**
         - ingest_metadata (list[dict]): The metadata to be ingested.
@@ -89,9 +92,12 @@ class BatchIngest:
 
     @staticmethod
     def _reformat_for_type_consistency(ingest_metadata: list[dict]) -> list[dict]:
-        """Takes ingest metadata and finds headers where values are a mix of lists and non-lists. If there is mix of
-        these types of values, it converts the non-array to a one-item list. The updated metadata is then returned to
-        be used for everything downstream"""
+        """
+        Reformats ingest metadata and finds headers where values are a mix of lists and non-lists. 
+        
+        If there is mix of these types of values, it converts the non-array to a one-item list. The updated metadata is then returned to
+        be used for everything downstream
+        """
         unique_headers = sorted({key for item in ingest_metadata for key in item.keys()})
 
         headers_containing_mismatch = []
@@ -119,9 +125,7 @@ class BatchIngest:
         return updated_metadata
 
     def run(self) -> None:
-        """
-        Run the batch ingestion process.
-        """
+        """Run the batch ingestion process."""
         logging.info(
             f"Batching {len(self.ingest_metadata)} total rows into batches of {self.batch_size} for ingest")
         total_batches = math.ceil(len(self.ingest_metadata) / self.batch_size)
@@ -164,6 +168,8 @@ class BatchIngest:
 
 
 class StartAndMonitorIngest:
+    """Class to start and monitor the ingestion of recordsinto a TDR dataset."""
+
     def __init__(
             self, tdr: TDR,
             ingest_records: list[dict],
@@ -175,8 +181,7 @@ class StartAndMonitorIngest:
             waiting_time_to_poll: int
     ):
         """
-        Initialize the StartAndMonitorIngest (A class to start and monitor the ingestion of records
-        into a TDR dataset).
+        Initialize the StartAndMonitorIngest.
 
         **Args:**
         - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
@@ -225,9 +230,7 @@ class StartAndMonitorIngest:
         return json.dumps(load_dict)  # dict -> json
 
     def run(self) -> None:
-        """
-        Run the ingestion process and monitor the job until completion.
-        """
+        """Run the ingestion process and monitor the job until completion."""
         ingest_request = self._create_ingest_dataset_request()
         logging.info(f"Starting ingest to {self.dataset_id}")
         ingest_response = self.tdr.ingest_to_dataset(dataset_id=self.dataset_id, data=ingest_request)
@@ -240,9 +243,7 @@ class StartAndMonitorIngest:
 
 
 class ReformatMetricsForIngest:
-    """
-    A class to reformat metrics for ingestion into TDR (Terra Data Repository).
-    """
+    """A class to reformat metrics for ingestion into TDR (Terra Data Repository)."""
 
     def __init__(
             self,
@@ -251,7 +252,9 @@ class ReformatMetricsForIngest:
             schema_info: Optional[dict] = None
     ):
         """
-        Initialize the ReformatMetricsForIngest class. This class is used to reformat metrics for ingest.
+        Initialize the ReformatMetricsForIngest class.
+        
+        This class is used to reformat metrics for ingest.
         Assumes input JSON will be in the following format for GCP:
         ```
         {
@@ -311,7 +314,9 @@ class ReformatMetricsForIngest:
 
     def _check_and_format_file_path(self, column_value: str) -> tuple[Any, bool]:
         """
-        Check if column value is a gs:// path and reformat to dict with ingest information. If file_to_uuid_dict is
+        Check if column value is a gs:// path and reformat to dict with ingest information.
+        
+        If file_to_uuid_dict is
         provided then it will add existing UUID. If file_to_uuid_dict provided and file not found then will warn and
         return None.
 
@@ -451,6 +456,8 @@ class ReformatMetricsForIngest:
 
 
 class ConvertTerraTableInfoForIngest:
+    """Converts each row of table metadata into a dictionary that can be ingested into TDR."""
+
     def __init__(
             self,
             table_metadata: list[dict],
@@ -459,8 +466,7 @@ class ConvertTerraTableInfoForIngest:
     ):
         """
         Initialize the ConvertTerraTableInfoForIngest class.
-        Converts each row of table metadata into a dictionary that can be ingested into TDR.
-
+        
         Input will look like this:
         ```
             [{
@@ -517,6 +523,8 @@ class ConvertTerraTableInfoForIngest:
 
 
 class FilterAndBatchIngest:
+    """Filter and batch ingest process into TDR."""
+
     def __init__(
             self,
             tdr: TDR,
@@ -630,6 +638,8 @@ class FilterAndBatchIngest:
 
 
 class GetPermissionsForWorkspaceIngest:
+    """Obtain permissions necessary for workspace ingest."""
+    
     def __init__(self, terra_workspace: TerraWorkspace, dataset_info: dict, added_to_auth_domain: bool = False):
         """
         Initialize the GetPermissionsForWorkspaceIngest class.
