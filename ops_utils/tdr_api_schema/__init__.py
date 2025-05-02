@@ -1,18 +1,11 @@
-"""
-Constants and default values for interacting with TDR API.
-
-@private
-"""
+"""Constants and default values for interacting with TDR API."""
 from enum import Enum
 from pydantic import BaseModel, Field
 from typing import Optional
 
 
 class DataTypeEnum(str, Enum):
-    """TDR data types.
-    
-    @private
-    """
+    """TDR data types."""
 
     string = "string"
     boolean = "boolean"
@@ -33,10 +26,7 @@ class DataTypeEnum(str, Enum):
 
 
 class Column(BaseModel):
-    """TDR Colum schema.
-    
-    @private
-    """
+    """TDR Colum schema."""
 
     name: str = Field(min_length=1, max_length=63)
     datatype: DataTypeEnum
@@ -45,20 +35,14 @@ class Column(BaseModel):
 
 
 class RelationshipTerm(BaseModel):
-    """TDR Relathionship term schema.
-
-    @private
-    """
+    """TDR Relathionship term schema."""
 
     table: str = Field(min_length=1, max_length=63)
     column: str = Field(min_length=1, max_length=63)
 
 
 class Relationship(BaseModel):
-    """TDR Relationship schema.
-    
-    @private
-    """
+    """TDR Relationship schema."""
 
     name: str = Field(min_length=1)
     from_table: RelationshipTerm = Field(alias="from")
@@ -66,10 +50,7 @@ class Relationship(BaseModel):
 
 
 class PartitionModeEnum(str, Enum):
-    """TDR partition modes.
-    
-    @private
-    """
+    """TDR partition modes."""
 
     none = "none"
     date = "date"
@@ -77,19 +58,13 @@ class PartitionModeEnum(str, Enum):
 
 
 class DatePartition(BaseModel):
-    """TDR date partition schema.
-    
-    @private
-    """
+    """TDR date partition schema."""
 
     column: str = Field(min_length=1, max_length=63)
 
 
 class IntPartition(BaseModel):
-    """TDR Int partition schema.
-    
-    @private    
-    """
+    """TDR Int partition schema."""
 
     column: str = Field(min_length=1, max_length=63)
     min: int
@@ -98,10 +73,7 @@ class IntPartition(BaseModel):
 
 
 class Table(BaseModel):
-    """TDR table schema.
-    
-    @private
-    """
+    """TDR table schema."""
     
     name: str = Field(max_length=63, min_length=1)
     columns: list[Column]
