@@ -73,7 +73,54 @@ print(TDR.TDR_LINK)
 ```
 which should return `https://data.terra.bio/api/repository/v1`
 
+## Setting Up Jupyter Environment on Terra
 
+### 1. Create a Virtual Environment and Activate It
+
+- Start a **Terra Jupyter cloud environment** and open the **Terminal**.
+- Run the following command to create a new environment:
+
+  ```bash
+  conda create -n [env_name] python=3.11.12
+  ```
+
+- Activate the environment:
+
+  ```bash
+  source activate [env_name]
+  ```
+
+### 2. Install `ipykernel` and Create a Jupyter Kernel
+
+- Install Jupyter and `ipykernel`:
+
+  ```bash
+  pip install --user jupyter ipykernel
+  ```
+
+- Create a new Jupyter kernel:
+
+  ```bash
+  python3.11 -m ipykernel install --user --name=[kernel_name] --display-name="[Display name of choice]"
+  ```
+
+- **Pause** the environment.
+
+### 3. Set Up Jupyter Notebook and Install `pyops-service-toolkit`
+
+- **Resume** the environment.
+- Open the **Jupyter notebook**.
+- Go to `Kernel > Change kernel` and select **[Display name of choice]**.
+- In a notebook cell, run:
+
+  ```python
+  %pip install git+https://github.com/broadinstitute/pyops-service-toolkit.git#egg=pyops-service-toolkit
+  ```
+  If you want to install a specific version, you can run the below instead with the version substituted in:
+  ```python
+  pip install git+https://github.com/broadinstitute/pyops-service-toolkit.git@{version}#egg=pyops-service-toolkit
+  ```
+  
 # 🔧 pre-commit
 pre-commit is configured in this repository. Automatic checks (configured in [.pre-commit-config.yaml](.pre-commit-config.yaml))
 will run with each commit. Each time you go to commit changes, pre-commit will point out failing checks, which should

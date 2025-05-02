@@ -1,3 +1,2 @@
-8.7.0
-- Updating linter used by GHA to use ruff
-- various fixes to docstyle formatting
+8.7.1
+- Update readme to include instructions on how to use repo within a Terra environment
