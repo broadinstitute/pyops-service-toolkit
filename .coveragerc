@@ -1,0 +1,7 @@
+[run]
+source = ops_utils
+omit =
+    */tests/*
+    */tdr_api_schema/*
+    */get_api_yaml.py
+    */azure_utils.py

@@ -27,14 +27,13 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          coverage run -m pytest
+          coverage run --rcfile=.coveragerc -m pytest
           coverage report
           coverage html
 
-      # TODO update the minimum requirement coverage to 90% after POD-2632 is complete
       - name: Enforce minimum coverage %
         run: |
-          coverage report --fail-under=60
+          coverage report --fail-under=80
 
       - name: Generate coverage report (XML)
         run: coverage xml
