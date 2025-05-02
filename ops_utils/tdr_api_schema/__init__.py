@@ -1,9 +1,12 @@
+"""Constants and default values for interacting with TDR API."""
 from enum import Enum
 from pydantic import BaseModel, Field
 from typing import Optional
 
 
 class DataTypeEnum(str, Enum):
+    """TDR data types."""
+
     string = "string"
     boolean = "boolean"
     bytes = "bytes"
@@ -23,6 +26,8 @@ class DataTypeEnum(str, Enum):
 
 
 class Column(BaseModel):
+    """TDR Colum schema."""
+
     name: str = Field(min_length=1, max_length=63)
     datatype: DataTypeEnum
     array_of: Optional[bool] = None
@@ -30,27 +35,37 @@ class Column(BaseModel):
 
 
 class RelationshipTerm(BaseModel):
+    """TDR Relathionship term schema."""
+
     table: str = Field(min_length=1, max_length=63)
     column: str = Field(min_length=1, max_length=63)
 
 
 class Relationship(BaseModel):
+    """TDR Relationship schema."""
+
     name: str = Field(min_length=1)
     from_table: RelationshipTerm = Field(alias="from")
     to: RelationshipTerm
 
 
 class PartitionModeEnum(str, Enum):
+    """TDR partition modes."""
+
     none = "none"
     date = "date"
     int = "int"
 
 
 class DatePartition(BaseModel):
+    """TDR date partition schema."""
+
     column: str = Field(min_length=1, max_length=63)
 
 
 class IntPartition(BaseModel):
+    """TDR Int partition schema."""
+
     column: str = Field(min_length=1, max_length=63)
     min: int
     max: int
@@ -58,6 +73,8 @@ class IntPartition(BaseModel):
 
 
 class Table(BaseModel):
+    """TDR table schema."""
+    
     name: str = Field(max_length=63, min_length=1)
     columns: list[Column]
     primaryKey: Optional[list[str]] = None

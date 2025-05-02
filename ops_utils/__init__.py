@@ -1,5 +1,5 @@
 r"""
-# pyops-service-toolkit
+# pyops-service-toolkit.
 
 Welcome to the documentation for
 [pyops-service-toolkit](https://github.com/broadinstitute/pyops-service-toolkit).
@@ -16,18 +16,20 @@ import functools
 # To avoid breaking changes and converting these to have underscores,
 # we can instead add the @private annotation in the docstring
 def comma_separated_list(value: str) -> list:
-    """@private
-    Return a list of values from a comma-separated string. Can be used as type in argparse.
+    """Return a list of values from a comma-separated string.
+
+    Can be used as type in argparse.
+    @private
     """
     return value.split(",")
 
 
 def deprecated(reason: str):  # type: ignore[no-untyped-def]
-    """
+    """Use as wrapper function for deprecated functionality.
+
+    Use the @deprecated decorator for a function and provide a reason. 
+    Anytime the function is called, a deprecation warning will be raised.
     @private
-    Wrapper function to be used for deprecated functionality. Use the @deprecated
-    decorator for a function and provide a reason. Anytime the function is called, a
-    deprecation warning will be raised.
     """
     def decorator(func):  # type: ignore[no-untyped-def]
         @functools.wraps(func)

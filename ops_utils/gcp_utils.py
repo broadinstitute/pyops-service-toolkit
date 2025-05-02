@@ -1,3 +1,4 @@
+"""Module for GCP utilities."""
 import os
 import logging
 import io
@@ -24,9 +25,12 @@ MD5_BASE64 = "base64"
 
 
 class GCPCloudFunctions:
+    """Class to handle GCP Cloud Functions."""
+
     def __init__(self, project: Optional[str] = None) -> None:
         """
         Initialize the GCPCloudFunctions class.
+
         Authenticates using the default credentials and sets up the Storage Client.
         Uses the `project_id` if provided, otherwise utilizes the default project set.
 
@@ -288,7 +292,6 @@ class GCPCloudFunctions:
         **Returns:**
         - bool: `True` if the files are identical, `False` otherwise.
         """
-
         src_blob = self.load_blob_from_full_path(src_cloud_path)
         dest_blob = self.load_blob_from_full_path(dest_cloud_path)
 
@@ -340,7 +343,7 @@ class GCPCloudFunctions:
 
     def _validate_file_pair(self, source_file: str, full_destination_path: str) -> dict:
         """
-        Helper function to validate if source and destination files are identical.
+        Validate if source and destination files are identical.
 
         **Args:**
         - source_file (str): The source file path.
@@ -517,7 +520,6 @@ class GCPCloudFunctions:
         **Returns:**
         - bytes: The content of the file as bytes.
         """
-
         blob = self.load_blob_from_full_path(cloud_path)
         # Download the file content as bytes
         content_bytes = blob.download_as_bytes()
@@ -638,7 +640,9 @@ class GCPCloudFunctions:
 
     def get_file_contents_of_most_recent_blob_in_bucket(self, bucket_name: str) -> Optional[tuple[str, str]]:
         """
-        Gets the most recent blob in the bucket. If the blob with the most recent timestamp doesn't have
+        Get the most recent blob in the bucket.
+        
+        If the blob with the most recent timestamp doesn't have
         any logging besides the basic "storage_byte_hours" logging, will continue to look at the next most
         recent file until a log with useful information is encountered. This is useful when combing through
         GCP activity logs for Terra workspace buckets.
@@ -689,7 +693,6 @@ class GCPCloudFunctions:
         **Returns:**
         - str: The active GCP account email.
         """
-
         result = subprocess.run(
             args=["gcloud", "auth", "list", "--filter=status:ACTIVE", "--format=value(account)"],
             capture_output=True,

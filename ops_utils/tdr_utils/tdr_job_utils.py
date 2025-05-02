@@ -1,3 +1,4 @@
+"""Utilities for interacting with TDR jobs."""
 import json
 import logging
 import time
@@ -7,10 +8,11 @@ from ..vars import ARG_DEFAULTS
 
 
 class MonitorTDRJob:
+    """A class to monitor the status of a TDR job until completion."""
 
     def __init__(self, tdr: Any, job_id: str, check_interval: int, return_json: bool):
         """
-        Initialize the MonitorTDRJob class (A class to monitor the status of a TDR job until completion).
+        Initialize the MonitorTDRJob class.
 
         **Args:**
         - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
@@ -69,6 +71,8 @@ class MonitorTDRJob:
 
 
 class SubmitAndMonitorMultipleJobs:
+    """"A class to batch submit and monitor TDR jobs."""
+
     def __init__(
             self, tdr: Any,
             job_function: Callable,
@@ -103,8 +107,9 @@ class SubmitAndMonitorMultipleJobs:
 
     def run(self) -> None:
         """
-        Run the process to submit and monitor multiple jobs in batches. Logs the progress and
-         status of each batch and job.
+        Run the process to submit and monitor multiple jobs in batches. 
+        
+        Logs the progress and status of each batch and job.
         """
         total_jobs = len(self.job_args_list)
         logging.info(f"Processing {total_jobs} {self.job_function.__name__} jobs in batches of {self.batch_size}")

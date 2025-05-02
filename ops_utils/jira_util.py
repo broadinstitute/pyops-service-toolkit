@@ -1,3 +1,4 @@
+"""Module for interacting with Jira tickets."""
 import os
 import logging
 from jira import JIRA
@@ -12,7 +13,9 @@ BROAD_INSTITUTE_SERVER = "https://broadinstitute.atlassian.net/"
 
 class Jira:
     """
-    A class to assist in interacting with JIRA tickets. Provides functionality to help in updating tickets
+    A class to assist in interacting with JIRA tickets.
+    
+    Provides functionality to help in updating tickets
     (adding comments, updating ticket fields, and transitioning statuses). Also provides a way to query
     existing JIRA tickets using certain filters. Assumes that an accessible JIRA API key is stored in
     Google's SecretManger
@@ -20,14 +23,13 @@ class Jira:
 
     def __init__(self, server: str, gcp_project_id: str, jira_api_key_secret_name: str) -> None:
         """
-        Initializes the Jira instance using the provided server
+        Initialize the Jira instance using the provided server.
 
         **Args:**
         - server (str): The server URL to connect to. For example: `https://broadinstitute.atlassian.net/`
         - gcp_project_id (str): The GCP project ID used to locate the Jira API key that is stored in SecretManager.
         - jira_api_key_secret_name (str): The name of the Jira API key secret that is stored in SecretManager.
         """
-
         self.server = server
         """@private"""
         self.gcp_project_id = gcp_project_id
@@ -38,8 +40,11 @@ class Jira:
         """@private"""
 
     def _connect_to_jira(self) -> JIRA:
-        """Obtains credentials and establishes the Jira connection. User must have token stored in ~/.jira_api_key"""
+        """
+        Obtain credentials and establish the Jira connection.
 
+        User must have token stored in ~/.jira_api_key
+        """
         if os.getenv("RUN_IN_CLOUD") == "yes":
             jira_user = f'{os.getenv("JIRA_USER")}@broadinstitute.org'
         else:
@@ -59,7 +64,7 @@ class Jira:
 
     def update_ticket_fields(self, issue_key: str, field_update_dict: dict) -> None:
         """
-        Update a Jira ticket with new field values
+        Update a Jira ticket with new field values.
 
         **Args:**
         - issue_key (str): The issue key to update
@@ -71,7 +76,7 @@ class Jira:
 
     def add_comment(self, issue_key: str, comment: str) -> None:
         """
-        Add a comment to a Jira ticket
+        Add a comment to a Jira ticket.
 
         **Args:**
         - issue_key (str): The issue key to update
@@ -81,7 +86,7 @@ class Jira:
 
     def transition_ticket(self, issue_key: str, transition_id: int) -> None:
         """
-        Transition a Jira ticket to a new status
+        Transition a Jira ticket to a new status.
 
         **Args:**
         - issue_key (str): The issue key to update
@@ -97,7 +102,7 @@ class Jira:
             expand_info: Optional[str] = None
     ) -> list[dict]:
         """
-        Get all issues by defining specific criteria
+        Get all issues by defining specific criteria.
 
         **Args:**
         - criteria (str): The criteria to search for. This should be formatted in a supported JIRA search filter

@@ -26,7 +26,7 @@ jobs:
              pip install -e .
              pip install pdoc
       # The '!' syntax tells pdocs which modules to completely ignore generating documentation for
-      - run: python -m pdoc ops_utils '!ops_utils.thread_pool_executor_util' '!ops_utils.tdr_api_schema' -o docs/ --logo DSP-BroadLogo_Pantone_Dark.png
+      - run: python -m pdoc ops_utils '!ops_utils.thread_pool_executor_util' '!ops_utils.tdr_api_schema' '!ops_utils.get_api_yaml' -o docs/ --logo DSP-BroadLogo_Pantone_Dark.png
       - run: cp resources/DSP-BroadLogo_Pantone_Dark.png docs/
 
       - uses: actions/upload-pages-artifact@v3

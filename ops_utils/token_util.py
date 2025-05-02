@@ -1,3 +1,4 @@
+"""Module for generating tokens for other module services."""
 import httplib2
 import pytz
 import logging
@@ -8,8 +9,10 @@ from datetime import datetime, timedelta
 
 
 class Token:
+    """Class for generating tokens for other module services."""
+
     def __init__(self, token_file: Optional[str] = None) -> None:
-        """Initialize the Token class
+        """Initialize the Token class.
 
         **Args:**
         - token_file (str, optional): The path to a file containing an existing token string.
@@ -59,12 +62,11 @@ class Token:
 
     def get_token(self) -> str:
         """
-        Generates a token with a set expiration time.
+        Generate a token with a set expiration time.
 
         **Returns:**
         - string: The generated token
         """
-
         # If token file provided then always return contents
         if self.token_file:
             return self.token_string  # type: ignore[return-value]

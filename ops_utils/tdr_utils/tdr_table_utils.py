@@ -1,3 +1,4 @@
+"""Module for interacting with TDR tables."""
 import json
 import logging
 import sys
@@ -7,9 +8,7 @@ from ..tdr_utils.tdr_schema_utils import InferTDRSchema
 
 
 class SetUpTDRTables:
-    """
-    A class to set up TDR tables by comparing and updating schemas.
-    """
+    """A class to set up TDR tables by comparing and updating schemas."""
 
     def __init__(
             self,

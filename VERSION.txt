@@ -1,2 +1,2 @@
-8.6.1
+8.7.1
 - Update readme to include instructions on how to use repo within a Terra environment
