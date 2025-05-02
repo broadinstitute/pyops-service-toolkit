@@ -1,3 +1,4 @@
+"""Modlue to interact with Google Calendar API."""
 from datetime import datetime, timedelta
 from typing import List, Dict
 from googleapiclient.discovery import build
@@ -5,11 +6,13 @@ from google.oauth2 import service_account
 
 
 class GoogleCalendar:
+    """Class to interact with Google Calendar API."""
+
     _SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
     def __init__(self, service_account_info: dict):
         """
-        Initializes the GoogleCalendar instance using the user's credentials.
+        Initialize the GoogleCalendar instance using the user's credentials.
 
         **Args:**
         - service_account_info (dict): A dictionary containing the service account credentials.
@@ -27,7 +30,7 @@ class GoogleCalendar:
     @staticmethod
     def _create_calendar_string_from_datetime(dt: datetime) -> str:
         """
-        Creates a string representation of a datetime object.
+        Create a string representation of a datetime object.
 
         **Args:**
         - dt (datetime): A datetime object.

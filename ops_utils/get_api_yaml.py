@@ -1,3 +1,7 @@
+"""Util for capturing API responses for use in unit tests.
+
+@private
+"""
 from responses import _recorder
 from ops_utils.request_util import RunRequest
 from ops_utils.token_util import Token

@@ -1,3 +1,4 @@
+"""Utilities for working with Terra."""
 import json
 import logging
 import re
@@ -28,6 +29,8 @@ ADMIN = "admin"
 
 
 class Terra:
+    """Class for generic Terra utilities."""
+
     def __init__(self, request_util: RunRequest):
         """
         Initialize the Terra class.
@@ -73,9 +76,7 @@ class Terra:
 
 
 class TerraGroups:
-    """
-    A class to manage Terra groups and their memberships.
-    """
+    """A class to manage Terra groups and their memberships."""
 
     GROUP_MEMBERSHIP_OPTIONS = [MEMBER, ADMIN]
     """@private"""
@@ -197,6 +198,7 @@ class TerraGroups:
 
 
 class TerraWorkspace:
+    """Terra workspace class to manage workspaces and their attributes."""
 
     def __init__(self, billing_project: str, workspace_name: str, request_util: RunRequest):
         """
@@ -271,9 +273,7 @@ class TerraWorkspace:
 
     @staticmethod
     def validate_terra_headers_for_tdr_conversion(table_name: str, headers: list[str]) -> None:
-        """
-        Given a table name and existing headers, will check that all headers follow the standards
-        required by TDR (that are different from requirements for Terra).
+        """Check that all headers follow the standards required by TDR.
 
         **Args:**
         - table_name (str): The name of the Terra table.
@@ -282,7 +282,6 @@ class TerraWorkspace:
         **Raises:**
         - ValueError if any headers are considered invalid by TDR standards
         """
-
         tdr_header_allowed_pattern = "^[a-zA-Z][_a-zA-Z0-9]*$"
         tdr_max_header_length = 63
 
@@ -750,8 +749,7 @@ class TerraWorkspace:
         return response.json()
 
     def delete_entity_table(self, entity_to_delete: str) -> int:
-        """
-        Delete an entire entity table from a Terra workspace
+        """Delete an entire entity table from a Terra workspace.
 
         **Args:**
         - entity_to_delete (str): The name of the entity table to delete.
@@ -759,7 +757,6 @@ class TerraWorkspace:
         **Returns:**
         - int: The API endpoint response status code
         """
-
         response = self.request_util.run_request(
             uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",
             method=DELETE
@@ -777,8 +774,7 @@ class TerraWorkspace:
         return response.status_code
 
     def save_entity_table_version(self, entity_type: str, version_name: str) -> None:
-        """
-        Save an entity table version in a Terra workspace
+        """Save an entity table version in a Terra workspace.
 
         **Args:**
         - entity_type (str): The name of the entity table to save a new version for

@@ -1,3 +1,5 @@
+"""Utility classes for interacting with TDR API."""
+
 import json
 import logging
 
@@ -15,12 +17,14 @@ from ..vars import ARG_DEFAULTS, GCP
 
 
 class TDR:
+    """Class to interact with the Terra Data Repository (TDR) API."""
+
     TDR_LINK = "https://data.terra.bio/api/repository/v1"
     """(str): The base URL for the TDR API."""
 
     def __init__(self, request_util: RunRequest):
         """
-        Initialize the TDR class (A class to interact with the Terra Data Repository (TDR) API.)
+        Initialize the TDR class (A class to interact with the Terra Data Repository (TDR) API).
 
         **Args:**
         - request_util (`ops_utils.request_util.RunRequest`): Utility for making HTTP requests.
@@ -34,7 +38,9 @@ class TDR:
             limit: int = ARG_DEFAULTS['batch_size_to_list_files']  # type: ignore[assignment]
     ) -> list[dict]:
         """
-        Get all files in a dataset. Returns json like below
+        Get all files in a dataset. 
+        
+        Returns json like below
 
             {
                 "fileId": "68ba8bfc-1d84-4ef3-99b8-cf1754d5rrrr",
@@ -101,6 +107,7 @@ class TDR:
     ) -> dict:
         """
         Create a dictionary of all files in a dataset where the key is the file 'path' and the value is the file UUID.
+
         This assumes that the TDR 'path' is original path of the file in the cloud storage with `gs://` stripped out.
 
         This will ONLY work if dataset was created with `experimentalSelfHosted = True`
@@ -890,7 +897,11 @@ class TDR:
 
     def _get_response_from_batched_endpoint(self, uri: str, limit: int = 1000) -> list[dict]:
         """
-        Helper method for all GET endpoints that require batching. Given the URI and the limit (optional), will
+        Get response from a batched endpoint.
+
+        Helper method for all GET endpoints that require batching.
+        
+        Given the URI and the limit (optional), will
         loop through batches until all metadata is retrieved.
 
         **Args:**
@@ -920,7 +931,9 @@ class TDR:
 
     def get_files_from_snapshot(self, snapshot_id: str, limit: int = 1000) -> list[dict]:
         """
-        Returns all the metadata about files in a given snapshot. Not all files can be returned at once, so the API
+        Return all the metadata about files in a given snapshot.
+        
+        Not all files can be returned at once, so the API
         is used repeatedly until all "batches" have been returned.
 
         **Args:**
@@ -935,7 +948,7 @@ class TDR:
 
     def get_dataset_snapshots(self, dataset_id: str) -> dict:
         """
-        Returns snapshots belonging to specified datset.
+        Return snapshots belonging to specified datset.
 
         **Args:**
         - dataset_id: uuid of dataset to query.
@@ -952,6 +965,8 @@ class TDR:
 
 
 class FilterOutSampleIdsAlreadyInDataset:
+    """Class to filter ingest metrics to remove sample IDs that already exist in the dataset."""
+
     def __init__(
             self,
             ingest_metrics: list[dict],

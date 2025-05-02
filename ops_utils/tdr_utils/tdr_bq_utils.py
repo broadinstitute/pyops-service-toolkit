@@ -1,3 +1,5 @@
+"""Module for handling TDR interactions with BigQuery."""
+
 from ..bq_utils import BigQueryUtil
 from .tdr_api_utils import TDR
 
@@ -6,6 +8,8 @@ from typing import Optional, Any
 
 
 class GetTdrAssetInfo:
+    """Class to obtain TDR asset metadata (from dataset or snapshot) from BigQuery."""
+
     def __init__(self, tdr: TDR, dataset_id: Optional[str] = None, snapshot_id: Optional[str] = None):
         """
         Initialize the GetTdrAssetInfo class.
@@ -74,6 +78,8 @@ class GetTdrAssetInfo:
 
 
 class TdrBq:
+    """Class to interact with TDR BigQuery tables."""
+    
     def __init__(self, project_id: str, bq_schema: str):
         """
         Initialize the TdrBq class.
@@ -111,7 +117,6 @@ class TdrBq:
 
         **Args:**
         - exclude_datarepo_id (bool): Whether to exclude the datarepo_row_id column.
-        - table_name (str): The name of the table.
         - to_dataframe (bool): Whether to return the results as a DataFrame.
 
         **Returns:**

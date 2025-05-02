@@ -1,3 +1,4 @@
+"""Module to handle web requests."""
 from typing import Any, Optional
 import requests
 import backoff
@@ -18,6 +19,8 @@ PUT = "PUT"
 
 
 class RunRequest:
+    """Class to handle web requests with retries and backoff."""
+
     def __init__(
             self,
             token: Token,
@@ -85,7 +88,6 @@ class RunRequest:
         **Returns:**
         - requests.Response: The response from the request.
         """
-
         # Create a custom backoff decorator with the provided parameters
         backoff_decorator = self._create_backoff_decorator(
             max_tries=self.max_retries,

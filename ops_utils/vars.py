@@ -1,3 +1,5 @@
+"""Constants and default values for the Ops Toolbox."""
+
 GCP = "gcp"
 """To be used anytime a "cloud type" should be defined as 'GCP'"""
 ARG_DEFAULTS = {

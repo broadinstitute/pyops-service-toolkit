@@ -1,5 +1,3 @@
-8.6.0
-- Configure Codecov to use configuration file
-- Update Codecov GitHub Action
-- Add more unit tests to boost coverage
-- Update Codecov minimum to 80%
+8.7.0
+- Updating linter used by GHA to use ruff
+- various fixes to docstyle formatting

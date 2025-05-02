@@ -1,11 +1,14 @@
+"""Module for CSV file operations."""
 import csv
 import logging
 from typing import Optional, Sequence
 
 
 class Csv:
+    """Class for CSV file operations."""
+
     def __init__(self, file_path: str, delimiter: str = "\t"):
-        """
+        r"""
         Initialize the Csv class.
 
         **Args:**
@@ -103,7 +106,7 @@ class Csv:
             allow_extra_headers: bool = False
     ) -> list[dict]:
         """
-        Creates a list of dictionaries from a TSV file.
+        Create a list of dictionaries from a TSV file.
 
         **Args:**
         - expected_headers (list[str], optional): The list of expected headers. If provided,
