@@ -1,5 +1,2 @@
-8.6.0
-- Configure Codecov to use configuration file
-- Update Codecov GitHub Action
-- Add more unit tests to boost coverage
-- Update Codecov minimum to 80%
+8.6.1
+- Update readme to include instructions on how to use repo within a Terra environment
