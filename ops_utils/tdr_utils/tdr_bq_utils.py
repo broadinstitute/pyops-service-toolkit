@@ -117,7 +117,6 @@ class TdrBq:
 
         **Args:**
         - exclude_datarepo_id (bool): Whether to exclude the datarepo_row_id column.
-        - table_name (str): The name of the table.
         - to_dataframe (bool): Whether to return the results as a DataFrame.
 
         **Returns:**
