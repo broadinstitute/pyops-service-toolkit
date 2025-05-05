@@ -21,7 +21,7 @@ class TestTerraWorkspaceUtils:
     @responses.activate
     def test_get_workspace(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/get_workspace.yaml")
-        workspace_info = self.workspace.get_workspace_info()
+        workspace_info = self.workspace.get_workspace_info().json()
         assert workspace_info
 
     @responses.activate
@@ -33,13 +33,13 @@ class TestTerraWorkspaceUtils:
     @responses.activate
     def test_get_workspace_entity_info(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/workspace_entity_info.yaml")
-        entify_info = self.workspace.get_workspace_entity_info()
+        entify_info = self.workspace.get_workspace_entity_info().json()
         assert entify_info['file_metadata']['idName'] == "file_metadata_id"
 
     @responses.activate
     def test_get_workspace_acl(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/workspace_acl_info.yaml")
-        workspace_acl = self.workspace.get_workspace_acl()
+        workspace_acl = self.workspace.get_workspace_acl().json()
         assert workspace_acl
 
     @responses.activate
@@ -51,33 +51,33 @@ class TestTerraWorkspaceUtils:
     @responses.activate
     def test_get_workspace_workflows(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/get_workspace_workflows.yaml")
-        workflows = self.workspace.get_workspace_workflows()
+        workflows = self.workspace.get_workspace_workflows().json()
         assert workflows
 
     @responses.activate
     def test_check_workspace_public(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/check_workspace_public.yaml")
-        workspace_public = self.workspace.check_workspace_public()
+        workspace_public = self.workspace.check_workspace_public().json()
         assert not workspace_public
 
     @responses.activate
     def test_create_workspace(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/create_workspace.yaml")
-        new_workspace_metadata = self.workspace.create_workspace()
+        new_workspace_metadata = self.workspace.create_workspace().json()
         assert new_workspace_metadata
 
     @responses.activate
     def test_update_workspace_attributes(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/update_workspace_attributes.yaml")
         attributes = [{"op": "AddUpdateAttribute", "attributeName": "dataset_id", "addUpdateAttribute": 'ex-dataset-guid'}]
-        workspace_update = self.workspace.update_workspace_attributes(attributes=attributes)
-        assert workspace_update is None
+        workspace_update = self.workspace.update_workspace_attributes(attributes=attributes).json()
+        assert workspace_update
 
     @responses.activate
     def test_update_user_acl(self):
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/update_acl.yaml")
         update_acl = self.workspace.update_user_acl(
-            email='test-account@integration-project.iam.gserviceaccount.com', access_level='READER')
+            email='test-account@integration-project.iam.gserviceaccount.com', access_level='READER').json()
         assert update_acl
 
     @responses.activate
@@ -85,7 +85,7 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/terra_util/update_multiple_acl.yaml")
         acl_list = [{"email": "test@broadinstitute.org", "accessLevel": "READER", "canShare": False, "canCompute": False, },
                     {"email": "test-account@integration-project.iam.gserviceaccount.com", "accessLevel": "READER", "canShare": False, "canCompute": False, }]
-        update_multiple_acl = self.workspace.update_multiple_users_acl(acl_list=acl_list, invite_users_not_found=False)
+        update_multiple_acl = self.workspace.update_multiple_users_acl(acl_list=acl_list, invite_users_not_found=False).json()
         assert update_multiple_acl
 
     @responses.activate
