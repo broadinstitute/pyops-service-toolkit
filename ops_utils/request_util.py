@@ -160,7 +160,7 @@ class RunRequest:
             headers["accept"] = accept
         return headers
 
-    def upload_file(self, uri: str, data: dict) -> str:
+    def upload_file(self, uri: str, data: dict) -> requests.Response:
         """
         Run a POST request with files parameter.
 
@@ -169,11 +169,10 @@ class RunRequest:
         - data (dict): The files data to upload.
 
         **Returns:**
-        - str: The response text from the request.
+        - requests.Response: The response from the request.
         """
         headers = self.create_headers(accept=None)
         response = requests.post(uri, headers=headers, files=data)
         if 300 <= response.status_code or response.status_code < 200:
-            print(response.text)
             response.raise_for_status()  # Raise an exception for non-200 status codes
-        return response.text
+        return response

@@ -36,7 +36,7 @@ class BatchIngest:
             skip_reformat: bool = False
     ):
         """
-        Initialize the BatchIngest class. 
+        Initialize the BatchIngest class.
 
         **Args:**
         - ingest_metadata (list[dict]): The metadata to be ingested.
@@ -93,10 +93,10 @@ class BatchIngest:
     @staticmethod
     def _reformat_for_type_consistency(ingest_metadata: list[dict]) -> list[dict]:
         """
-        Reformats ingest metadata and finds headers where values are a mix of lists and non-lists. 
-        
-        If there is mix of these types of values, it converts the non-array to a one-item list. The updated metadata is then returned to
-        be used for everything downstream
+        Reformats ingest metadata and finds headers where values are a mix of lists and non-lists.
+
+        If there is mix of these types of values, it converts the non-array to a one-item list. The updated metadata
+        is then returned to be used for everything downstream
         """
         unique_headers = sorted({key for item in ingest_metadata for key in item.keys()})
 
@@ -253,7 +253,7 @@ class ReformatMetricsForIngest:
     ):
         """
         Initialize the ReformatMetricsForIngest class.
-        
+
         This class is used to reformat metrics for ingest.
         Assumes input JSON will be in the following format for GCP:
         ```
@@ -315,7 +315,7 @@ class ReformatMetricsForIngest:
     def _check_and_format_file_path(self, column_value: str) -> tuple[Any, bool]:
         """
         Check if column value is a gs:// path and reformat to dict with ingest information.
-        
+
         If file_to_uuid_dict is
         provided then it will add existing UUID. If file_to_uuid_dict provided and file not found then will warn and
         return None.
@@ -466,7 +466,7 @@ class ConvertTerraTableInfoForIngest:
     ):
         """
         Initialize the ConvertTerraTableInfoForIngest class.
-        
+
         Input will look like this:
         ```
             [{
@@ -639,7 +639,7 @@ class FilterAndBatchIngest:
 
 class GetPermissionsForWorkspaceIngest:
     """Obtain permissions necessary for workspace ingest."""
-    
+
     def __init__(self, terra_workspace: TerraWorkspace, dataset_info: dict, added_to_auth_domain: bool = False):
         """
         Initialize the GetPermissionsForWorkspaceIngest class.
@@ -670,7 +670,7 @@ class GetPermissionsForWorkspaceIngest:
         self.terra_workspace.update_user_acl(email=tdr_sa_account, access_level="READER")
 
         # Check if workspace has auth domain
-        workspace_info = self.terra_workspace.get_workspace_info()
+        workspace_info = self.terra_workspace.get_workspace_info().json()
         auth_domain_list = workspace_info["workspace"]["authorizationDomain"]
         # Attempt to add tdr_sa_account to auth domain
         if auth_domain_list:

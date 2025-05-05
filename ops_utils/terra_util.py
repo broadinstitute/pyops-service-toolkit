@@ -42,7 +42,7 @@ class Terra:
         self.request_util = request_util
         """@private"""
 
-    def fetch_accessible_workspaces(self, fields: Optional[list[str]]) -> list[dict]:
+    def fetch_accessible_workspaces(self, fields: Optional[list[str]]) -> requests.Response:
         """
         Fetch the list of accessible workspaces.
 
@@ -50,35 +50,35 @@ class Terra:
         - fields (list[str], optional): A list of fields to include in the response. If None, all fields are included.
 
         **Returns:**
-        - list[dict]: A list of dictionaries containing the accessible workspaces.
+        - requests.Response: The response from the request.
         """
         fields_str = "fields=" + ",".join(fields) if fields else ""
         url = f'{RAWLS_LINK}/workspaces?{fields_str}'
-        response = self.request_util.run_request(
+        return self.request_util.run_request(
             uri=url,
             method=GET
         )
-        return response.json()
 
-    def get_pet_account_json(self) -> dict:
+    def get_pet_account_json(self) -> requests.Response:
         """
         Get the service account JSON.
 
         **Returns:**
-        - dict: The service account JSON.
+        - requests.Response: The response from the request.
         """
         url = f"{SAM_LINK}/google/v1/user/petServiceAccount/key"
-        response = self.request_util.run_request(
+        return self.request_util.run_request(
             uri=url,
             method=GET
         )
-        return response.json()
 
 
 class TerraGroups:
     """A class to manage Terra groups and their memberships."""
 
     GROUP_MEMBERSHIP_OPTIONS = [MEMBER, ADMIN]
+    """@private"""
+    CONFLICT_STATUS_CODE = 409
     """@private"""
 
     def __init__(self, request_util: RunRequest):
@@ -105,7 +105,7 @@ class TerraGroups:
         if role not in self.GROUP_MEMBERSHIP_OPTIONS:
             raise ValueError(f"Role must be one of {self.GROUP_MEMBERSHIP_OPTIONS}")
 
-    def remove_user_from_group(self, group: str, email: str, role: str) -> int:
+    def remove_user_from_group(self, group: str, email: str, role: str) -> requests.Response:
         """
         Remove a user from a group.
 
@@ -116,18 +116,17 @@ class TerraGroups:
             (must be one of `ops_utils.terra_utils.MEMBER` or `ops_utils.terra_utils.ADMIN`).
 
         **Returns:**
-        - int: The response code
+        - requests.Response: The response from the request.
         """
         url = f"{SAM_LINK}/groups/v1/{group}/{role}/{email}"
         self._check_role(role)
-        res = self.request_util.run_request(
+        logging.info(f"Removing {email} from group {group}")
+        return self.request_util.run_request(
             uri=url,
             method=DELETE
         )
-        logging.info(f"Removed {email} from group {group}")
-        return res.status_code
 
-    def create_group(self, group_name: str, continue_if_exists: bool = False) -> int:
+    def create_group(self, group_name: str, continue_if_exists: bool = False) -> requests.Response:
         """
         Create a new group.
 
@@ -136,23 +135,23 @@ class TerraGroups:
         - continue_if_exists (bool, optional): Whether to continue if the group already exists. Defaults to `False`.
 
         **Returns:**
-        - int: The response code
+        - requests.Response: The response from the request.
         """
         url = f"{SAM_LINK}/groups/v1/{group_name}"
-        accept_return_codes = [409] if continue_if_exists else []
+        accept_return_codes = [self.CONFLICT_STATUS_CODE] if continue_if_exists else []
         response = self.request_util.run_request(
             uri=url,
             method=POST,
             accept_return_codes=accept_return_codes
         )
-        if continue_if_exists and response.status_code == 409:
+        if continue_if_exists and response.status_code == self.CONFLICT_STATUS_CODE:
             logging.info(f"Group {group_name} already exists. Continuing.")
-            return response.status_code
+            return response
         else:
             logging.info(f"Created group {group_name}")
-            return response.status_code
+            return response
 
-    def delete_group(self, group_name: str) -> int:
+    def delete_group(self, group_name: str) -> requests.Response:
         """
         Delete a group.
 
@@ -160,17 +159,18 @@ class TerraGroups:
         - group_name (str): The name of the group to delete.
 
         **Returns:**
-        - int: The response code
+        - requests.Response: The response from the request.
         """
         url = f"{SAM_LINK}/groups/v1/{group_name}"
-        res = self.request_util.run_request(
+        logging.info(f"Deleting group {group_name}")
+        return self.request_util.run_request(
             uri=url,
             method=DELETE
         )
-        logging.info(f"Deleted group {group_name}")
-        return res.status_code
 
-    def add_user_to_group(self, group: str, email: str, role: str, continue_if_exists: bool = False) -> int:
+    def add_user_to_group(
+            self, group: str, email: str, role: str, continue_if_exists: bool = False
+    ) -> requests.Response:
         """
         Add a user to a group.
 
@@ -183,22 +183,24 @@ class TerraGroups:
                 Defaults to `False`.
 
         **Returns:**
-        - int: The response code
+        - requests.Response: The response from the request.
         """
         url = f"{SAM_LINK}/groups/v1/{group}/{role}/{email}"
         self._check_role(role)
-        accept_return_codes = [409] if continue_if_exists else []
-        res = self.request_util.run_request(
+        accept_return_codes = [self.CONFLICT_STATUS_CODE] if continue_if_exists else []
+        logging.info(f"Adding {email} to group {group} as {role}")
+        return self.request_util.run_request(
             uri=url,
             method=PUT,
             accept_return_codes=accept_return_codes
         )
-        logging.info(f"Added {email} to group {group} as {role}")
-        return res.status_code
 
 
 class TerraWorkspace:
     """Terra workspace class to manage workspaces and their attributes."""
+
+    CONFLICT_STATUS_CODE = 409
+    """@private"""
 
     def __init__(self, billing_project: str, workspace_name: str, request_util: RunRequest):
         """
@@ -313,18 +315,17 @@ class TerraWorkspace:
             error_to_report += base_error_message
             raise ValueError(error_to_report)
 
-    def get_workspace_info(self) -> dict:
+    def get_workspace_info(self) -> requests.Response:
         """
         Get workspace information.
 
         **Returns:**
-        - dict: The JSON response containing workspace information.
+        - requests.Response: The response from the request.
         """
         url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}"
         logging.info(
             f"Getting workspace info for {self.billing_project}/{self.workspace_name}")
-        response = self.request_util.run_request(uri=url, method=GET)
-        return json.loads(response.text)
+        return self.request_util.run_request(uri=url, method=GET)
 
     def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False) -> list[dict]:
         """
@@ -396,9 +397,9 @@ class TerraWorkspace:
         **Returns:**
         - str: The bucket name.
         """
-        return self.get_workspace_info()["workspace"]["bucketName"]
+        return self.get_workspace_info().json()["workspace"]["bucketName"]
 
-    def get_workspace_entity_info(self, use_cache: bool = True) -> dict:
+    def get_workspace_entity_info(self, use_cache: bool = True) -> requests.Response:
         """
         Get workspace entity information.
 
@@ -406,26 +407,24 @@ class TerraWorkspace:
         - use_cache (bool, optional): Whether to use cache. Defaults to `True`.
 
         **Returns:**
-        - dict: The JSON response containing workspace entity information.
+        - requests.Response: The response from the request.
         """
         use_cache = "true" if use_cache else "false"  # type: ignore[assignment]
         url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entities?useCache={use_cache}"
-        response = self.request_util.run_request(uri=url, method=GET)
-        return json.loads(response.text)
+        return self.request_util.run_request(uri=url, method=GET)
 
-    def get_workspace_acl(self) -> dict:
+    def get_workspace_acl(self) -> requests.Response:
         """
         Get the workspace access control list (ACL).
 
         **Returns:**
-        - dict: The JSON response containing the workspace ACL.
+        - requests.Response: The response from the request.
         """
         url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/acl"
-        response = self.request_util.run_request(
+        return self.request_util.run_request(
             uri=url,
             method=GET
         )
-        return response.json()
 
     def update_user_acl(
             self,
@@ -434,7 +433,7 @@ class TerraWorkspace:
             can_share: bool = False,
             can_compute: bool = False,
             invite_users_not_found: bool = False,
-    ) -> dict:
+    ) -> requests.Response:
         """
         Update the access control list (ACL) for a user in the workspace.
 
@@ -447,7 +446,7 @@ class TerraWorkspace:
                 the workspace. Defaults to `False`
 
         **Returns:**
-        - dict: The JSON response containing the updated ACL.
+        - requests.Response: The response from the request.
         """
         url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/acl?" + \
               f"inviteUsersNotFound={str(invite_users_not_found).lower()}"
@@ -465,19 +464,19 @@ class TerraWorkspace:
             content_type="application/json",
             data="[" + json.dumps(payload) + "]"
         )
-        request_json = response.json()
-        if request_json["usersNotFound"] and not invite_users_not_found:
+
+        if response.json()["usersNotFound"] and not invite_users_not_found:
             # Will be a list of one user
-            user_not_found = request_json["usersNotFound"][0]
+            user_not_found = response.json()["usersNotFound"][0]
             raise Exception(
                 f'The user {user_not_found["email"]} was not found and access was not updated'
             )
-        return request_json
+        return response
 
     @deprecated(
         """Firecloud functionality has been sunset. There is currently no support for adding library attributes in Terra."""  # noqa: E501
     )
-    def put_metadata_for_library_dataset(self, library_metadata: dict, validate: bool = False) -> dict:
+    def put_metadata_for_library_dataset(self, library_metadata: dict, validate: bool = False) -> requests.Response:
         """
         Update the metadata for a library dataset.
 
@@ -486,18 +485,19 @@ class TerraWorkspace:
         - validate (bool, optional): Whether to validate the metadata. Defaults to `False`.
 
         **Returns:**
-        - dict: The JSON response containing the updated library attributes.
+        - requests.Response: The response from the request.
         """
         acl = f"{TERRA_LINK}/library/{self.billing_project}/{self.workspace_name}" + \
               f"/metadata?validate={str(validate).lower()}"
-        res = self.request_util.run_request(
+        return self.request_util.run_request(
             uri=acl,
             method=PUT,
             data=json.dumps(library_metadata)
         )
-        return res.json()
 
-    def update_multiple_users_acl(self, acl_list: list[dict], invite_users_not_found: bool = False) -> dict:
+    def update_multiple_users_acl(
+            self, acl_list: list[dict], invite_users_not_found: bool = False
+    ) -> requests.Response:
         """
         Update the access control list (ACL) for multiple users in the workspace.
 
@@ -507,7 +507,7 @@ class TerraWorkspace:
                 the workspace. Defaults to `False`
 
         **Returns:**
-        - dict: The JSON response containing the updated ACL.
+        - requests.Response: The response from the request.
         """
         url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/acl?" + \
             f"inviteUsersNotFound={str(invite_users_not_found).lower()}"
@@ -519,21 +519,21 @@ class TerraWorkspace:
             content_type="application/json",
             data=json.dumps(acl_list)
         )
-        request_json = response.json()
-        if request_json["usersNotFound"] and not invite_users_not_found:
+
+        if response.json()["usersNotFound"] and not invite_users_not_found:
             # Will be a list of one user
-            users_not_found = [u["email"] for u in request_json["usersNotFound"]]
+            users_not_found = [u["email"] for u in response.json()["usersNotFound"]]
             raise Exception(
                 f"The following users were not found and access was not updated: {users_not_found}"
             )
-        return request_json
+        return response
 
     def create_workspace(
             self,
             auth_domain: list[dict] = [],
             attributes: dict = {},
             continue_if_exists: bool = False,
-    ) -> Optional[dict]:
+    ) -> requests.Response:
         """
         Create a new workspace in Terra.
 
@@ -544,7 +544,7 @@ class TerraWorkspace:
         - continue_if_exists (bool, optional): Whether to continue if the workspace already exists. Defaults to `False`.
 
         **Returns:**
-        - dict: The response from the Terra API containing the workspace details.
+        - requests.Response: The response from the request.
         """
         payload = {
             "namespace": self.billing_project,
@@ -554,7 +554,7 @@ class TerraWorkspace:
             "cloudPlatform": GCP
         }
         # If workspace already exists then continue if exists
-        accept_return_codes = [409] if continue_if_exists else []
+        accept_return_codes = [self.CONFLICT_STATUS_CODE] if continue_if_exists else []
         logging.info(f"Creating workspace {self.billing_project}/{self.workspace_name}")
         response = self.request_util.run_request(
             uri=f"{TERRA_LINK}/workspaces",
@@ -563,9 +563,9 @@ class TerraWorkspace:
             data=json.dumps(payload),
             accept_return_codes=accept_return_codes
         )
-        if continue_if_exists and response.status_code == 409:
+        if continue_if_exists and response.status_code == self.CONFLICT_STATUS_CODE:
             logging.info(f"Workspace {self.billing_project}/{self.workspace_name} already exists")
-        return response.json()
+        return response
 
     def create_workspace_attributes_ingest_dict(self, workspace_attributes: Optional[dict] = None) -> list[dict]:
         """
@@ -578,8 +578,10 @@ class TerraWorkspace:
         - list[dict]: A list of dictionaries containing the workspace attributes.
         """
         # If not provided then call API to get it
-        workspace_attributes = workspace_attributes if workspace_attributes else self.get_workspace_info()[
-            "workspace"]["attributes"]
+        workspace_attributes = (
+            workspace_attributes if workspace_attributes
+            else self.get_workspace_info().json()["workspace"]["attributes"]
+        )
 
         ingest_dict = []
         for key, value in workspace_attributes.items():
@@ -597,7 +599,7 @@ class TerraWorkspace:
             )
         return ingest_dict
 
-    def upload_metadata_to_workspace_table(self, entities_tsv: str) -> str:
+    def upload_metadata_to_workspace_table(self, entities_tsv: str) -> requests.Response:
         """
         Upload metadata to the workspace table.
 
@@ -605,31 +607,29 @@ class TerraWorkspace:
         - entities_tsv (str): The path to the TSV file containing the metadata to upload.
 
         **Returns:**
-        - str: The response from the upload request.
+        - requests.Response: The response from the request.
         """
         endpoint = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/flexibleImportEntities"
         data = {"entities": open(entities_tsv, "rb")}
-        response = self.request_util.upload_file(
+        return self.request_util.upload_file(
             uri=endpoint,
             data=data
         )
-        return response
 
-    def get_workspace_workflows(self) -> dict:
+    def get_workspace_workflows(self) -> requests.Response:
         """
         Get the workflows for the workspace.
 
         **Returns:**
-        - dict: The JSON response containing the workspace workflows.
+        - requests.Response: The response from the request.
         """
         uri = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/methodconfigs?allRepos=true"
-        response = self.request_util.run_request(
+        return self.request_util.run_request(
             uri=uri,
             method=GET
         )
-        return response.json()
 
-    def import_workflow(self, workflow_dict: dict, continue_if_exists: bool = False) -> int:
+    def import_workflow(self, workflow_dict: dict, continue_if_exists: bool = False) -> requests.Response:
         """
         Import a workflow into the workspace.
 
@@ -639,48 +639,51 @@ class TerraWorkspace:
                 already exists. Defaults to `False`.
 
         **Returns:**
-        - int: The response status code
+        - requests.Response: The response from the request.
         """
         uri = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/methodconfigs"
         workflow_json = json.dumps(workflow_dict)
-        accept_return_codes = [409] if continue_if_exists else []
-        response = self.request_util.run_request(
+        accept_return_codes = [self.CONFLICT_STATUS_CODE] if continue_if_exists else []
+        return self.request_util.run_request(
             uri=uri,
             method=POST,
             data=workflow_json,
             content_type="application/json",
             accept_return_codes=accept_return_codes
         )
-        return response.status_code
 
     def delete_workspace(self) -> requests.Response:
         """
         Delete a Terra workspace.
 
         **Returns:**
-        - requests.Response: The response from the delete request.
+        - requests.Response: The response from the request.
         """
-        response = self.request_util.run_request(
+        return self.request_util.run_request(
             uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}",
             method=DELETE
         )
-        return response
 
-    def update_workspace_attributes(self, attributes: list[dict]) -> None:
+    def update_workspace_attributes(self, attributes: list[dict]) -> requests.Response:
         """
         Update the attributes for the workspace.
 
         **Args:**
         - attributes (dict): The attributes to update.
+
+        **Returns:**
+        - requests.Response: The response from the request.
         """
-        self.request_util.run_request(
+        return self.request_util.run_request(
             uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/updateAttributes",
             method=PATCH,
             data=json.dumps(attributes),
             content_type="application/json"
         )
 
-    def leave_workspace(self, workspace_id: Optional[str] = None, ignore_direct_access_error: bool = False) -> None:
+    def leave_workspace(
+            self, workspace_id: Optional[str] = None, ignore_direct_access_error: bool = False
+    ) -> requests.Response:
         """
         Leave a workspace. If workspace ID not supplied, will look it up.
 
@@ -688,9 +691,12 @@ class TerraWorkspace:
         - workspace_id (str, optional): The workspace ID. Defaults to None.
         - ignore_direct_access_error (Optional[bool], optional): Whether to ignore direct access errors.
              Defaults to `False`.
+
+        **Returns:**
+        - requests.Response: The response from the request.
         """
         if not workspace_id:
-            workspace_info = self.get_workspace_info()
+            workspace_info = self.get_workspace_info().json()
             workspace_id = workspace_info['workspace']['workspaceId']
         accepted_return_code = [403] if ignore_direct_access_error else []
 
@@ -705,14 +711,18 @@ class TerraWorkspace:
                 f"Did not remove user from workspace with id '{workspace_id}' as current user does not have direct"
                 f"access to the workspace (they could be an owner on the billing project)"
             )
+        return res
 
-    def change_workspace_public_setting(self, public: bool) -> None:
+    def change_workspace_public_setting(self, public: bool) -> requests.Response:
         """
         Change a workspace's public setting.
 
         **Args:**
         - public (bool, optional): Whether the workspace should be public. Set to `True` to be made
          public, `False` otherwise.
+
+        **Returns:**
+        - requests.Response: The response from the request.
         """
         body = [
             {
@@ -722,14 +732,14 @@ class TerraWorkspace:
                 }
             }
         ]
-        self.request_util.run_request(
+        return self.request_util.run_request(
             uri=f"{RAWLS_LINK}/workspaces/v2/{self.billing_project}/{self.workspace_name}/settings",
             method=PUT,
             content_type="application/json",
             data=json.dumps(body)
         )
 
-    def check_workspace_public(self, bucket: Optional[str] = None) -> bool:
+    def check_workspace_public(self, bucket: Optional[str] = None) -> requests.Response:
         """
         Check if a workspace is public.
 
@@ -738,24 +748,23 @@ class TerraWorkspace:
         it up if not provided. Defaults to None.
 
         **Returns:**
-        - bool: Whether the workspace is public or not.
+        - requests.Response: The response from the request.
         """
         workspace_bucket = bucket if bucket else self.get_workspace_bucket()
         bucket_prefix_stripped = workspace_bucket.removeprefix("fc-secure-").removeprefix("fc-")
-        response = self.request_util.run_request(
+        return self.request_util.run_request(
             uri=f"{SAM_LINK}/resources/v2/workspace/{bucket_prefix_stripped}/policies/reader/public",
             method=GET
         )
-        return response.json()
 
-    def delete_entity_table(self, entity_to_delete: str) -> int:
+    def delete_entity_table(self, entity_to_delete: str) -> requests.Response:
         """Delete an entire entity table from a Terra workspace.
 
         **Args:**
         - entity_to_delete (str): The name of the entity table to delete.
 
         **Returns:**
-        - int: The API endpoint response status code
+        - requests.Response: The response from the request.
         """
         response = self.request_util.run_request(
             uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",
@@ -771,14 +780,14 @@ class TerraWorkspace:
                 f"Encountered the following error while attempting to delete '{entity_to_delete}' "
                 f"table: {response.text}"
             )
-        return response.status_code
+        return response
 
     def save_entity_table_version(self, entity_type: str, version_name: str) -> None:
         """Save an entity table version in a Terra workspace.
 
         **Args:**
         - entity_type (str): The name of the entity table to save a new version for
-        - version_name (str): What to name the new version
+        - version_name (str): The name of the new version
         """
         # Get the workspace metrics
         workspace_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type)
@@ -794,7 +803,7 @@ class TerraWorkspace:
             zipf.write(file_name, arcname=f"json/{file_name}")
 
         # Upload the zip file to subdirectory within the workspace's bucket (where Terra expects it to live)
-        workspace_info = self.get_workspace_info()
+        workspace_info = self.get_workspace_info().json()
         path_to_upload_to = os.path.join(
             "gs://", workspace_info["workspace"]["bucketName"], ".data-table-versions", entity_type, zip_file_name
         )
