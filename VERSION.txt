@@ -1,2 +1,2 @@
-8.7.1
-- Update readme to include instructions on how to use repo within a Terra environment
+9.0.0
+- Update all Terra utilities to return entire response objects when possible for consistency
