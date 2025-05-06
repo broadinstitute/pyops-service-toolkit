@@ -71,7 +71,7 @@ class MonitorTDRJob:
 
 
 class SubmitAndMonitorMultipleJobs:
-    """"A class to batch submit and monitor TDR jobs."""
+    """A class to batch submit and monitor TDR jobs."""
 
     def __init__(
             self, tdr: Any,

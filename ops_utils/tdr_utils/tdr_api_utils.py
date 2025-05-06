@@ -727,8 +727,7 @@ class TDR:
             content_type="application/json"
         )
         job_id = response.json()["id"]
-        job_results = MonitorTDRJob(tdr=self, job_id=job_id, check_interval=check_intervals, return_json=False).run()
-        return job_results  # type: ignore[return-value]
+        return MonitorTDRJob(tdr=self, job_id=job_id, check_interval=check_intervals, return_json=False).run()
 
     def soft_delete_all_table_entries(
             self,
@@ -974,7 +973,7 @@ class TDR:
 
     def get_dataset_snapshots(self, dataset_id: str) -> requests.Response:
         """
-        Get snapshots belonging to specified dataset.
+        Return snapshots belonging to specified dataset.
 
         **Args:**
         - dataset_id: uuid of dataset to query.

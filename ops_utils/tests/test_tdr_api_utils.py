@@ -118,7 +118,7 @@ class TestTerraWorkspaceUtils:
             user="sahakian@broadinstitute.org",
             policy="custodian",
             dataset_id=TEST_DATASET_ID,
-        )
+        ).json()
         assert True
 
     @responses.activate
@@ -128,7 +128,7 @@ class TestTerraWorkspaceUtils:
             user="sahakian@broadinstitute.org",
             policy="custodian",
             dataset_id=TEST_DATASET_ID,
-        )
+        ).json()
         assert True
 
     @responses.activate
@@ -310,7 +310,7 @@ class TestTerraWorkspaceUtils:
         job_id = self.tdr_util.delete_file(
             dataset_id=TEST_DATASET_ID,
             file_id="99bf3bbd-5610-4c93-90a1-48d0cf168a6d"
-        )
+        ).json()["id"]
         assert job_id
 
     @responses.activate
