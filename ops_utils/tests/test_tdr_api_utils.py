@@ -99,7 +99,7 @@ class TestTerraWorkspaceUtils:
         response = self.tdr_util.ingest_to_dataset(
             dataset_id=TEST_DATASET_ID,
             data=json.dumps(data_dict)
-        )
+        ).json()
         assert response
 
     @responses.activate
@@ -141,7 +141,7 @@ class TestTerraWorkspaceUtils:
     @responses.activate
     def test_get_dataset_info(self):
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_dataset_info.yaml")
-        dataset_info = self.tdr_util.get_dataset_info(dataset_id=TEST_DATASET_ID)
+        dataset_info = self.tdr_util.get_dataset_info(dataset_id=TEST_DATASET_ID).json()
         assert dataset_info['id'] == TEST_DATASET_ID
 
     @responses.activate
@@ -265,7 +265,7 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_dataset_snapshots.yaml")
         snapshots_dict = self.tdr_util.get_dataset_snapshots(
             dataset_id=TEST_DATASET_ID,
-        )
+        ).json()
         assert snapshots_dict['items'][0]['id'] == SNAPSHOT_ID
 
     @responses.activate

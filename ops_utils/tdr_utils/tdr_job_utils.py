@@ -107,8 +107,8 @@ class SubmitAndMonitorMultipleJobs:
 
     def run(self) -> None:
         """
-        Run the process to submit and monitor multiple jobs in batches. 
-        
+        Run the process to submit and monitor multiple jobs in batches.
+
         Logs the progress and status of each batch and job.
         """
         total_jobs = len(self.job_args_list)
@@ -125,7 +125,7 @@ class SubmitAndMonitorMultipleJobs:
             # Submit jobs for the current batch
             for job_args in current_batch:
                 # Submit job with arguments and store the job ID
-                job_id = self.job_function(*job_args)
+                job_id = self.job_function(*job_args).json()["id"]
                 if self.verbose:
                     logging.info(f"Submitted job {job_id} with args {job_args}")
                 job_ids.append(job_id)

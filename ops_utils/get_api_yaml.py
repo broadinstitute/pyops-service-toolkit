@@ -23,7 +23,7 @@ OUTPUT_YAML = 'out.yaml'
 @_recorder.record(file_path=OUTPUT_YAML)
 def _get_yaml(requests_utils: RunRequest) -> None:
     tdr = TDR(request_util=requests_utils)
-    results = tdr.get_dataset_info(dataset_id)
+    results = tdr.get_dataset_info(dataset_id).json()
     if results:
         print(results)
 

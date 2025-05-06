@@ -39,7 +39,7 @@ class TestTDRIngestUtils:
     @responses.activate
     def test_get_permissions_for_workspace_ingest(self):
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_ingest_util/get_permissions_for_workspace_ingest.yaml")
-        dataset_info = self.tdr.get_dataset_info(dataset_id=TEST_DATASET_ID)
+        dataset_info = self.tdr.get_dataset_info(dataset_id=TEST_DATASET_ID).json()
         GetPermissionsForWorkspaceIngest(
             terra_workspace=self.workspace,
             dataset_info=dataset_info,

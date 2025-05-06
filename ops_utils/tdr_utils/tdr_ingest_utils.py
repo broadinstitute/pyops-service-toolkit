@@ -233,7 +233,7 @@ class StartAndMonitorIngest:
         """Run the ingestion process and monitor the job until completion."""
         ingest_request = self._create_ingest_dataset_request()
         logging.info(f"Starting ingest to {self.dataset_id}")
-        ingest_response = self.tdr.ingest_to_dataset(dataset_id=self.dataset_id, data=ingest_request)
+        ingest_response = self.tdr.ingest_to_dataset(dataset_id=self.dataset_id, data=ingest_request).json()
         MonitorTDRJob(
             tdr=self.tdr,
             job_id=ingest_response["id"],
