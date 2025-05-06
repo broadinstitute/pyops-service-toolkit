@@ -1,9 +1,9 @@
 import responses
-
+import json
 from unittest.mock import MagicMock
+
 from ops_utils.request_util import RunRequest
 from ops_utils.tdr_utils.tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
-import json
 
 mock_token = MagicMock()
 request_util = RunRequest(token=mock_token)
@@ -41,9 +41,9 @@ TEST_INGEST_METRICS = ingest_metrics = [
         },
     ]
 
+
 class TestTerraWorkspaceUtils:
     tdr_util = TDR(request_util=request_util)
-
 
     @responses.activate
     def test_create_dataset(self):
@@ -301,7 +301,7 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_snapshot_info.yaml")
         snapshot_info = self.tdr_util.get_snapshot_info(
             snapshot_id=SNAPSHOT_ID
-        )
+        ).json()
         assert snapshot_info['id'] == SNAPSHOT_ID
 
     @responses.activate
@@ -329,4 +329,3 @@ class TestTerraWorkspaceUtils:
             dataset_id=TEST_DATASET_ID,
         )
         assert True
-

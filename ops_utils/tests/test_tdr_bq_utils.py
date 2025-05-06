@@ -1,11 +1,11 @@
-from ops_utils.tdr_utils.tdr_bq_utils import GetTdrAssetInfo, TdrBq
-from ops_utils.tdr_utils.tdr_api_utils import TDR
-from ops_utils.request_util import RunRequest
 import os
 import pytest
 import responses
 from unittest.mock import MagicMock, patch
 
+from ops_utils.tdr_utils.tdr_bq_utils import GetTdrAssetInfo, TdrBq
+from ops_utils.tdr_utils.tdr_api_utils import TDR
+from ops_utils.request_util import RunRequest
 
 def setup_tdr_client():
     mock_token = MagicMock()

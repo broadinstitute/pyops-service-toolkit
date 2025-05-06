@@ -1,9 +1,9 @@
 import os
-from ops_utils.vars import GCP
 import responses
-from ops_utils.gcp_utils import GCPCloudFunctions
 from unittest.mock import MagicMock, mock_open, patch
 from google.auth import credentials
+
+from ops_utils.gcp_utils import GCPCloudFunctions
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "test_creds.json"
 
@@ -21,6 +21,7 @@ def create_gcp_client():
     with LOAD_FILE_PATCH:
         gcp_client = GCPCloudFunctions()
     return gcp_client
+
 
 class TestGCPUtils:
     
@@ -118,4 +119,3 @@ class TestGCPUtils:
     def test_write_to_gcp_file(self):
         responses._add_from_file(file_path="ops_utils/tests/data/gcp_util/write_to_blob.yaml")
         self.gcp_client.write_to_gcp_file(cloud_path='gs://test_bucket/blob_to_write.txt', file_contents="test data here")
-

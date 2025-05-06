@@ -1,9 +1,9 @@
 import os
-from ops_utils.jira_util import Jira, BROAD_INSTITUTE_SERVER
 import responses
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, patch
 from google.auth import credentials
-import pytest
+
+from ops_utils.jira_util import Jira, BROAD_INSTITUTE_SERVER
 
 
 def setup_jira_client_mock():
