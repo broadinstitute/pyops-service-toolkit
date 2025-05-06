@@ -33,7 +33,15 @@ class TDR:
 
     @staticmethod
     def _check_policy(policy: str) -> None:
-        """@private"""
+        """
+        Check if the policy is valid.
+
+        **Args:**
+        - policy (str): The role to check.
+
+        **Raises:**
+        - ValueError: If the policy is not one of the allowed options.
+        """
         if policy not in ["steward", "custodian", "snapshot_creator"]:
             raise ValueError(f"Policy {policy} is not valid. Must be steward, custodian, or snapshot_creator")
 
