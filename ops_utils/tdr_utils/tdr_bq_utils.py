@@ -38,7 +38,7 @@ class GetTdrAssetInfo:
         dataset_info = self.tdr.get_dataset_info(
             dataset_id=self.dataset_id,  # type: ignore[arg-type]
             info_to_include=["SCHEMA", "ACCESS_INFORMATION"]
-        )
+        ).json()
         return {
             "bq_project": dataset_info["accessInformation"]["bigQuery"]["projectId"],
             "bq_schema": dataset_info["accessInformation"]["bigQuery"]["datasetName"],
@@ -46,31 +46,35 @@ class GetTdrAssetInfo:
             "relationships": dataset_info["schema"]["relationships"]
         }
 
-    def _get_snapshot_info(self) -> dict:
+    def _get_snapshot_info(self) -> Optional[dict]:
         """
         Retrieve snapshot information from TDR.
 
         **Returns:**
         - dict: A dictionary containing BigQuery project ID, schema, tables, and relationships.
+        Returns None if the snapshot is not found or access is denied.
         """
-        snapshot_info = self.tdr.get_snapshot_info(
+        response = self.tdr.get_snapshot_info(
             snapshot_id=self.snapshot_id,  # type: ignore[arg-type]
             info_to_include=["TABLES", "RELATIONSHIPS", "ACCESS_INFORMATION"]
         )
-        return {
-            "bq_project": snapshot_info["accessInformation"]["bigQuery"]["projectId"],
-            "bq_schema": snapshot_info["accessInformation"]["bigQuery"]["datasetName"],
-            "tables": snapshot_info["tables"],
-            "relationships": snapshot_info["relationships"]
-        }
+        if response:
+            snapshot_info = response.json()
+            return {
+                "bq_project": snapshot_info["accessInformation"]["bigQuery"]["projectId"],
+                "bq_schema": snapshot_info["accessInformation"]["bigQuery"]["datasetName"],
+                "tables": snapshot_info["tables"],
+                "relationships": snapshot_info["relationships"]
+            }
+        return None
 
-    def run(self) -> dict:
+    def run(self) -> Optional[dict]:
         """
         Execute the process to retrieve either dataset or snapshot information.
 
         **Returns:**
-        - dict: A dictionary containing the relevant information based on whether `dataset_id` or
-            `snapshot_id` is provided.
+        - dict (optional): A dictionary containing the relevant information based on whether `dataset_id` or
+            `snapshot_id` is provided. Returns None if the snapshot is not found or access is denied.
         """
         if self.dataset_id:
             return self._get_dataset_info()
@@ -79,7 +83,7 @@ class GetTdrAssetInfo:
 
 class TdrBq:
     """Class to interact with TDR BigQuery tables."""
-    
+
     def __init__(self, project_id: str, bq_schema: str):
         """
         Initialize the TdrBq class.

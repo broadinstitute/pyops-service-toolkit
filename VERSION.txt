@@ -1,2 +1,2 @@
-9.0.1
-- Updating Contrib.md w/ instructions for adding tests
+10.0.0
+- Update all TDR utilities to return entire response objects when possible for consistency

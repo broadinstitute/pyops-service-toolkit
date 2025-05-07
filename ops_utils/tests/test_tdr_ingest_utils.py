@@ -1,12 +1,14 @@
 import responses
-
 from unittest.mock import MagicMock
+
 from ops_utils.request_util import RunRequest
 from ops_utils.tdr_utils.tdr_api_utils import TDR
 from ops_utils.terra_util import TerraWorkspace
-from ops_utils.tdr_utils.tdr_ingest_utils import ConvertTerraTableInfoForIngest, \
-    GetPermissionsForWorkspaceIngest, FilterAndBatchIngest
-from ops_utils.vars import GCP
+from ops_utils.tdr_utils.tdr_ingest_utils import (
+    ConvertTerraTableInfoForIngest,
+    GetPermissionsForWorkspaceIngest,
+    FilterAndBatchIngest
+)
 
 mock_token = MagicMock()
 request_util = RunRequest(token=mock_token)
@@ -39,7 +41,7 @@ class TestTDRIngestUtils:
     @responses.activate
     def test_get_permissions_for_workspace_ingest(self):
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_ingest_util/get_permissions_for_workspace_ingest.yaml")
-        dataset_info = self.tdr.get_dataset_info(dataset_id=TEST_DATASET_ID)
+        dataset_info = self.tdr.get_dataset_info(dataset_id=TEST_DATASET_ID).json()
         GetPermissionsForWorkspaceIngest(
             terra_workspace=self.workspace,
             dataset_info=dataset_info,

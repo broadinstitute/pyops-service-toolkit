@@ -1,9 +1,9 @@
 import responses
-
+import json
 from unittest.mock import MagicMock
+
 from ops_utils.request_util import RunRequest
 from ops_utils.tdr_utils.tdr_api_utils import TDR, FilterOutSampleIdsAlreadyInDataset
-import json
 
 mock_token = MagicMock()
 request_util = RunRequest(token=mock_token)
@@ -41,9 +41,9 @@ TEST_INGEST_METRICS = ingest_metrics = [
         },
     ]
 
+
 class TestTerraWorkspaceUtils:
     tdr_util = TDR(request_util=request_util)
-
 
     @responses.activate
     def test_create_dataset(self):
@@ -99,7 +99,7 @@ class TestTerraWorkspaceUtils:
         response = self.tdr_util.ingest_to_dataset(
             dataset_id=TEST_DATASET_ID,
             data=json.dumps(data_dict)
-        )
+        ).json()
         assert response
 
     @responses.activate
@@ -118,7 +118,7 @@ class TestTerraWorkspaceUtils:
             user="sahakian@broadinstitute.org",
             policy="custodian",
             dataset_id=TEST_DATASET_ID,
-        )
+        ).json()
         assert True
 
     @responses.activate
@@ -128,7 +128,7 @@ class TestTerraWorkspaceUtils:
             user="sahakian@broadinstitute.org",
             policy="custodian",
             dataset_id=TEST_DATASET_ID,
-        )
+        ).json()
         assert True
 
     @responses.activate
@@ -141,7 +141,7 @@ class TestTerraWorkspaceUtils:
     @responses.activate
     def test_get_dataset_info(self):
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_dataset_info.yaml")
-        dataset_info = self.tdr_util.get_dataset_info(dataset_id=TEST_DATASET_ID)
+        dataset_info = self.tdr_util.get_dataset_info(dataset_id=TEST_DATASET_ID).json()
         assert dataset_info['id'] == TEST_DATASET_ID
 
     @responses.activate
@@ -265,7 +265,7 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_dataset_snapshots.yaml")
         snapshots_dict = self.tdr_util.get_dataset_snapshots(
             dataset_id=TEST_DATASET_ID,
-        )
+        ).json()
         assert snapshots_dict['items'][0]['id'] == SNAPSHOT_ID
 
     @responses.activate
@@ -301,7 +301,7 @@ class TestTerraWorkspaceUtils:
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_snapshot_info.yaml")
         snapshot_info = self.tdr_util.get_snapshot_info(
             snapshot_id=SNAPSHOT_ID
-        )
+        ).json()
         assert snapshot_info['id'] == SNAPSHOT_ID
 
     @responses.activate
@@ -310,7 +310,7 @@ class TestTerraWorkspaceUtils:
         job_id = self.tdr_util.delete_file(
             dataset_id=TEST_DATASET_ID,
             file_id="99bf3bbd-5610-4c93-90a1-48d0cf168a6d"
-        )
+        ).json()["id"]
         assert job_id
 
     @responses.activate
@@ -329,4 +329,3 @@ class TestTerraWorkspaceUtils:
             dataset_id=TEST_DATASET_ID,
         )
         assert True
-

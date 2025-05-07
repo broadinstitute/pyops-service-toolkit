@@ -2,7 +2,6 @@
 
 import json
 import logging
-
 import requests
 import re
 from typing import Any, Optional, Union
@@ -32,14 +31,28 @@ class TDR:
         self.request_util = request_util
         """@private"""
 
+    @staticmethod
+    def _check_policy(policy: str) -> None:
+        """
+        Check if the policy is valid.
+
+        **Args:**
+        - policy (str): The role to check.
+
+        **Raises:**
+        - ValueError: If the policy is not one of the allowed options.
+        """
+        if policy not in ["steward", "custodian", "snapshot_creator"]:
+            raise ValueError(f"Policy {policy} is not valid. Must be steward, custodian, or snapshot_creator")
+
     def get_dataset_files(
             self,
             dataset_id: str,
             limit: int = ARG_DEFAULTS['batch_size_to_list_files']  # type: ignore[assignment]
     ) -> list[dict]:
         """
-        Get all files in a dataset. 
-        
+        Get all files in a dataset.
+
         Returns json like below
 
             {
@@ -158,7 +171,7 @@ class TDR:
 
         return {"sas_token": sas_token, "expiry_time": time_str}
 
-    def delete_file(self, file_id: str, dataset_id: str) -> str:
+    def delete_file(self, file_id: str, dataset_id: str) -> requests.Response:
         """
         Delete a file from a dataset.
 
@@ -167,13 +180,11 @@ class TDR:
         - dataset_id (str): The ID of the dataset.
 
         **Returns:**
-        - str: The job ID of the delete operation.
+        - requests.Response: The response from the request.
         """
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/files/{file_id}"
-        response = self.request_util.run_request(uri=uri, method=DELETE)
-        job_id = json.loads(response.text)['id']
-        logging.info(f"Submitted delete job {job_id} for file {file_id}")
-        return job_id
+        logging.info(f"Submitting delete job for file {file_id}")
+        return self.request_util.run_request(uri=uri, method=DELETE)
 
     def delete_files(
             self,
@@ -198,7 +209,7 @@ class TDR:
             check_interval=check_interval
         ).run()
 
-    def add_user_to_dataset(self, dataset_id: str, user: str, policy: str) -> None:
+    def add_user_to_dataset(self, dataset_id: str, user: str, policy: str) -> requests.Response:
         """
         Add a user to a dataset with a specified policy.
 
@@ -208,21 +219,24 @@ class TDR:
         - policy (str): The policy to be assigned to the user.
                 Must be one of `steward`, `custodian`, or `snapshot_creator`.
 
+        **Returns:**
+        - requests.Response: The response from the request.
+
         **Raises:**
         - ValueError: If the policy is not valid.
         """
-        if policy not in ["steward", "custodian", "snapshot_creator"]:
-            raise ValueError(f"Policy {policy} is not valid. Must be steward, custodian, or snapshot_creator")
+        self._check_policy(policy)
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/policies/{policy}/members"
         member_dict = {"email": user}
         logging.info(f"Adding user {user} to dataset {dataset_id} with policy {policy}")
-        self.request_util.run_request(
+        return self.request_util.run_request(
             uri=uri,
             method=POST,
-            data=json.dumps(member_dict), content_type="application/json"
+            data=json.dumps(member_dict),
+            content_type="application/json"
         )
 
-    def remove_user_from_dataset(self, dataset_id: str, user: str, policy: str) -> None:
+    def remove_user_from_dataset(self, dataset_id: str, user: str, policy: str) -> requests.Response:
         """
         Remove a user from a dataset.
 
@@ -232,18 +246,20 @@ class TDR:
         - policy (str): The policy to be removed from the user.
                 Must be one of `steward`, `custodian`, or `snapshot_creator`.
 
+        **Returns:**
+        - requests.Response: The response from the request.
+
         **Raises:**
         - ValueError: If the policy is not valid.
         """
-        if policy not in ["steward", "custodian", "snapshot_creator"]:
-            raise ValueError(f"Policy {policy} is not valid. Must be steward, custodian, or snapshot_creator")
+        self._check_policy(policy)
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/policies/{policy}/members/{user}"
         logging.info(f"Removing user {user} from dataset {dataset_id} with policy {policy}")
-        self.request_util.run_request(uri=uri, method=DELETE)
+        return self.request_util.run_request(uri=uri, method=DELETE)
 
     def delete_dataset(self, dataset_id: str) -> None:
         """
-        Delete a dataset.
+        Delete a dataset and monitors the job until completion.
 
         **Args:**
             dataset_id (str): The ID of the dataset to be deleted.
@@ -259,25 +275,32 @@ class TDR:
             snapshot_id: str,
             continue_not_found: bool = False,
             info_to_include: Optional[list[str]] = None
-    ) -> dict:
+    ) -> Optional[requests.Response]:
         """
         Get information about a snapshot.
 
         **Args:**
         - snapshot_id (str): The ID of the snapshot.
-        - continue_not_found (bool, optional): Whether to accept a 404 response. Defaults to `False`.
+        - continue_not_found (bool, optional): Whether to accept a `404` response. Defaults to `False`.
         - info_to_include (list[str], optional): A list of additional information to include. Defaults to None.
                 Options are: `SOURCES`, `TABLES`, `RELATIONSHIPS`, `ACCESS_INFORMATION`, `PROFILE`, `PROPERTIES`,
                 `DATA_PROJECT`,`CREATION_INFORMATION`, `DUOS`
 
         **Returns:**
-        - dict: A dictionary containing the snapshot information.
+        - requests.Response (optional): The response from the request (returns None if the snapshot is not
+         found or access is denied).
         """
         acceptable_return_code = [404, 403] if continue_not_found else []
         acceptable_include_info = [
-            "SOURCES", "TABLES", "RELATIONSHIPS",
-            "ACCESS_INFORMATION", "PROFILE", "PROPERTIES",
-            "DATA_PROJECT", "CREATION_INFORMATION", "DUOS"
+            "SOURCES",
+            "TABLES",
+            "RELATIONSHIPS",
+            "ACCESS_INFORMATION",
+            "PROFILE",
+            "PROPERTIES",
+            "DATA_PROJECT",
+            "CREATION_INFORMATION",
+            "DUOS"
         ]
         if info_to_include:
             if not all(info in acceptable_include_info for info in info_to_include):
@@ -293,11 +316,11 @@ class TDR:
         )
         if response.status_code == 404:
             logging.warning(f"Snapshot {snapshot_id} not found")
-            return {}
+            return None
         if response.status_code == 403:
             logging.warning(f"Access denied for snapshot {snapshot_id}")
-            return {}
-        return json.loads(response.text)
+            return None
+        return response
 
     def delete_snapshots(
             self,
@@ -306,7 +329,7 @@ class TDR:
             check_interval: int = 10,
             verbose: bool = False) -> None:
         """
-        Delete multiple snapshots.
+        Delete multiple snapshots from a dataset in batches and monitor delete jobs until completion for each batch.
 
         **Args:**
         - snapshot_ids (list[str]): A list of snapshot IDs to be deleted.
@@ -323,7 +346,7 @@ class TDR:
             verbose=verbose
         ).run()
 
-    def delete_snapshot(self, snapshot_id: str) -> str:
+    def delete_snapshot(self, snapshot_id: str) -> requests.Response:
         """
         Delete a snapshot.
 
@@ -331,13 +354,11 @@ class TDR:
         - snapshot_id (str): The ID of the snapshot to be deleted.
 
         **Returns:**
-        - str: The TDR job ID
+        - requests.Response: The response from the request.
         """
         uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}"
         logging.info(f"Deleting snapshot {snapshot_id}")
-        response = self.request_util.run_request(uri=uri, method=DELETE)
-        job_id = response.json()['id']
-        return job_id
+        return self.request_util.run_request(uri=uri, method=DELETE)
 
     def _yield_existing_datasets(
             self, filter: Optional[str] = None, batch_size: int = 100, direction: str = "asc"
@@ -407,7 +428,7 @@ class TDR:
                     matching_datasets.append(dataset)
         return matching_datasets
 
-    def get_dataset_info(self, dataset_id: str, info_to_include: Optional[list[str]] = None) -> dict:
+    def get_dataset_info(self, dataset_id: str, info_to_include: Optional[list[str]] = None) -> requests.Response:
         """
         Get information about a dataset.
 
@@ -418,7 +439,7 @@ class TDR:
         Defaults to None.
 
         **Returns:**
-        - dict: A dictionary containing the dataset information.
+        - requests.Response: The response from the request.
 
         **Raises:**
         - ValueError: If `info_to_include` contains invalid information types.
@@ -439,8 +460,7 @@ class TDR:
         else:
             include_string = ""
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}?include={include_string}"
-        response = self.request_util.run_request(uri=uri, method=GET)
-        return json.loads(response.text)
+        return self.request_util.run_request(uri=uri, method=GET)
 
     def get_table_schema_info(
             self,
@@ -460,8 +480,8 @@ class TDR:
         - Union[dict, None]: A dictionary containing the table schema information, or None if the table is not found.
         """
         if not dataset_info:
-            dataset_info = self.get_dataset_info(dataset_id=dataset_id, info_to_include=["SCHEMA"])
-        for table in dataset_info["schema"]["tables"]:
+            dataset_info = self.get_dataset_info(dataset_id=dataset_id, info_to_include=["SCHEMA"]).json()
+        for table in dataset_info["schema"]["tables"]:  # type: ignore[index]
             if table["name"] == table_name:
                 return table
         return None
@@ -475,15 +495,14 @@ class TDR:
         - expect_failure (bool, optional): Whether the job is expected to fail. Defaults to `False`.
 
         **Returns:**
-        - dict: A dictionary containing the job result.
+        - requests.Response: The response from the request.
         """
         uri = f"{self.TDR_LINK}/jobs/{job_id}/result"
         # If job is expected to fail, accept any return code
         acceptable_return_code = list(range(100, 600)) if expect_failure else []
-        response = self.request_util.run_request(uri=uri, method=GET, accept_return_codes=acceptable_return_code)
-        return response
+        return self.request_util.run_request(uri=uri, method=GET, accept_return_codes=acceptable_return_code)
 
-    def ingest_to_dataset(self, dataset_id: str, data: dict) -> dict:
+    def ingest_to_dataset(self, dataset_id: str, data: dict) -> requests.Response:
         """
         Load data into a TDR dataset.
 
@@ -492,19 +511,18 @@ class TDR:
         - data (dict): The data to be ingested.
 
         **Returns:**
-        - dict: A dictionary containing the response from the ingest operation.
+        - requests.Response: The response from the request.
         """
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/ingest"
         logging.info(
             "If recently added TDR SA to source bucket/dataset/workspace and you receive a 400/403 error, " +
             "it can sometimes take up to 12/24 hours for permissions to propagate. Try rerunning the script later.")
-        response = self.request_util.run_request(
+        return self.request_util.run_request(
             uri=uri,
             method=POST,
             content_type="application/json",
             data=data
         )
-        return json.loads(response.text)
 
     def file_ingest_to_dataset(
             self,
@@ -523,7 +541,7 @@ class TDR:
         - load_tag (str): The tag to be used in the ingest job. Defaults to `file_ingest_load_tag`.
 
         **Returns:**
-        - dict: A dictionary containing the response from the ingest operation.
+        - dict: A dictionary containing the response from the ingest operation job monitoring.
         """
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/files/bulk/array"
         data = {
@@ -625,11 +643,10 @@ class TDR:
         - job_id (str): The ID of the job.
 
         **Returns:**
-        - requests.Response: The response object containing the job status.
+        - requests.Response: The response from the request.
         """
         uri = f"{self.TDR_LINK}/jobs/{job_id}"
-        response = self.request_util.run_request(uri=uri, method=GET)
-        return response
+        return self.request_util.run_request(uri=uri, method=GET)
 
     def get_dataset_file_uuids_from_metadata(self, dataset_id: str) -> list[str]:
         """
@@ -641,7 +658,7 @@ class TDR:
         **Returns:**
         - list[str]: A list of file UUIDs from the dataset metadata.
         """
-        dataset_info = self.get_dataset_info(dataset_id=dataset_id, info_to_include=["SCHEMA"])
+        dataset_info = self.get_dataset_info(dataset_id=dataset_id, info_to_include=["SCHEMA"]).json()
         all_metadata_file_uuids = []
         tables = 0
         for table in dataset_info["schema"]["tables"]:
@@ -672,7 +689,7 @@ class TDR:
             table_name: str,
             datarepo_row_ids: list[str],
             check_intervals: int = 15
-    ) -> None:
+    ) -> Optional[dict]:
         """
         Soft delete specific records from a table.
 
@@ -681,10 +698,14 @@ class TDR:
         - table_name (str): The name of the target table.
         - datarepo_row_ids (list[str]): A list of row IDs to be deleted.
         - check_intervals (int, optional): The interval in seconds to wait between status checks. Defaults to `15`.
+
+        **Returns:**
+        - dict (optional): A dictionary containing the response from the soft delete operation job
+        monitoring. Returns None if no row IDs are provided.
         """
         if not datarepo_row_ids:
             logging.info(f"No records found to soft delete in table {table_name}")
-            return
+            return None
         logging.info(f"Soft deleting {len(datarepo_row_ids)} records from table {table_name}")
         uri = f"{self.TDR_LINK}/datasets/{dataset_id}/deletes"
         payload = {
@@ -706,7 +727,7 @@ class TDR:
             content_type="application/json"
         )
         job_id = response.json()["id"]
-        MonitorTDRJob(tdr=self, job_id=job_id, check_interval=check_intervals, return_json=False).run()
+        return MonitorTDRJob(tdr=self, job_id=job_id, check_interval=check_intervals, return_json=False).run()
 
     def soft_delete_all_table_entries(
             self,
@@ -714,7 +735,7 @@ class TDR:
             table_name: str,
             query_limit: int = 1000,
             check_intervals: int = 15
-    ) -> None:
+    ) -> Optional[dict]:
         """
         Soft deletes all records in a table.
 
@@ -723,12 +744,16 @@ class TDR:
         - table_name (str): The name of the target table.
         - query_limit (int, optional): The maximum number of records to retrieve per batch. Defaults to `1000`.
         - check_intervals (int, optional): The interval in seconds to wait between status checks. Defaults to `15`.
+
+        **Returns:**
+        - dict (optional): A dictionary containing the response from the soft delete operation job monitoring. Returns
+        None if no row IDs are provided.
         """
         dataset_metrics = self.get_dataset_table_metrics(
             dataset_id=dataset_id, target_table_name=table_name, query_limit=query_limit
         )
         row_ids = [metric["datarepo_row_id"] for metric in dataset_metrics]
-        self.soft_delete_entries(
+        return self.soft_delete_entries(
             dataset_id=dataset_id,
             table_name=table_name,
             datarepo_row_ids=row_ids,
@@ -900,7 +925,7 @@ class TDR:
         Get response from a batched endpoint.
 
         Helper method for all GET endpoints that require batching.
-        
+
         Given the URI and the limit (optional), will
         loop through batches until all metadata is retrieved.
 
@@ -932,7 +957,7 @@ class TDR:
     def get_files_from_snapshot(self, snapshot_id: str, limit: int = 1000) -> list[dict]:
         """
         Return all the metadata about files in a given snapshot.
-        
+
         Not all files can be returned at once, so the API
         is used repeatedly until all "batches" have been returned.
 
@@ -946,22 +971,21 @@ class TDR:
         uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}/files"
         return self._get_response_from_batched_endpoint(uri=uri, limit=limit)
 
-    def get_dataset_snapshots(self, dataset_id: str) -> dict:
+    def get_dataset_snapshots(self, dataset_id: str) -> requests.Response:
         """
-        Return snapshots belonging to specified datset.
+        Return snapshots belonging to specified dataset.
 
         **Args:**
         - dataset_id: uuid of dataset to query.
 
         **Returns:**
-        - dict: A dictionaries containing a list of snapshots under 'items' and their  metadata.
+        - requests.Response: The response from the request.
         """
         uri = f"{self.TDR_LINK}/snapshots?datasetIds={dataset_id}"
-        response = self.request_util.run_request(
+        return self.request_util.run_request(
             uri=uri,
             method=GET
         )
-        return response.json()
 
 
 class FilterOutSampleIdsAlreadyInDataset:

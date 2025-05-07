@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 from ops_utils.thread_pool_executor_util import MultiThreadedJobs
 
 
-
 def always_succeeds(*args, **kwargs):
     """A test function that always succeeds"""
     return sum(args)
