@@ -24,6 +24,13 @@ do not already have support for (or just does not belong in a category that alre
 incrementing the version and adding release notes. See [README.txt](README.md#versioning) for more information
 about incrementing versions correctly.
 
+#### Adding Tests for new features
+If adding a new function / class / or module please add corresponding unit tests to cover the new functionality. 
+The existing test suite can be found under ops_utils/tests and use pytest as test framework. If new functionality 
+makes web requests, mock responses to your functions can be obtained for testing using the ops_utils/get_api_yaml.py script.
+The output from this will need to be renamed and placed in an appropriate location within the tests directory e.g. ops_utils/tests/data/{class_name}/.
+Make sure you review the output yaml file and obscure any identifying data within it for our test cases, ensuring you remove any tokens that might have been captured.
+
 ### Fixing Bugs
 If possible, try to address bug fixes in a backwards compatible way.
 
