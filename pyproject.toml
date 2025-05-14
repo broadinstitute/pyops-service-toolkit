@@ -38,6 +38,7 @@ dependencies = [
     "humanfriendly",
     "responses",
     "gitpython",
+    "gspread",
     'importlib-metadata; python_version<"3.10"',
 ]
 
