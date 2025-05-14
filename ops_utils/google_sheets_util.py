@@ -19,8 +19,10 @@ class GoogleSheets:
         if service_account_info:
             credentials = gspread.service_account_from_dict(service_account_info)
         else:
-            token = Token(extra_scopes=self._SCOPES).get_token()
-            credentials = UserCredentials(token=token)
+            token = Token(extra_scopes=self._SCOPES)
+            token_string = token._get_gcp_token()
+            print(f"Token: {token_string}")
+            credentials = UserCredentials(token=token_string)
         self.gc = gspread.authorize(credentials=credentials)
 
     def _open_sheet(self, spreadsheet_id: str, sheet_name: str) -> gspread.Worksheet:
