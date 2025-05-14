@@ -74,4 +74,5 @@ class GoogleSheets:
         - int: The last non-empty row number.
         """
         ws = self._open_sheet(spreadsheet_id, sheet_name)
+        breakpoint()
         return len(list(filter(None, ws.col_values(1)))) + 1
