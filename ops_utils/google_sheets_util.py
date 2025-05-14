@@ -32,7 +32,7 @@ class GoogleSheets:
         - spreadsheet_id (str): The ID of the Google Sheet.
         """
         spreadsheet = self.gc.open_by_key(spreadsheet_id)
-        return spreadsheet.worksheets(worksheet_name)
+        return spreadsheet.worksheet(worksheet_name)
 
     def update_cell(self, spreadsheet_id: str, worksheet_name: str, cell: str, value: str) -> None:
         """
