@@ -1,4 +1,6 @@
 from typing import Optional
+from .token_util import Token
+from google.auth.credentials import Credentials as UserCredentials
 import gspread
 
 
@@ -15,9 +17,11 @@ class GoogleSheets:
         - service_account_info (dict): A dictionary containing the service account credentials.
         """
         if service_account_info:
-            self.gc = gspread.service_account_from_dict(service_account_info)
+            credentials = gspread.service_account_from_dict(service_account_info)
         else:
-            self.gc = gspread.oauth()
+            token = Token(extra_scopes=self._SCOPES)
+            credentials = UserCredentials(token=token)
+        self.gc = gspread.authorize(credentials=credentials)
 
     def _open_sheet(self, spreadsheet_id: str, sheet_name: str) -> gspread.Worksheet:
         """

@@ -11,11 +11,12 @@ from datetime import datetime, timedelta
 class Token:
     """Class for generating tokens for other module services."""
 
-    def __init__(self, token_file: Optional[str] = None) -> None:
+    def __init__(self, token_file: Optional[str] = None, extra_scopes: Optional[list[str]] = None) -> None:
         """Initialize the Token class.
 
         **Args:**
         - token_file (str, optional): The path to a file containing an existing token string.
+        - extra_scopes (list[str], optional): Additional scopes to request for the token.
         """
         self.expiry: Optional[datetime] = None
         """@private"""
@@ -35,7 +36,7 @@ class Token:
                     "https://www.googleapis.com/auth/userinfo.profile",
                     "https://www.googleapis.com/auth/userinfo.email",
                     "https://www.googleapis.com/auth/devstorage.full_control"
-                ]
+                ] + (extra_scopes if extra_scopes else [])
             )
 
     def _get_gcp_token(self) -> Union[str, None]:
