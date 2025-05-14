@@ -64,7 +64,7 @@ class GoogleSheets:
 
     def get_last_row(self, spreadsheet_id: str, worksheet_name: str) -> int:
         """
-        Get the last non-empty row in the specified column.
+        Get the last non-empty row in the specified column, accounting for trailing empty rows.
 
         **Args:**
         - spreadsheet_id (str): Spreadsheet ID.
@@ -74,4 +74,8 @@ class GoogleSheets:
         - int: The last non-empty row number.
         """
         ws = self._open_worksheet(spreadsheet_id, worksheet_name)
-        return len(list(filter(None, ws.col_values(1)))) + 1
+        col_values = ws.col_values(1)  # Get all values in the first column
+        for row_index in range(len(col_values), 0, -1):  # Iterate from the last row to the first
+            if col_values[row_index - 1]:  # Check if the cell is not empty
+                return row_index
+        return 0  # Return 0 if all rows are empty
