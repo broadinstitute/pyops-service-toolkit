@@ -18,7 +18,7 @@ class GoogleSheets:
         """
         if service_account_info:
             self.gc = gspread.service_account_from_dict(service_account_info)
-            else:
+        else:
             token = Token(extra_scopes=self._SCOPES)
             token_string = token.get_token()
             credentials = user_credentials.Credentials(
