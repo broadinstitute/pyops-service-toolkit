@@ -1,7 +1,6 @@
 from typing import Optional
 from .token_util import Token
-from google.auth.transport.requests import AuthorizedSession
-from google.oauth2.credentials import Credentials
+from google.oauth2 import credentials as user_credentials
 import gspread
 
 
@@ -19,15 +18,14 @@ class GoogleSheets:
         """
         if service_account_info:
             self.gc = gspread.service_account_from_dict(service_account_info)
-        else:
+            else:
             token = Token(extra_scopes=self._SCOPES)
             token_string = token.get_token()
-            credentials = Credentials(
+            credentials = user_credentials.Credentials(
                 token=token_string,
                 scopes=self._SCOPES
             )
-            session = AuthorizedSession(credentials)
-            self.gc = gspread.Client(auth=session)
+            self.gc = gspread.Client(auth=credentials)
 
     def _open_sheet(self, spreadsheet_id: str, sheet_name: str) -> gspread.Worksheet:
         """
