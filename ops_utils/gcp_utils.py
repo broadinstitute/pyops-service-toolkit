@@ -164,7 +164,9 @@ class GCPCloudFunctions:
         return True
 
     def list_bucket_contents(
-            self, bucket_name: str,
+            self,
+            bucket_name: str,
+            prefix: Optional[str] = None,
             file_extensions_to_ignore: list[str] = [],
             file_strings_to_ignore: list[str] = [],
             file_extensions_to_include: list[str] = [],
@@ -175,6 +177,7 @@ class GCPCloudFunctions:
 
         **Args:**
         - bucket_name (str): The name of the GCS bucket. If includes `gs://`, it will be removed.
+        - prefix (str, optional): The prefix to filter the blobs. Defaults to None.
         - file_extensions_to_ignore (list[str], optional): List of file extensions to ignore. Defaults to [].
         - file_strings_to_ignore (list[str], optional): List of file name substrings to ignore. Defaults to [].
         - file_extensions_to_include (list[str], optional): List of file extensions to include. Defaults to [].
@@ -193,7 +196,7 @@ class GCPCloudFunctions:
         bucket = self.client.bucket(bucket_name, user_project=self.client.project)
 
         # List blobs within the bucket
-        blobs = bucket.list_blobs()
+        blobs = bucket.list_blobs(prefix=prefix)
         logging.info("Finished listing blobs. Processing files now.")
 
         # Create a list of dictionaries containing file information
