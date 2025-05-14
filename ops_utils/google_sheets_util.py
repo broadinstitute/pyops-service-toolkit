@@ -24,55 +24,54 @@ class GoogleSheets:
             creds.refresh(Request())
             self.gc = gspread.Client(auth=creds)
 
-    def _open_sheet(self, spreadsheet_id: str, sheet_name: str) -> gspread.Worksheet:
+    def _open_worksheet(self, spreadsheet_id: str, worksheet_name: str) -> gspread.Worksheet:
         """
         Open a spreadsheet by its ID.
 
         **Args:**
         - spreadsheet_id (str): The ID of the Google Sheet.
         """
-        sheet = self.gc.open_by_key(spreadsheet_id)
-        return sheet.worksheets(sheet_name)
+        spreadsheet = self.gc.open_by_key(spreadsheet_id)
+        return spreadsheet.worksheets(worksheet_name)
 
-    def update_cell(self, spreadsheet_id: str, sheet_name: str, cell: str, value: str) -> None:
+    def update_cell(self, spreadsheet_id: str, worksheet_name: str, cell: str, value: str) -> None:
         """
         Update a specific cell in the sheet.
 
         **Args:**
         - spreadsheet_id (str): Spreadsheet ID.
-        - sheet_name (str): Sheet/tab name.
+        - worksheet_name (str): Sheet/tab name.
         - cell (str): A1-style cell notation.
         - value (str): Value to insert.
         """
-        worksheet = self._open_sheet(spreadsheet_id, sheet_name)
+        worksheet = self._open_worksheet(spreadsheet_id, worksheet_name)
         worksheet.update(cell, value)
 
-    def get_cell_value(self, spreadsheet_id: str, sheet_name: str, cell: str) -> str:
+    def get_cell_value(self, spreadsheet_id: str, worksheet_name: str, cell: str) -> str:
         """
         Get the value of a specific cell.
 
         **Args:**
         - spreadsheet_id (str): Spreadsheet ID.
-        - sheet_name (str): Sheet/tab name.
+        - worksheet_name (str): Sheet/tab name.
         - cell (str): A1-style cell reference.
 
         **Returns:**
         - str or None: Cell value or None if empty.
         """
-        ws = self._open_sheet(spreadsheet_id, sheet_name)
+        ws = self._open_worksheet(spreadsheet_id, worksheet_name)
         return ws.acell(cell).value
 
-    def get_last_row(self, spreadsheet_id: str, sheet_name: str) -> int:
+    def get_last_row(self, spreadsheet_id: str, worksheet_name: str) -> int:
         """
         Get the last non-empty row in the specified column.
 
         **Args:**
         - spreadsheet_id (str): Spreadsheet ID.
-        - sheet_name (str): Sheet/tab name.
+        - worksheet_name (str): Sheet/tab name.
 
         **Returns:**
         - int: The last non-empty row number.
         """
-        ws = self._open_sheet(spreadsheet_id, sheet_name)
-        breakpoint()
+        ws = self._open_worksheet(spreadsheet_id, worksheet_name)
         return len(list(filter(None, ws.col_values(1)))) + 1
