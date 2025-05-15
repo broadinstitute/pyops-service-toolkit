@@ -1,6 +1,7 @@
 from google.auth import default
 from googleapiclient.discovery import build
 import logging
+import json
 from typing import Optional
 
 
@@ -33,7 +34,7 @@ class GCPCloudFunctionCaller:
         """
         function_path = f"projects/{self.project}/locations/-/functions/{function_name}"
         request = self.service.projects().locations().functions().call(
-            name=function_path, body={"data": data}
+            name=function_path, body={"data": json.dumps(data)}
         )
 
         try:
