@@ -703,3 +703,5 @@ class GCPCloudFunctions:
             check=True
         )
         return result.stdout.strip()
+
+    
