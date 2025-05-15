@@ -1,4 +1,4 @@
-"""Modlue to interact with Google Calendar API."""
+"""Module to interact with Google Calendar API."""
 from datetime import datetime, timedelta
 from typing import List, Dict
 from googleapiclient.discovery import build
