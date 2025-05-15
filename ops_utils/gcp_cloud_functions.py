@@ -6,9 +6,7 @@ from typing import Optional
 
 
 class GCPCloudFunctionCaller:
-    """
-    Class to call a GCP Cloud Function programmatically.
-    """
+    """Class to call a GCP Cloud Function programmatically."""
 
     def __init__(self, project: Optional[str] = None) -> None:
         """
