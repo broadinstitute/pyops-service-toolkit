@@ -45,7 +45,7 @@ class GoogleSheets:
         - value (str): Value to insert.
         """
         worksheet = self._open_worksheet(spreadsheet_id, worksheet_name)
-        worksheet.update(cell, value)
+        worksheet.update(cell, [[value]])
 
     def get_cell_value(self, spreadsheet_id: str, worksheet_name: str, cell: str) -> str:
         """
