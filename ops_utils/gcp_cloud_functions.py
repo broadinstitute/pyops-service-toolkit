@@ -32,7 +32,7 @@ class GCPCloudFunctionCaller:
         **Returns:**
         - dict: The response from the Cloud Function.
         """
-        function_path = f"projects/{self.project}/locations/-/functions/{function_name}"
+        function_path = f"projects/{self.project}/locations/us-central1/functions/{function_name}"
         request = self.service.projects().locations().functions().call(
             name=function_path, body={"data": json.dumps(data)}
         )
