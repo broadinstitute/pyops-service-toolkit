@@ -34,7 +34,7 @@ class GCPCloudFunctionCaller:
         """
         function_path = f"projects/{self.project}/locations/us-central1/functions/{function_name}"
         request = self.service.projects().locations().functions().call(
-            name=function_path, body={"data": json.dumps(data)}
+            name=function_path, body={"data": json.dumps(data)}, cache_discovery=False
         )
 
         try:
