@@ -4,6 +4,9 @@ from googleapiclient.discovery import build
 import logging
 import json
 from typing import Optional
+import os
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "test_creds.json"
 
 
 class GCPCloudFunctionCaller:

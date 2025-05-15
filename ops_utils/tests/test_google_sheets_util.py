@@ -1,6 +1,9 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from ops_utils.google_sheets_util import GoogleSheets
+import os
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "test_creds.json"
 
 
 class TestGoogleSheets(unittest.TestCase):
