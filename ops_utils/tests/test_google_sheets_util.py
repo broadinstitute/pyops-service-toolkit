@@ -21,9 +21,11 @@ class TestGoogleSheets(unittest.TestCase):
         mock_creds = MagicMock()
         mock_default.return_value = (mock_creds, None)
         mock_gspread_client.return_value = MagicMock()
+
         sheets = GoogleSheets()
+
         mock_default.assert_called_once_with(scopes=GoogleSheets._SCOPES)
-        mock_creds.refresh.assert_called_once()
+        mock_creds.refresh.assert_not_called()  # Ensure no real refresh is called
         mock_gspread_client.assert_called_once_with(auth=mock_creds)
 
     @patch('ops_utils.google_sheets_util.GoogleSheets._open_worksheet')

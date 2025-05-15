@@ -3,7 +3,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 @pytest.fixture
-def cloud_function_caller():
+@patch("ops_utils.gcp_cloud_functions.default", return_value=(MagicMock(), "test-project"))
+def cloud_function_caller(mock_default):
     return GCPCloudFunctionCaller(project="test-project")
 
 @patch("ops_utils.gcp_cloud_functions.default")
