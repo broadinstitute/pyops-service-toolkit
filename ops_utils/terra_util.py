@@ -827,3 +827,23 @@ class TerraWorkspace:
                 "description": version_name,
             }
         )
+
+    def add_user_comment_to_submission(self, submission_id: str, user_comment: str) -> requests.Response:
+        """
+        Add a user comment to a submission in Terra.
+
+        **Args:**
+        - submission_id (str): The ID of the submission to add a comment to.
+        - user_comment (str): The comment to add to the submission.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+
+        logging.info(f"Attempting to add user comment: '{user_comment}' to submission: '{submission_id}'")
+        return self.request_util.run_request(
+            uri=f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}",
+            method=PATCH,
+            content_type="application/json",
+            data={"userComment": user_comment}
+        )
