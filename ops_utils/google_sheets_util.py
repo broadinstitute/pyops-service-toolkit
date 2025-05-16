@@ -13,6 +13,11 @@ class GoogleSheets:
     def __init__(self, service_account_info: Optional[dict] = None):
         """
         Initialize the GoogleSheets instance using the service account or user credentials.
+        If you are running this without service account it will use application-default account.
+        Make sure it includes the scope 'https://www.googleapis.com/auth/spreadsheets'.
+
+            gcloud auth application-default login
+            --scopes==https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/cloud-platform
 
         **Args:**
         - service_account_info (dict): A dictionary containing the service account credentials.
@@ -46,7 +51,7 @@ class GoogleSheets:
         - value (str): Value to insert.
         """
         worksheet = self._open_worksheet(spreadsheet_id, worksheet_name)
-        worksheet.update(cell, [[value]])
+        worksheet.update([[value]], range_name=cell)
 
     def get_cell_value(self, spreadsheet_id: str, worksheet_name: str, cell: str) -> str:
         """

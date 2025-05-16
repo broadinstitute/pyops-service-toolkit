@@ -1,58 +1,49 @@
 # test_google_sheets.py
 
-import pytest
-from unittest.mock import patch, MagicMock
+from ops_utils.google_sheets_util import GoogleSheets
+import responses
+
+SPREADSHEET_ID = "1GjeRUYtkkT1bGxVGE4DLHrA5itQGWjvCh0xNWpdHTTQ"
+SHEET_NAME = "Sheet1"
+
 
 class TestGoogleSheets:
     """Test suite for GoogleSheets class."""
 
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        """Setup the mock for GoogleSheets."""
-        with patch('ops_utils.google_sheets_util.GoogleSheets', autospec=True) as MockGoogleSheetsUtils:
-            self.mock_google_sheets = MockGoogleSheetsUtils.return_value
-            yield
-
-    def test_update_cell(self):
-        """Test updating a cell in a Google Sheet."""
-        with patch.object(self.mock_google_sheets, 'update_cell', return_value=None):
-            self.mock_google_sheets.update_cell(
-                spreadsheet_id="test_sheet_id",
-                worksheet_name="Sheet1",
-                cell="A1",
-                value="Test Value"
-            )
-            self.mock_google_sheets.update_cell.assert_called_once_with(
-                spreadsheet_id="test_sheet_id",
-                worksheet_name="Sheet1",
-                cell="A1",
-                value="Test Value"
-            )
-
+    @responses.activate
     def test_get_cell_value(self):
-        """Test getting a cell value from a Google Sheet."""
-        with patch.object(self.mock_google_sheets, 'get_cell_value', return_value="Test Value"):
-            result = self.mock_google_sheets.get_cell_value(
-                spreadsheet_id="test_sheet_id",
-                worksheet_name="Sheet1",
-                cell="A1"
-            )
-            assert result == "Test Value"
-            self.mock_google_sheets.get_cell_value.assert_called_once_with(
-                spreadsheet_id="test_sheet_id",
-                worksheet_name="Sheet1",
-                cell="A1"
-            )
+        """Test get_cell_value method."""
+        responses._add_from_file(file_path="ops_utils/tests/data/google_sheets_util/get_cell_value.yaml")
+        result = GoogleSheets().get_cell_value(
+            spreadsheet_id=SPREADSHEET_ID,
+            worksheet_name=SHEET_NAME,
+            cell="A1",
+        )
+        assert result == "Stuff"
 
+    @responses.activate
     def test_get_last_row(self):
-        """Test getting the last non-empty row in a Google Sheet."""
-        with patch.object(self.mock_google_sheets, 'get_last_row', return_value=10):
-            result = self.mock_google_sheets.get_last_row(
-                spreadsheet_id="test_sheet_id",
-                worksheet_name="Sheet1"
-            )
-            assert result == 10
-            self.mock_google_sheets.get_last_row.assert_called_once_with(
-                spreadsheet_id="test_sheet_id",
-                worksheet_name="Sheet1"
-            )
+        """Test get_last_row method."""
+        responses._add_from_file(file_path="ops_utils/tests/data/google_sheets_util/get_last_row.yaml")
+        result = GoogleSheets().get_last_row(
+            spreadsheet_id=SPREADSHEET_ID,
+            worksheet_name=SHEET_NAME,
+        )
+        assert result == 3
+
+    @responses.activate
+    def test_update_and_get_cell_value(self):
+        """Test update_cell method."""
+        responses._add_from_file(file_path="ops_utils/tests/data/google_sheets_util/update_and_get_cell_value.yaml")
+        GoogleSheets().update_cell(
+            spreadsheet_id=SPREADSHEET_ID,
+            worksheet_name=SHEET_NAME,
+            cell="A4",
+            value="New Value",
+        )
+        result = GoogleSheets().get_cell_value(
+            spreadsheet_id=SPREADSHEET_ID,
+            worksheet_name=SHEET_NAME,
+            cell="A4",
+        )
+        assert result == "New Value"
