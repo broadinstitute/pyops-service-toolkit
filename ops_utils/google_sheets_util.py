@@ -14,8 +14,19 @@ class GoogleSheets:
         """
         Initialize the GoogleSheets instance using the service account or user credentials.
 
+        This method sets up the Google Sheets client using either the provided service account
+        credentials or the application-default credentials. If no service account information
+        is provided, ensure that the application-default credentials are properly configured.
+
         **Args:**
-        - service_account_info (dict): A dictionary containing the service account credentials.
+        - service_account_info (Optional[dict]): A dictionary containing the service account credentials.
+
+        **Example:**
+        To use application-default credentials, run the following command:
+        ```
+        gcloud auth application-default login \
+        --scopes=https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/cloud-platform
+        ```
         """
         if service_account_info:
             self.gc = gspread.service_account_from_dict(service_account_info)
@@ -46,7 +57,7 @@ class GoogleSheets:
         - value (str): Value to insert.
         """
         worksheet = self._open_worksheet(spreadsheet_id, worksheet_name)
-        worksheet.update(cell, [[value]])
+        worksheet.update([[value]], range_name=cell)
 
     def get_cell_value(self, spreadsheet_id: str, worksheet_name: str, cell: str) -> str:
         """
