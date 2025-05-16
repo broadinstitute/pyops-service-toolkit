@@ -839,7 +839,6 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-
         logging.info(f"Attempting to add user comment: '{user_comment}' to submission: '{submission_id}'")
         return self.request_util.run_request(
             uri=f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}",
