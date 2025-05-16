@@ -1,2 +1,2 @@
-10.1.1
-- Add tests for google sheets and gcp cloud functions
+10.2.0
+- Add function to Terra utilities to add user comment to a submission
