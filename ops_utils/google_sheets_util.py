@@ -13,14 +13,20 @@ class GoogleSheets:
     def __init__(self, service_account_info: Optional[dict] = None):
         """
         Initialize the GoogleSheets instance using the service account or user credentials.
-        If you are running this without service account it will use application-default account.
-        Make sure it includes the scope 'https://www.googleapis.com/auth/spreadsheets'.
 
-            gcloud auth application-default login
-            --scopes==https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/cloud-platform
+        This method sets up the Google Sheets client using either the provided service account
+        credentials or the application-default credentials. If no service account information
+        is provided, ensure that the application-default credentials are properly configured.
 
         **Args:**
-        - service_account_info (dict): A dictionary containing the service account credentials.
+        - service_account_info (Optional[dict]): A dictionary containing the service account credentials.
+
+        **Example:**
+        To use application-default credentials, run the following command:
+        ```
+        gcloud auth application-default login \
+        --scopes=https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/cloud-platform
+        ```
         """
         if service_account_info:
             self.gc = gspread.service_account_from_dict(service_account_info)

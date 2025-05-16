@@ -20,7 +20,7 @@ OUTPUT_YAML = 'out.yaml'
 
 
 def replace_access_token_in_yaml(file_path: str, new_token: str = "REDACTED") -> None:
-    """Replaces the access token in the given YAML file."""
+    """Replace the access token in the given YAML file."""
     with open(file_path, 'r') as file:
         data = yaml.safe_load(file)
 
@@ -49,7 +49,7 @@ def replace_access_token_in_yaml(file_path: str, new_token: str = "REDACTED") ->
 # Test to get yaml returned from the API call. Output will be written to
 @_recorder.record(file_path=OUTPUT_YAML)
 def _get_yaml() -> None:
-    """Get the yaml file from the API call. Update to run whatever you want to capture yaml for"""
+    """Get the yaml file from the API call. Update to run whatever you want to capture yaml for."""
     GoogleSheets().update_cell(
         spreadsheet_id=spreadsheet_id,
         worksheet_name=sheet_name,
