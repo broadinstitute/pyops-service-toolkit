@@ -845,5 +845,5 @@ class TerraWorkspace:
             uri=f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}",
             method=PATCH,
             content_type="application/json",
-            data={"userComment": user_comment}
+            data=json.dumps({"userComment": user_comment}),
         )
