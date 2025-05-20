@@ -873,7 +873,6 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-
         return self.request_util.run_request(
             uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions",
             method=POST,
