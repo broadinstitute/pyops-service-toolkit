@@ -386,7 +386,6 @@ class TerraWorkspace:
                 return [
                     self._remove_dict_from_cell(entity) for entity in entity_list
                 ]
-            logging.warning(f"Cell is a dict but no entityName or items found: {cell_value}")
             return cell_value
         return cell_value
 
