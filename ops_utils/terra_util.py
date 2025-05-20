@@ -856,8 +856,9 @@ class TerraWorkspace:
             use_call_cache: bool = True
     ) -> requests.Response:
         """
-        Initiate a submission within a Terra workspace. Note - the workflow being initiated MUST already be
-        imported into the workspace.
+        Initiate a submission within a Terra workspace.
+
+        Note - the workflow being initiated MUST already be imported into the workspace.
 
         **Args:**
         - method_config_namespace (str): The namespace of the method configuration.
