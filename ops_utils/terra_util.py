@@ -847,24 +847,33 @@ class TerraWorkspace:
         )
 
     def initiate_submission(
-            self, method_config_namespace: str, method_config_name: str, entity_type: str, entity_name: str
+            self,
+            method_config_namespace: str,
+            method_config_name: str,
+            entity_type: str,
+            entity_name: str,
+            expression: str,
+            use_call_cache: bool = True
     ) -> requests.Response:
         """
         Initiate a submission within a Terra workspace. Note - the workflow being initiated MUST already be
         imported into the workspace.
 
         **Args:**
-        - method_config_namespace (str): The namespace of the method configuration. This is usually the same as the
-         workspace namespace (i.e. the billing project).
+        - method_config_namespace (str): The namespace of the method configuration.
         - method_config_name (str): The name of the method configuration to use for the submission
         (i.e. the workflow name).
         - entity_type (str): The entity type to be used as input to the workflow (e.x. "sample", or "sample_set").
         - entity_name (str): The name of the entity to be used as input to the workflow (e.x. "sample_1", or
         "sample_set_1").
+        - expression (str): The "expression" to use. For example, if the `entity_type` is `sample` and the workflow is
+        launching one sample, this can be left as `this`. If the `entity_type` is `sample_set`, but one workflow should
+        be launched PER SAMPLE, the expression should be `this.samples`.
 
         **Returns:**
         - requests.Response: The response from the request.
         """
+
         return self.request_util.run_request(
             uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions",
             method=POST,
@@ -875,8 +884,8 @@ class TerraWorkspace:
                     "methodConfigurationName": method_config_name,
                     "entityType": entity_type,
                     "entityName": entity_name,
-                    "expression": "this",
-                    "useCallCache": True,
+                    "expression": expression,
+                    "useCallCache": use_call_cache,
                     "deleteIntermediateOutputFiles": True,
                     "useReferenceDisks": True,
                     "memoryRetryMultiplier": 0,
