@@ -846,3 +846,45 @@ class TerraWorkspace:
             content_type="application/json",
             data=json.dumps({"userComment": user_comment}),
         )
+
+    def initiate_submission(
+            self, method_config_namespace: str, method_config_name: str, entity_type: str, entity_name: str
+    ) -> requests.Response:
+        """
+        Initiate a submission within a Terra workspace. Note - the workflow being initiated MUST already be
+        imported into the workspace.
+
+        **Args:**
+        - method_config_namespace (str): The namespace of the method configuration. This is usually the same as the
+         workspace namespace (i.e. the billing project).
+        - method_config_name (str): The name of the method configuration to use for the submission
+        (i.e. the workflow name).
+        - entity_type (str): The entity type to be used as input to the workflow (e.x. "sample", or "sample_set").
+        - entity_name (str): The name of the entity to be used as input to the workflow (e.x. "sample_1", or
+        "sample_set_1").
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        return self.request_util.run_request(
+            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions",
+            method=POST,
+            content_type="application/json",
+            data=json.dumps(
+                {
+                    "methodConfigurationNamespace": method_config_namespace,
+                    "methodConfigurationName": method_config_name,
+                    "entityType": entity_type,
+                    "entityName": entity_name,
+                    "expression": "this",
+                    "useCallCache": True,
+                    "deleteIntermediateOutputFiles": True,
+                    "useReferenceDisks": True,
+                    "memoryRetryMultiplier": 0,
+                    "workflowFailureMode": "NoNewCalls",
+                    "userComment": "test",
+                    "ignoreEmptyOutputs": False,
+                    "perWorkflowCostCap": 10
+                }
+            ),
+        )
