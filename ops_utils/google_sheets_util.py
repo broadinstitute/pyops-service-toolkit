@@ -91,3 +91,29 @@ class GoogleSheets:
             if col_values[row_index - 1]:  # Check if the cell is not empty
                 return row_index
         return 0  # Return 0 if all rows are empty
+
+    def get_column_values(self, spreadsheet_id: str, worksheet_name: str, column: str) -> list:
+        """
+        Get all values in a specific column in order of row.
+
+        **Args:**
+        - spreadsheet_id (str): Spreadsheet ID.
+        - worksheet_name (str): Sheet/tab name.
+        - column (str): Column identifier (e.g., "A" or "1").
+
+        **Returns:**
+        - list: List of values in the column.
+        """
+        ws = self._open_worksheet(spreadsheet_id, worksheet_name)
+
+        # Convert column letter to number if it's a letter
+        if column.isalpha():
+            # gspread uses 1-based indexing for columns
+            column_index = 0
+            for char in column.upper():
+                column_index = column_index * 26 + (ord(char) - ord('A') + 1)
+        else:
+            # If column is already a number
+            column_index = int(column)
+
+        return ws.col_values(column_index)
