@@ -1,0 +1,24 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"submissionId":"submission-123","submissionDate":"2023-10-15T12:34:56.789Z","status":"Done","workflowStatuses":{"workflow-1":"Succeeded","workflow-2":"Failed"},"workflows":[{"workflowId":"workflow-1","status":"Succeeded","statusLastChangedDate":"2023-10-15T13:00:00.000Z"},{"workflowId":"workflow-2","status":"Failed","statusLastChangedDate":"2023-10-15T13:15:00.000Z"}]}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: authorization,content-type,accept,origin,x-app-id
+      Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '1728000'
+      Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-control: no-store
+      Pragma: no-cache
+      Referrer-Policy: strict-origin-when-cross-origin
+      Strict-Transport-Security: max-age=31536000; includeSubDomains
+      Transfer-Encoding: chunked
+      Vary: Accept-Encoding
+      Via: 1.1 google, 1.1 google
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-XSS-Protection: 1; mode=block
+    method: GET
+    status: 200
+    url: https://api.firecloud.org/api/workspaces/test_billing_project/test_workspace/submissions/submission-123
