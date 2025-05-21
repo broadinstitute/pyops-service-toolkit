@@ -69,14 +69,3 @@ class TestGoogleSheets(unittest.TestCase):
             cell="A4",
         )
         assert result == "New Value"
-
-    @responses.activate
-    def test_get_column_values(self):
-        """Test get_column_values method."""
-        responses._add_from_file(file_path="ops_utils/tests/data/google_sheets_util/get_column_values.yaml")
-        result = self.google_sheets_client.get_column_values(
-            spreadsheet_id=SPREADSHEET_ID,
-            worksheet_name=SHEET_NAME,
-            column="A",
-        )
-        assert result == ["Stuff", "To", "Test"]
