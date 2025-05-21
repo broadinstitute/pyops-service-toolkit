@@ -853,6 +853,7 @@ class TerraWorkspace:
             entity_type: str,
             entity_name: str,
             expression: str,
+            user_comment: Optional[str],
             use_call_cache: bool = True
     ) -> requests.Response:
         """
@@ -870,29 +871,32 @@ class TerraWorkspace:
         - expression (str): The "expression" to use. For example, if the `entity_type` is `sample` and the workflow is
         launching one sample, this can be left as `this`. If the `entity_type` is `sample_set`, but one workflow should
         be launched PER SAMPLE, the expression should be `this.samples`.
+        - user_comment (str, optional): The user comment to add to the submission.
+        - use_call_cache (bool, optional): Whether to use the call caching. Defaults to `True`.
 
         **Returns:**
         - requests.Response: The response from the request.
         """
+        payload = {
+            "methodConfigurationNamespace": method_config_namespace,
+            "methodConfigurationName": method_config_name,
+            "entityType": entity_type,
+            "entityName": entity_name,
+            "expression": expression,
+            "useCallCache": use_call_cache,
+            "deleteIntermediateOutputFiles": True,
+            "useReferenceDisks": True,
+            "memoryRetryMultiplier": 1,
+            "workflowFailureMode": "NoNewCalls",
+            "ignoreEmptyOutputs": False,
+            "perWorkflowCostCap": 99999,
+        }
+        if user_comment:
+            payload["userComment"] = user_comment
+
         return self.request_util.run_request(
             uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions",
             method=POST,
             content_type="application/json",
-            data=json.dumps(
-                {
-                    "methodConfigurationNamespace": method_config_namespace,
-                    "methodConfigurationName": method_config_name,
-                    "entityType": entity_type,
-                    "entityName": entity_name,
-                    "expression": expression,
-                    "useCallCache": use_call_cache,
-                    "deleteIntermediateOutputFiles": True,
-                    "useReferenceDisks": True,
-                    "memoryRetryMultiplier": 0,
-                    "workflowFailureMode": "NoNewCalls",
-                    "userComment": "test",
-                    "ignoreEmptyOutputs": False,
-                    "perWorkflowCostCap": 10
-                }
-            ),
+            data=json.dumps(payload),
         )
