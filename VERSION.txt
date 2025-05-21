@@ -1,4 +1,3 @@
-10.4.0
-- Add function to Terra utilities to get submission status
-- Add function to Terra utilities to retry failures from submission
+10.5.0
+- Add function to google sheets to get all a whole column
 
