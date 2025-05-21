@@ -897,3 +897,44 @@ class TerraWorkspace:
             content_type="application/json",
             data=json.dumps(payload),
         )
+      
+    def retry_failed_submission(self, submission_id: str) -> requests.Response:
+        """
+        Retry a failed submission in Terra.
+
+        **Args:**
+        - submission_id (str): The ID of the submission to retry.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}/retry"
+        payload = {"retryType": "Failed"}
+        logging.info(
+            f"Retrying failed submission: '{submission_id}' in workspace {self.billing_project}/{self.workspace_name}"
+        )
+        return self.request_util.run_request(
+            uri=url,
+            method=POST,
+            content_type="application/json",
+            data=json.dumps(payload)
+        )
+
+    def get_submission_status(self, submission_id: str) -> requests.Response:
+        """
+        Get the status of a submission in Terra.
+
+        **Args:**
+        - submission_id (str): The ID of the submission.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}"
+        logging.info(
+            f"Getting status for submission: '{submission_id}' in workspace {self.billing_project}/{self.workspace_name}"
+        )
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )

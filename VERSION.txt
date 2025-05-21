@@ -1,2 +1,4 @@
-10.3.0
-- Add function to Terra utilities to initiate submission
+10.4.0
+- Add function to Terra utilities to get submission status
+- Add function to Terra utilities to retry failures from submission
+
