@@ -386,7 +386,6 @@ class TerraWorkspace:
                 return [
                     self._remove_dict_from_cell(entity) for entity in entity_list
                 ]
-            logging.warning(f"Cell is a dict but no entityName or items found: {cell_value}")
             return cell_value
         return cell_value
 
@@ -845,4 +844,56 @@ class TerraWorkspace:
             method=PATCH,
             content_type="application/json",
             data=json.dumps({"userComment": user_comment}),
+        )
+
+    def initiate_submission(
+            self,
+            method_config_namespace: str,
+            method_config_name: str,
+            entity_type: str,
+            entity_name: str,
+            expression: str,
+            user_comment: Optional[str],
+            use_call_cache: bool = True
+    ) -> requests.Response:
+        """
+        Initiate a submission within a Terra workspace.
+
+        Note - the workflow being initiated MUST already be imported into the workspace.
+
+        **Args:**
+        - method_config_namespace (str): The namespace of the method configuration.
+        - method_config_name (str): The name of the method configuration to use for the submission
+        (i.e. the workflow name).
+        - entity_type (str): The entity type to be used as input to the workflow (e.x. "sample", or "sample_set").
+        - entity_name (str): The name of the entity to be used as input to the workflow (e.x. "sample_1", or
+        "sample_set_1").
+        - expression (str): The "expression" to use. For example, if the `entity_type` is `sample` and the workflow is
+        launching one sample, this can be left as `this`. If the `entity_type` is `sample_set`, but one workflow should
+        be launched PER SAMPLE, the expression should be `this.samples`.
+        - user_comment (str, optional): The user comment to add to the submission.
+        - use_call_cache (bool, optional): Whether to use the call caching. Defaults to `True`.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        payload = {
+            "methodConfigurationNamespace": method_config_namespace,
+            "methodConfigurationName": method_config_name,
+            "entityType": entity_type,
+            "entityName": entity_name,
+            "expression": expression,
+            "useCallCache": use_call_cache,
+            "deleteIntermediateOutputFiles": False,
+            "useReferenceDisks": False,
+            "ignoreEmptyOutputs": False,
+        }
+        if user_comment:
+            payload["userComment"] = user_comment
+
+        return self.request_util.run_request(
+            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions",
+            method=POST,
+            content_type="application/json",
+            data=json.dumps(payload),
         )
