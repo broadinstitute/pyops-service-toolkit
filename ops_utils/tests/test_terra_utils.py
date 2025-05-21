@@ -95,6 +95,26 @@ class TestTerraWorkspaceUtils:
             upload_metadata_res = self.workspace.upload_metadata_to_workspace_table("sample.tsv")
         assert upload_metadata_res
 
+    @responses.activate
+    def test_get_submission_status(self):
+        responses._add_from_file(file_path="ops_utils/tests/data/terra_util/get_submission_status.yaml")
+        submission_status = self.workspace.get_submission_status(submission_id="submission-123").json()
+        assert submission_status["submissionId"] == "submission-123"
+        assert submission_status["status"] == "Done"
+        assert "workflow-1" in submission_status["workflowStatuses"]
+        assert submission_status["workflowStatuses"]["workflow-1"] == "Succeeded"
+        assert "workflow-2" in submission_status["workflowStatuses"]
+        assert submission_status["workflowStatuses"]["workflow-2"] == "Failed"
+
+    @responses.activate
+    def test_retry_failed_submission(self):
+        responses._add_from_file(file_path="ops_utils/tests/data/terra_util/retry_failed_submission.yaml")
+        retry_response = self.workspace.retry_failed_submission(submission_id="submission-123").json()
+        assert retry_response["submissionId"] == "submission-123-retry"
+        assert retry_response["status"] == "Submitted"
+        assert "workflow-2" in retry_response["workflowStatuses"]
+        assert retry_response["workflowStatuses"]["workflow-2"] == "Submitted"
+
 
 class TestTerra(unittest.TestCase):
 
