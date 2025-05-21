@@ -854,7 +854,6 @@ class TerraWorkspace:
             entity_name: str,
             expression: str,
             user_comment: Optional[str],
-            memory_retry_multiplier: int = 1,
             use_call_cache: bool = True
     ) -> requests.Response:
         """
@@ -873,7 +872,6 @@ class TerraWorkspace:
         launching one sample, this can be left as `this`. If the `entity_type` is `sample_set`, but one workflow should
         be launched PER SAMPLE, the expression should be `this.samples`.
         - user_comment (str, optional): The user comment to add to the submission.
-        - memory_retry_multiplier (int, optional): The memory retry multiplier. Defaults to `1`.
         - use_call_cache (bool, optional): Whether to use the call caching. Defaults to `True`.
 
         **Returns:**
@@ -886,12 +884,9 @@ class TerraWorkspace:
             "entityName": entity_name,
             "expression": expression,
             "useCallCache": use_call_cache,
-            "deleteIntermediateOutputFiles": True,
-            "useReferenceDisks": True,
-            "memoryRetryMultiplier": memory_retry_multiplier,
-            "workflowFailureMode": "NoNewCalls",
+            "deleteIntermediateOutputFiles": False,
+            "useReferenceDisks": False,
             "ignoreEmptyOutputs": False,
-            "perWorkflowCostCap": 99999,
         }
         if user_comment:
             payload["userComment"] = user_comment
