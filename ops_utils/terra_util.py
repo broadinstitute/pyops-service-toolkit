@@ -350,6 +350,20 @@ class TerraWorkspace:
                 row['attributes'] = self._remove_dict_from_attributes(row['attributes'])
         return results
 
+    def get_specific_entity_metrics(self, entity_type: str, entity_name: str) -> requests.Response:
+        """
+        Get specific entity metrics for a given entity type and name.
+
+        **Args:**
+        - entity_type (str): The type of entity to get metrics for.
+        - entity_name (str): The name of the entity to get metrics for.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"
+        return self.request_util.run_request(uri=url, method=GET)
+
     def _remove_dict_from_attributes(self, attributes: dict) -> dict:
         """
         Remove dictionaries from the attributes.
