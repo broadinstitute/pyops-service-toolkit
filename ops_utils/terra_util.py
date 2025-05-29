@@ -623,7 +623,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         endpoint = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/flexibleImportEntities"
-        data = {"entities": (entities_tsv, open(entities_tsv, "rb"), "text/tab-separated-values")}
+        data = {"entities": open(entities_tsv, "rb")}
         return self.request_util.upload_file(
             uri=endpoint,
             data=data
