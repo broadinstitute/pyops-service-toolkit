@@ -68,6 +68,7 @@ class RunRequest:
             uri: str,
             method: str,
             data: Any = None,
+            files: Any = None,
             params: Optional[dict] = None,
             factor: int = 15,
             content_type: Optional[str] = None,
@@ -105,11 +106,18 @@ class RunRequest:
                     params=params
                 )
             elif method == POST:
-                response = requests.post(
-                    uri,
-                    headers=self.create_headers(content_type=content_type),
-                    data=data
-                )
+                if files:
+                    response = requests.post(
+                        uri,
+                        headers=self.create_headers(content_type=content_type),
+                        files=files
+                    )
+                else:
+                    response = requests.post(
+                        uri,
+                        headers=self.create_headers(content_type=content_type),
+                        data=data
+                    )
             elif method == DELETE:
                 response = requests.delete(
                     uri,
@@ -171,8 +179,8 @@ class RunRequest:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        headers = self.create_headers(accept=None)
-        response = requests.post(uri, headers=headers, files=data)
-        if 300 <= response.status_code or response.status_code < 200:
-            response.raise_for_status()  # Raise an exception for non-200 status codes
-        return response
+        return self.run_request(
+            uri=uri,
+            method=POST,
+            files=data
+        )
