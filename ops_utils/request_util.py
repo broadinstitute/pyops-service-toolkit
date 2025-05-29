@@ -71,6 +71,7 @@ class RunRequest:
             files: Any = None,
             params: Optional[dict] = None,
             factor: int = 15,
+            accept: Optional[str] = "application/json",
             content_type: Optional[str] = None,
             accept_return_codes: list[int] = []
     ) -> requests.Response:
@@ -83,6 +84,7 @@ class RunRequest:
         - data (Any, optional): The data to send in the request body. Defaults to None.
         - params (dict, optional): The query parameters for the request. Defaults to None.
         - factor (int, optional): The exponential backoff factor. Defaults to 15.
+        - accept (str, optional): The accept header for the request. Defaults to "application/json".
         - content_type (str, optional): The content type for the request. Defaults to None.
         - accept_return_codes (list[int], optional): List of acceptable return codes. Defaults to [].
 
@@ -99,40 +101,41 @@ class RunRequest:
         # Apply decorators to request execution
         @backoff_decorator
         def _make_request() -> requests.Response:
+            headers = self.create_headers(content_type=content_type, accept=accept)
             if method == GET:
                 response = requests.get(
                     uri,
-                    headers=self.create_headers(content_type=content_type),
+                    headers=headers,
                     params=params
                 )
             elif method == POST:
                 if files:
                     response = requests.post(
                         uri,
-                        headers=self.create_headers(content_type=content_type),
+                        headers=headers,
                         files=files
                     )
                 else:
                     response = requests.post(
                         uri,
-                        headers=self.create_headers(content_type=content_type),
+                        headers=headers,
                         data=data
                     )
             elif method == DELETE:
                 response = requests.delete(
                     uri,
-                    headers=self.create_headers(content_type=content_type)
+                    headers=headers
                 )
             elif method == PATCH:
                 response = requests.patch(
                     uri,
-                    headers=self.create_headers(content_type=content_type),
+                    headers=headers,
                     data=data
                 )
             elif method == PUT:
                 response = requests.put(
                     uri,
-                    headers=self.create_headers(content_type=content_type),
+                    headers=headers,
                     data=data
                 )
             else:
@@ -182,5 +185,6 @@ class RunRequest:
         return self.run_request(
             uri=uri,
             method=POST,
-            files=data
+            files=data,
+            accept="*/*",
         )
