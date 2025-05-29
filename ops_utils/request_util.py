@@ -107,7 +107,7 @@ class RunRequest:
                 )
             elif method == POST:
                 if files:
-                    headers = self.create_headers(content_type=content_type)
+                    headers = self.create_headers(content_type=content_type, accept="*/*")
                     print(headers)
                     print(uri)
                     print(files)
