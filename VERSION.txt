@@ -1,2 +1,2 @@
-10.6.0
-- Add function to get specific entity from Terra
+10.6.1
+- Upload file with request util use existing code and print out more info when failures
