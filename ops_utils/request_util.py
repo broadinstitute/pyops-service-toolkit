@@ -101,40 +101,41 @@ class RunRequest:
         # Apply decorators to request execution
         @backoff_decorator
         def _make_request() -> requests.Response:
+            headers = self.create_headers(content_type=content_type, accept=accept)
             if method == GET:
                 response = requests.get(
                     uri,
-                    headers=self.create_headers(content_type=content_type),
+                    headers=headers,
                     params=params
                 )
             elif method == POST:
                 if files:
                     response = requests.post(
                         uri,
-                        headers=self.create_headers(content_type=content_type, accept=accept),
+                        headers=headers,
                         files=files
                     )
                 else:
                     response = requests.post(
                         uri,
-                        headers=self.create_headers(content_type=content_type),
+                        headers=headers,
                         data=data
                     )
             elif method == DELETE:
                 response = requests.delete(
                     uri,
-                    headers=self.create_headers(content_type=content_type)
+                    headers=headers
                 )
             elif method == PATCH:
                 response = requests.patch(
                     uri,
-                    headers=self.create_headers(content_type=content_type),
+                    headers=headers,
                     data=data
                 )
             elif method == PUT:
                 response = requests.put(
                     uri,
-                    headers=self.create_headers(content_type=content_type),
+                    headers=headers,
                     data=data
                 )
             else:
