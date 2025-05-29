@@ -71,6 +71,7 @@ class RunRequest:
             files: Any = None,
             params: Optional[dict] = None,
             factor: int = 15,
+            accept: Optional[str] = "application/json",
             content_type: Optional[str] = None,
             accept_return_codes: list[int] = []
     ) -> requests.Response:
@@ -83,6 +84,7 @@ class RunRequest:
         - data (Any, optional): The data to send in the request body. Defaults to None.
         - params (dict, optional): The query parameters for the request. Defaults to None.
         - factor (int, optional): The exponential backoff factor. Defaults to 15.
+        - accept (str, optional): The accept header for the request. Defaults to "application/json".
         - content_type (str, optional): The content type for the request. Defaults to None.
         - accept_return_codes (list[int], optional): List of acceptable return codes. Defaults to [].
 
@@ -107,13 +109,9 @@ class RunRequest:
                 )
             elif method == POST:
                 if files:
-                    headers = self.create_headers(content_type=content_type, accept="*/*")
-                    print(headers)
-                    print(uri)
-                    print(files)
                     response = requests.post(
                         uri,
-                        headers=headers, #self.create_headers(content_type=content_type),
+                        headers=self.create_headers(content_type=content_type, accept=accept),
                         files=files
                     )
                 else:
@@ -186,5 +184,6 @@ class RunRequest:
         return self.run_request(
             uri=uri,
             method=POST,
-            files=data
+            files=data,
+            accept="*/*",
         )
