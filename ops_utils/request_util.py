@@ -171,13 +171,14 @@ class RunRequest:
             headers["accept"] = accept
         return headers
 
-    def upload_file(self, uri: str, data: dict) -> requests.Response:
+    def upload_file(self, uri: str, data: dict, accept: str = "*/*") -> requests.Response:
         """
         Run a POST request with files parameter.
 
         **Args:**
         - uri (str): The URI for the request.
         - data (dict): The files data to upload.
+        - accept (str, optional): The accept header for the request. Defaults to "*/*".
 
         **Returns:**
         - requests.Response: The response from the request.
@@ -186,5 +187,5 @@ class RunRequest:
             uri=uri,
             method=POST,
             files=data,
-            accept="*/*",
+            accept=accept,
         )
