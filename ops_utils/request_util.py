@@ -107,9 +107,13 @@ class RunRequest:
                 )
             elif method == POST:
                 if files:
+                    headers = self.create_headers(content_type=content_type)
+                    print(headers)
+                    print(uri)
+                    print(files)
                     response = requests.post(
                         uri,
-                        headers=self.create_headers(content_type=content_type),
+                        headers=headers, #self.create_headers(content_type=content_type),
                         files=files
                     )
                 else:
