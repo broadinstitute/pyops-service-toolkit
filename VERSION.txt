@@ -1,2 +1,2 @@
-10.6.1
-- Upload file with request util use existing code and print out more info when failures
+10.6.2
+- Add option to pass accept to upload_file
