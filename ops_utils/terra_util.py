@@ -361,7 +361,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"
+        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"  # noqa: E501
         return self.request_util.run_request(uri=url, method=GET)
 
     def _remove_dict_from_attributes(self, attributes: dict) -> dict:
@@ -911,7 +911,7 @@ class TerraWorkspace:
             content_type="application/json",
             data=json.dumps(payload),
         )
-      
+
     def retry_failed_submission(self, submission_id: str) -> requests.Response:
         """
         Retry a failed submission in Terra.
@@ -946,9 +946,41 @@ class TerraWorkspace:
         """
         url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}"
         logging.info(
-            f"Getting status for submission: '{submission_id}' in workspace {self.billing_project}/{self.workspace_name}"
+            f"Getting status for submission: '{submission_id}' in workspace"
+            f" {self.billing_project}/{self.workspace_name}"
         )
         return self.request_util.run_request(
             uri=url,
             method=GET
+        )
+
+    def delete_bulk_entities(self, entity_type: str, entity_names: list[str]) -> requests.Response:
+        """
+        Delete multiple entities of a specific type from the workspace.
+
+        **Args:**
+        - entity_type (str): The type of the entities to delete.
+        - entity_names (list[str]): A list of entity names to delete.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        logging.info(
+            f"Deleting entities {entity_names} of type {entity_type} from workspace "
+            f"{self.billing_project}/{self.workspace_name}"
+        )
+        payload = []
+        for entity_name in entity_names:
+            payload.append(
+                {
+                    "entityType": entity_type,
+                    "entityName": entity_name
+                }
+            )
+
+        return self.request_util.run_request(
+            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entities/delete",
+            method=POST,
+            content_type="application/json",
+            data=json.dumps(payload)
         )
