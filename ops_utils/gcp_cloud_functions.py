@@ -5,6 +5,7 @@ import logging
 import json
 from typing import Optional
 
+ERROR_KEY = "error"
 
 class GCPCloudFunctionCaller:
     """Class to call a GCP Cloud Function programmatically."""
@@ -20,13 +21,19 @@ class GCPCloudFunctionCaller:
         self.project = project or default_project
         self.service = build("cloudfunctions", "v1", credentials=credentials)
 
-    def call_function(self, function_name: str, data: dict) -> dict:
+    def call_function(
+            self,
+            function_name: str,
+            data: dict,
+            check_error: bool = True,
+    ) -> dict:
         """
         Call a GCP Cloud Function.
 
         **Args:**
         - function_name (str): The name of the Cloud Function to call.
         - data (dict): The payload to send to the Cloud Function.
+        - check_error (bool): Whether to check for errors in the response. Defaults to True.
 
         **Returns:**
         - dict: The response from the Cloud Function.
@@ -36,10 +43,8 @@ class GCPCloudFunctionCaller:
             name=function_path, body={"data": json.dumps(data)}
         )
 
-        try:
-            response = request.execute()
-            logging.info(f"Cloud Function {function_name} called successfully.")
-            return response
-        except Exception as e:
-            logging.error(f"Failed to call Cloud Function {function_name}: {e}")
-            raise
+        response = request.execute()
+        if check_error and ERROR_KEY in response:
+            raise RuntimeError(f"Error calling Cloud Function {function_name}: {response[ERROR_KEY]}")
+        logging.info(f"Cloud Function {function_name} called successfully.")
+        return response
