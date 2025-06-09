@@ -1,2 +1,2 @@
-10.6.2
-- Add option to pass accept to upload_file
+10.6.3
+- gcp cloud function checks for errors
