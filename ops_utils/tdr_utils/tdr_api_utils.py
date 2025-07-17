@@ -823,8 +823,7 @@ class TDR:
                 dataset_name=dataset_name,
                 description=description,
                 profile_id=billing_profile,
-                additional_dataset_properties=additional_properties_dict,
-                relationships=relationships
+                additional_dataset_properties=additional_properties_dict
             )
         return dataset_id
 
@@ -834,7 +833,6 @@ class TDR:
             dataset_name: str,
             description: str,
             profile_id: str,
-            relationships: Optional[list[dict]] = None,
             additional_dataset_properties: Optional[dict] = None
     ) -> Optional[str]:
         """
@@ -845,7 +843,6 @@ class TDR:
         - dataset_name (str): The name of the dataset.
         - description (str): The description of the dataset.
         - profile_id (str): The billing profile ID.
-        - relationships (Optional[list[dict]], optional): A list of relationships to add to the dataset schema.
         - additional_dataset_properties (Optional[dict], optional): Additional
                 properties for the dataset. Defaults to None.
 
@@ -866,8 +863,6 @@ class TDR:
 
         if additional_dataset_properties:
             dataset_properties.update(additional_dataset_properties)
-        if relationships:
-
         try:
             CreateDatasetSchema(**dataset_properties)  # type: ignore[arg-type]
         except ValidationError as e:
