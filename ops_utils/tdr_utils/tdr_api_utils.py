@@ -18,10 +18,11 @@ from ..vars import ARG_DEFAULTS, GCP
 class TDR:
     """Class to interact with the Terra Data Repository (TDR) API."""
 
-    TDR_LINK = "https://data.terra.bio/api/repository/v1"
+    PROD_LINK = "https://data.terra.bio/api/repository/v1"
+    DEV_LINK = "https://jade.datarepo-dev.broadinstitute.org/api/repository/v1"
     """(str): The base URL for the TDR API."""
 
-    def __init__(self, request_util: RunRequest):
+    def __init__(self, request_util: RunRequest, env: str = 'prod'):
         """
         Initialize the TDR class (A class to interact with the Terra Data Repository (TDR) API).
 
@@ -29,6 +30,12 @@ class TDR:
         - request_util (`ops_utils.request_util.RunRequest`): Utility for making HTTP requests.
         """
         self.request_util = request_util
+        if env.lower() == 'prod':
+            self.tdr_link = self.PROD_LINK
+        elif env.lower() == 'dev':
+            self.tdr_link = self.DEV_LINK
+        else:
+            raise RuntimeError(f"Unsupported environment: {env}. Must be 'prod' or 'dev'.")
         """@private"""
 
     @staticmethod
@@ -89,7 +96,7 @@ class TDR:
         **Returns:**
         - list[dict]: A list of dictionaries containing the metadata of the files in the dataset.
         """
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}/files"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/files"
         logging.info(f"Getting all files in dataset {dataset_id}")
         return self._get_response_from_batched_endpoint(uri=uri, limit=limit)
 
@@ -153,12 +160,12 @@ class TDR:
         - ValueError: If neither `snapshot_id` nor `dataset_id` is provided.
         """
         if snapshot_id:
-            uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}?include=ACCESS_INFORMATION"
+            uri = f"{self.tdr_link}/snapshots/{snapshot_id}?include=ACCESS_INFORMATION"
             response = self.request_util.run_request(uri=uri, method=GET)
             snapshot_info = json.loads(response.text)
             sas_token = snapshot_info["accessInformation"]["parquet"]["sasToken"]
         elif dataset_id:
-            uri = f"{self.TDR_LINK}/datasets/{dataset_id}?include=ACCESS_INFORMATION"
+            uri = f"{self.tdr_link}/datasets/{dataset_id}?include=ACCESS_INFORMATION"
             response = self.request_util.run_request(uri=uri, method=GET)
             snapshot_info = json.loads(response.text)
             sas_token = snapshot_info["accessInformation"]["parquet"]["sasToken"]
@@ -182,7 +189,7 @@ class TDR:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}/files/{file_id}"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/files/{file_id}"
         logging.info(f"Submitting delete job for file {file_id}")
         return self.request_util.run_request(uri=uri, method=DELETE)
 
@@ -226,7 +233,7 @@ class TDR:
         - ValueError: If the policy is not valid.
         """
         self._check_policy(policy)
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}/policies/{policy}/members"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/policies/{policy}/members"
         member_dict = {"email": user}
         logging.info(f"Adding user {user} to dataset {dataset_id} with policy {policy}")
         return self.request_util.run_request(
@@ -253,7 +260,7 @@ class TDR:
         - ValueError: If the policy is not valid.
         """
         self._check_policy(policy)
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}/policies/{policy}/members/{user}"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/policies/{policy}/members/{user}"
         logging.info(f"Removing user {user} from dataset {dataset_id} with policy {policy}")
         return self.request_util.run_request(uri=uri, method=DELETE)
 
@@ -264,7 +271,7 @@ class TDR:
         **Args:**
             dataset_id (str): The ID of the dataset to be deleted.
         """
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}"
         logging.info(f"Deleting dataset {dataset_id}")
         response = self.request_util.run_request(uri=uri, method=DELETE)
         job_id = response.json()['id']
@@ -308,7 +315,7 @@ class TDR:
             include_string = '&include='.join(info_to_include)
         else:
             include_string = ""
-        uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}?include={include_string}"
+        uri = f"{self.tdr_link}/snapshots/{snapshot_id}?include={include_string}"
         response = self.request_util.run_request(
             uri=uri,
             method=GET,
@@ -356,7 +363,7 @@ class TDR:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}"
+        uri = f"{self.tdr_link}/snapshots/{snapshot_id}"
         logging.info(f"Deleting snapshot {snapshot_id}")
         return self.request_util.run_request(uri=uri, method=DELETE)
 
@@ -383,7 +390,7 @@ class TDR:
             log_message = f"Searching for all datasets in batches of {batch_size}"
         logging.info(log_message)
         while True:
-            uri = f"{self.TDR_LINK}/datasets?offset={offset}&limit={batch_size}&sort=created_date&direction={direction}{filter_str}"  # noqa: E501
+            uri = f"{self.tdr_link}/datasets?offset={offset}&limit={batch_size}&sort=created_date&direction={direction}{filter_str}"  # noqa: E501
             response = self.request_util.run_request(uri=uri, method=GET)
             datasets = response.json()["items"]
             if not datasets:
@@ -459,7 +466,7 @@ class TDR:
             include_string = '&include='.join(info_to_include)
         else:
             include_string = ""
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}?include={include_string}"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}?include={include_string}"
         return self.request_util.run_request(uri=uri, method=GET)
 
     def get_table_schema_info(
@@ -497,7 +504,7 @@ class TDR:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        uri = f"{self.TDR_LINK}/jobs/{job_id}/result"
+        uri = f"{self.tdr_link}/jobs/{job_id}/result"
         # If job is expected to fail, accept any return code
         acceptable_return_code = list(range(100, 600)) if expect_failure else []
         return self.request_util.run_request(uri=uri, method=GET, accept_return_codes=acceptable_return_code)
@@ -513,7 +520,7 @@ class TDR:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}/ingest"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/ingest"
         logging.info(
             "If recently added TDR SA to source bucket/dataset/workspace and you receive a 400/403 error, " +
             "it can sometimes take up to 12/24 hours for permissions to propagate. Try rerunning the script later.")
@@ -543,7 +550,7 @@ class TDR:
         **Returns:**
         - dict: A dictionary containing the response from the ingest operation job monitoring.
         """
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}/files/bulk/array"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/files/bulk/array"
         data = {
             "profileId": profile_id,
             "loadTag": f"{load_tag}",
@@ -601,7 +608,7 @@ class TDR:
             "limit": query_limit,
             "sort": "datarepo_row_id"
         }
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}/data/{target_table_name}"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/data/{target_table_name}"
         while True:
             batch_number = int((search_request["offset"] / query_limit)) + 1  # type: ignore[operator]
             response = self.request_util.run_request(
@@ -645,7 +652,7 @@ class TDR:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        uri = f"{self.TDR_LINK}/jobs/{job_id}"
+        uri = f"{self.tdr_link}/jobs/{job_id}"
         return self.request_util.run_request(uri=uri, method=GET)
 
     def get_dataset_file_uuids_from_metadata(self, dataset_id: str) -> list[str]:
@@ -707,7 +714,7 @@ class TDR:
             logging.info(f"No records found to soft delete in table {table_name}")
             return None
         logging.info(f"Soft deleting {len(datarepo_row_ids)} records from table {table_name}")
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}/deletes"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/deletes"
         payload = {
             "deleteType": "soft",
             "specType": "jsonArray",
@@ -766,6 +773,7 @@ class TDR:
             billing_profile: str,
             schema: dict,
             description: str,
+            relationships: Optional[list[dict]] = None,
             delete_existing: bool = False,
             continue_if_exists: bool = False,
             additional_properties_dict: Optional[dict] = None
@@ -778,6 +786,8 @@ class TDR:
         - billing_profile (str): The billing profile ID.
         - schema (dict): The schema of the dataset.
         - description (str): The description of the dataset.
+        - relationships (Optional[list[dict]], optional): A list of relationships to add to the dataset schema.
+                Defaults to None.
         - additional_properties_dict (Optional[dict], optional): Additional properties
                 for the dataset. Defaults to None.
         - delete_existing (bool, optional): Whether to delete the existing dataset if found.
@@ -813,7 +823,8 @@ class TDR:
                 dataset_name=dataset_name,
                 description=description,
                 profile_id=billing_profile,
-                additional_dataset_properties=additional_properties_dict
+                additional_dataset_properties=additional_properties_dict,
+                relationships=relationships
             )
         return dataset_id
 
@@ -823,6 +834,7 @@ class TDR:
             dataset_name: str,
             description: str,
             profile_id: str,
+            relationships: Optional[list[dict]] = None,
             additional_dataset_properties: Optional[dict] = None
     ) -> Optional[str]:
         """
@@ -833,6 +845,7 @@ class TDR:
         - dataset_name (str): The name of the dataset.
         - description (str): The description of the dataset.
         - profile_id (str): The billing profile ID.
+        - relationships (Optional[list[dict]], optional): A list of relationships to add to the dataset schema.
         - additional_dataset_properties (Optional[dict], optional): Additional
                 properties for the dataset. Defaults to None.
 
@@ -853,11 +866,13 @@ class TDR:
 
         if additional_dataset_properties:
             dataset_properties.update(additional_dataset_properties)
+        if relationships:
+
         try:
             CreateDatasetSchema(**dataset_properties)  # type: ignore[arg-type]
         except ValidationError as e:
             raise ValueError(f"Schema validation error: {e}")
-        uri = f"{self.TDR_LINK}/datasets"
+        uri = f"{self.tdr_link}/datasets"
         logging.info(f"Creating dataset {dataset_name} under billing profile {profile_id}")
         response = self.request_util.run_request(
             method=POST,
@@ -895,7 +910,7 @@ class TDR:
         **Raises:**
         - ValueError: If the schema validation fails.
         """
-        uri = f"{self.TDR_LINK}/datasets/{dataset_id}/updateSchema"
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/updateSchema"
         request_body: dict = {"description": f"{update_note}", "changes": {}}
         if tables_to_add:
             request_body["changes"]["addTables"] = tables_to_add
@@ -968,7 +983,7 @@ class TDR:
         **Returns:**
         - list[dict]: A list of dictionaries containing the metadata of the files in the snapshot.
         """
-        uri = f"{self.TDR_LINK}/snapshots/{snapshot_id}/files"
+        uri = f"{self.tdr_link}/snapshots/{snapshot_id}/files"
         return self._get_response_from_batched_endpoint(uri=uri, limit=limit)
 
     def get_dataset_snapshots(self, dataset_id: str) -> requests.Response:
@@ -981,7 +996,7 @@ class TDR:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        uri = f"{self.TDR_LINK}/snapshots?datasetIds={dataset_id}"
+        uri = f"{self.tdr_link}/snapshots?datasetIds={dataset_id}"
         return self.request_util.run_request(
             uri=uri,
             method=GET
