@@ -1,2 +1,3 @@
-10.6.3
-- gcp cloud function checks for errors
+11.0.0
+- Adding ability to create snapshots
+- Be able to pass in environment variables to terra and TDR

@@ -11,33 +11,56 @@ from datetime import datetime, timedelta
 class Token:
     """Class for generating tokens for other module services."""
 
-    def __init__(self, token_file: Optional[str] = None, extra_scopes: Optional[list[str]] = None) -> None:
+    def __init__(
+            self,
+            token_file: Optional[str] = None,
+            extra_scopes: Optional[list[str]] = None,
+            service_account_json: Optional[str] = None
+    ) -> None:
         """Initialize the Token class.
 
         **Args:**
         - token_file (str, optional): The path to a file containing an existing token string.
         - extra_scopes (list[str], optional): Additional scopes to request for the token.
+        - service_account_json (str, optional): Path to service account JSON key file.
         """
         self.expiry: Optional[datetime] = None
         """@private"""
         self.token_string: Optional[str] = ""
         """@private"""
+
         # If provided with a file just use the contents of file
         if token_file:
             self.token_file = token_file
             with open(self.token_file) as f:
                 self.token_string = f.read().rstrip()
+            return
+
+        self.token_file = ""
+
+        # Default scopes
+        scopes = [
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/devstorage.full_control"
+        ]
+
+        # Add extra scopes if provided
+        if extra_scopes:
+            scopes.extend(extra_scopes)
+
+        # Use service account if provided
+        if service_account_json:
+            from oauth2client.service_account import ServiceAccountCredentials
+            self.credentials = ServiceAccountCredentials.from_json_keyfile_name(
+                service_account_json,
+                scopes=scopes
+            )
         else:
-            self.token_file = ""
+            # Fall back to application default credentials
             from oauth2client.client import GoogleCredentials
             self.credentials = GoogleCredentials.get_application_default()
-            self.credentials = self.credentials.create_scoped(
-                [
-                    "https://www.googleapis.com/auth/userinfo.profile",
-                    "https://www.googleapis.com/auth/userinfo.email",
-                    "https://www.googleapis.com/auth/devstorage.full_control"
-                ] + (extra_scopes if extra_scopes else [])
-            )
+            self.credentials = self.credentials.create_scoped(scopes)
 
     def _get_gcp_token(self) -> Union[str, None]:
         # Refresh token if it has not been set or if it is expired or close to expiry

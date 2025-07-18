@@ -2,6 +2,7 @@
 import os
 import logging
 import io
+import json
 import hashlib
 import base64
 import subprocess
@@ -10,6 +11,9 @@ from humanfriendly import format_size, parse_size
 from mimetypes import guess_type
 from typing import Optional, Any
 from google.cloud.storage.blob import Blob
+from google.oauth2 import service_account
+from google.cloud import storage
+from google.auth import default
 
 from .vars import ARG_DEFAULTS
 from .thread_pool_executor_util import MultiThreadedJobs
@@ -27,21 +31,42 @@ MD5_BASE64 = "base64"
 class GCPCloudFunctions:
     """Class to handle GCP Cloud Functions."""
 
-    def __init__(self, project: Optional[str] = None) -> None:
+    def __init__(
+            self,
+            project: Optional[str] = None,
+            service_account_json: Optional[str] = None
+    ) -> None:
         """
         Initialize the GCPCloudFunctions class.
 
-        Authenticates using the default credentials and sets up the Storage Client.
-        Uses the `project_id` if provided, otherwise utilizes the default project set.
+        Authenticates using service account JSON if provided or default credentials,
+        and sets up the Storage Client.
 
-        **Args:**
-        - project (str, optional): The GCP project ID
+        Args:
+            project: Optional[str] = None
+                The GCP project ID. If not provided, will use project from service account or default.
+            service_account_json: Optional[str] = None
+                Path to service account JSON key file. If provided, will use these credentials.
         """
-        from google.cloud import storage  # type: ignore[attr-defined]
-        from google.auth import default
-        credentials, default_project = default()
+        # Initialize credentials and project
+        credentials = None
+        default_project = None
+
+        if service_account_json:
+            credentials = service_account.Credentials.from_service_account_file(service_account_json)
+            # Extract project from service account if not specified
+            if not project:
+                with open(service_account_json, 'r') as f:
+                    sa_info = json.load(f)
+                    project = sa_info.get('project_id')
+        else:
+            # Use default credentials
+            credentials, default_project = default()
+
+        # Set project if not already set
         if not project:
             project = default_project
+
         self.client = storage.Client(credentials=credentials, project=project)
         """@private"""
 
