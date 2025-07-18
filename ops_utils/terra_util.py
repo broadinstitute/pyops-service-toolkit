@@ -13,7 +13,7 @@ from .vars import GCP
 from .gcp_utils import GCPCloudFunctions
 from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
-# TODO: GET RIGHT DEV LINK
+# Constants for Terra API links
 TERRA_DEV_LINK = "https://firecloud-orchestration.dsde-dev.broadinstitute.org/api"
 """@private"""
 TERRA_PROD_LINK = "https://api.firecloud.org/api"
