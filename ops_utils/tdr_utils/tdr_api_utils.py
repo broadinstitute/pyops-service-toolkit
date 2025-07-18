@@ -1039,6 +1039,7 @@ class TDR:
             payload["duosId"] = duos_id
         if data_access_control_groups:
             payload["dataAccessControlGroups"] = data_access_control_groups
+        logging.info(f"Creating snapshot {snapshot_name} in dataset {dataset_name}")
         response = self.request_util.run_request(
             uri=uri,
             method=POST,
