@@ -168,6 +168,8 @@ class SetUpTDRTables:
 
 
 class MatchSchemas:
+    """A class to match schemas between two TDR datasets and add missing tables."""
+
     def __init__(self, orig_dataset_info: dict, dest_dataset_info: dict, dest_dataset_id: str, tdr: TDR):
         """
         Initialize the MatchSchemas class.
@@ -196,15 +198,15 @@ class MatchSchemas:
         for table in self.orig_dataset_info["schema"]["tables"]:
             if table['name'] not in dest_tables:
                 logging.info(
-                    f"Table {table['name']} not found in new dataset {new_dataset_name}. will add table"
+                    f"Table {table['name']} not found in new dataset {self.dest_dataset_info['name']}. will add table"
                 )
                 tables_to_update.append(table)
         if tables_to_update:
             logging.info(
-                f"Adding {len(tables_to_update)} tables to new dataset {new_dataset_name}"
+                f"Adding {len(tables_to_update)} tables to new dataset {self.dest_dataset_info['name']}"
             )
             self.tdr.update_dataset_schema(
                 dataset_id=self.dest_dataset_id,
                 tables_to_add=tables_to_update,
-                update_note=f"Adding tables to dataset {new_dataset_name}"
+                update_note=f"Adding tables to dataset {self.dest_dataset_info['name']}"
             )
