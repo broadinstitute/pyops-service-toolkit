@@ -997,6 +997,59 @@ class TDR:
             method=GET
         )
 
+    def create_snapshot(
+            self,
+            snapshot_name: str,
+            description: str,
+            dataset_name: str,
+            snapshot_mode: str,  # byFullView is entire dataset
+            profile_id: str,
+            stewards: Optional[list[str]] = [],
+            readers: Optional[list[str]] = [],
+            consent_code: Optional[str] = None,
+            duos_id: Optional[str] = None,
+            data_access_control_groups: Optional[list[str]] = None,
+    ) -> None:
+        """
+        Create a snapshot in TDR.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        uri = f"{self.tdr_link}/snapshots"
+        payload = {
+            "name": snapshot_name,
+            "description": description,
+            "contents": [
+                {
+                    "datasetName": dataset_name,
+                    "mode": snapshot_mode,
+                }
+            ],
+            "policies": {
+                "stewards": stewards,
+                "readers": readers,
+            },
+            "profileId": profile_id,
+            "globalFileIds": True,
+        }
+        if consent_code:
+            payload["consentCode"] = consent_code
+        if duos_id:
+            payload["duosId"] = duos_id
+        if data_access_control_groups:
+            payload["dataAccessControlGroups"] = data_access_control_groups
+        response = self.request_util.run_request(
+            uri=uri,
+            method=POST,
+            content_type="application/json",
+            data=json.dumps(payload)
+        )
+        job_id = response.json()["id"]
+        job_results = MonitorTDRJob(tdr=self, job_id=job_id, check_interval=30, return_json=True).run()
+        snapshot_id = job_results["id"]  # type: ignore[index]
+        logging.info(f"Successfully created snapshot {snapshot_name} - {snapshot_id}")
+
 
 class FilterOutSampleIdsAlreadyInDataset:
     """Class to filter ingest metrics to remove sample IDs that already exist in the dataset."""
