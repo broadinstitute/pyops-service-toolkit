@@ -2,7 +2,7 @@
 import logging
 from google.cloud import bigquery
 from google.api_core.exceptions import Forbidden
-from typing import Optional
+from typing import Optional, Any
 
 
 class BigQueryUtil:
@@ -69,7 +69,7 @@ class BigQueryUtil:
         new_rows = destination_table.num_rows
         logging.info(f"Table now contains {new_rows} rows after upload")
 
-    def query_table(self, query: str, to_dataframe: bool = False) -> list[dict]:
+    def query_table(self, query: str, to_dataframe: bool = False) -> Any:
         """
         Execute a SQL query on a BigQuery table and returns the results.
 
@@ -83,7 +83,7 @@ class BigQueryUtil:
         query_job = self.client.query(query)
         if to_dataframe:
             return query_job.result().to_dataframe()
-        return [row for row in query_job.result()]
+        return [dict(row) for row in query_job.result()]
 
     def check_permissions_to_project(self, raise_on_other_failure: bool = True) -> bool:
         """

@@ -13,7 +13,10 @@ from .vars import GCP
 from .gcp_utils import GCPCloudFunctions
 from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
-TERRA_LINK = "https://api.firecloud.org/api"
+# Constants for Terra API links
+TERRA_DEV_LINK = "https://firecloud-orchestration.dsde-dev.broadinstitute.org/api"
+"""@private"""
+TERRA_PROD_LINK = "https://api.firecloud.org/api"
 """@private"""
 LEONARDO_LINK = "https://leonardo.dsde-prod.broadinstitute.org/api"
 """@private"""
@@ -31,7 +34,7 @@ ADMIN = "admin"
 class Terra:
     """Class for generic Terra utilities."""
 
-    def __init__(self, request_util: RunRequest):
+    def __init__(self, request_util: RunRequest, env: str = "prod"):
         """
         Initialize the Terra class.
 
@@ -202,7 +205,7 @@ class TerraWorkspace:
     CONFLICT_STATUS_CODE = 409
     """@private"""
 
-    def __init__(self, billing_project: str, workspace_name: str, request_util: RunRequest):
+    def __init__(self, billing_project: str, workspace_name: str, request_util: RunRequest, env: str = "prod"):
         """
         Initialize the TerraWorkspace class.
 
@@ -230,6 +233,14 @@ class TerraWorkspace:
         """@private"""
         self.request_util = request_util
         """@private"""
+        if env.lower() == "dev":
+            self.terra_link = TERRA_DEV_LINK
+            """@private"""
+        elif env.lower() == "prod":
+            self.terra_link = TERRA_PROD_LINK
+            """@private"""
+        else:
+            raise ValueError(f"Invalid environment: {env}. Must be 'dev' or 'prod'.")
 
     def __repr__(self) -> str:
         """
@@ -251,7 +262,7 @@ class TerraWorkspace:
         Yields:
             Any: The JSON response containing entity metrics.
         """
-        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entityQuery/{entity}?pageSize={total_entities_per_page}"  # noqa: E501
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityQuery/{entity}?pageSize={total_entities_per_page}"  # noqa: E501
         response = self.request_util.run_request(
             uri=url,
             method=GET,
@@ -322,7 +333,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}"
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}"
         logging.info(
             f"Getting workspace info for {self.billing_project}/{self.workspace_name}")
         return self.request_util.run_request(uri=url, method=GET)
@@ -361,7 +372,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"
         return self.request_util.run_request(uri=url, method=GET)
 
     def _remove_dict_from_attributes(self, attributes: dict) -> dict:
@@ -423,7 +434,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         use_cache = "true" if use_cache else "false"  # type: ignore[assignment]
-        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entities?useCache={use_cache}"
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entities?useCache={use_cache}"
         return self.request_util.run_request(uri=url, method=GET)
 
     def get_workspace_acl(self) -> requests.Response:
@@ -433,7 +444,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/acl"
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/acl"
         return self.request_util.run_request(
             uri=url,
             method=GET
@@ -461,7 +472,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/acl?" + \
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/acl?" + \
               f"inviteUsersNotFound={str(invite_users_not_found).lower()}"
         payload = {
             "email": email,
@@ -500,7 +511,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        acl = f"{TERRA_LINK}/library/{self.billing_project}/{self.workspace_name}" + \
+        acl = f"{self.terra_link}/library/{self.billing_project}/{self.workspace_name}" + \
               f"/metadata?validate={str(validate).lower()}"
         return self.request_util.run_request(
             uri=acl,
@@ -522,7 +533,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/acl?" + \
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/acl?" + \
             f"inviteUsersNotFound={str(invite_users_not_found).lower()}"
         logging.info(
             f"Updating users in workspace {self.billing_project}/{self.workspace_name}")
@@ -570,7 +581,7 @@ class TerraWorkspace:
         accept_return_codes = [self.CONFLICT_STATUS_CODE] if continue_if_exists else []
         logging.info(f"Creating workspace {self.billing_project}/{self.workspace_name}")
         response = self.request_util.run_request(
-            uri=f"{TERRA_LINK}/workspaces",
+            uri=f"{self.terra_link}/workspaces",
             method=POST,
             content_type="application/json",
             data=json.dumps(payload),
@@ -622,7 +633,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        endpoint = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/flexibleImportEntities"
+        endpoint = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/flexibleImportEntities"
         data = {"entities": open(entities_tsv, "rb")}
         return self.request_util.upload_file(
             uri=endpoint,
@@ -636,7 +647,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        uri = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/methodconfigs?allRepos=true"
+        uri = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/methodconfigs?allRepos=true"
         return self.request_util.run_request(
             uri=uri,
             method=GET
@@ -654,7 +665,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        uri = f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/methodconfigs"
+        uri = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/methodconfigs"
         workflow_json = json.dumps(workflow_dict)
         accept_return_codes = [self.CONFLICT_STATUS_CODE] if continue_if_exists else []
         return self.request_util.run_request(
@@ -673,7 +684,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         return self.request_util.run_request(
-            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}",
+            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}",
             method=DELETE
         )
 
@@ -688,7 +699,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         return self.request_util.run_request(
-            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/updateAttributes",
+            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/updateAttributes",
             method=PATCH,
             data=json.dumps(attributes),
             content_type="application/json"
@@ -780,7 +791,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         response = self.request_util.run_request(
-            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",
+            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",
             method=DELETE
         )
         if response.status_code == 204:
@@ -906,7 +917,7 @@ class TerraWorkspace:
             payload["userComment"] = user_comment
 
         return self.request_util.run_request(
-            uri=f"{TERRA_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions",
+            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/submissions",
             method=POST,
             content_type="application/json",
             data=json.dumps(payload),
