@@ -3,12 +3,10 @@
 import json
 import logging
 import requests
-import re
 from typing import Any, Optional, Union
-from urllib.parse import unquote
 from pydantic import ValidationError
 
-from ..request_util import GET, POST, DELETE, RunRequest
+from ..request_util import GET, POST, DELETE, PUT, RunRequest
 from ..tdr_api_schema.create_dataset_schema import CreateDatasetSchema
 from ..tdr_api_schema.update_dataset_schema import UpdateSchema
 from .tdr_job_utils import MonitorTDRJob, SubmitAndMonitorMultipleJobs
@@ -144,40 +142,6 @@ class TDR:
             for file_dict in self.get_dataset_files(dataset_id=dataset_id, limit=limit)
         }
 
-    def get_sas_token(self, snapshot_id: str = "", dataset_id: str = "") -> dict:
-        """
-        Get the SAS token for a snapshot OR dataset. Only one should be provided.
-
-        **Args:**
-        - snapshot_id (str, optional): The ID of the snapshot. Defaults to "".
-        - dataset_id (str, optional): The ID of the dataset. Defaults to "".
-
-        **Returns:**
-        - dict: A dictionary containing the SAS token and its expiry time. Expiry
-        time is a string like `2025-02-13T19:31:47Z`.
-
-        **Raises:**
-        - ValueError: If neither `snapshot_id` nor `dataset_id` is provided.
-        """
-        if snapshot_id:
-            uri = f"{self.tdr_link}/snapshots/{snapshot_id}?include=ACCESS_INFORMATION"
-            response = self.request_util.run_request(uri=uri, method=GET)
-            snapshot_info = json.loads(response.text)
-            sas_token = snapshot_info["accessInformation"]["parquet"]["sasToken"]
-        elif dataset_id:
-            uri = f"{self.tdr_link}/datasets/{dataset_id}?include=ACCESS_INFORMATION"
-            response = self.request_util.run_request(uri=uri, method=GET)
-            snapshot_info = json.loads(response.text)
-            sas_token = snapshot_info["accessInformation"]["parquet"]["sasToken"]
-        else:
-            raise ValueError("Must provide either snapshot_id or dataset_id")
-
-        sas_expiry_time_pattern = re.compile(r"se.+?(?=\&sp)")
-        expiry_time_str = sas_expiry_time_pattern.search(sas_token)
-        time_str = unquote(expiry_time_str.group()).replace("se=", "")  # type: ignore[union-attr]
-
-        return {"sas_token": sas_token, "expiry_time": time_str}
-
     def delete_file(self, file_id: str, dataset_id: str) -> requests.Response:
         """
         Delete a file from a dataset.
@@ -276,6 +240,20 @@ class TDR:
         response = self.request_util.run_request(uri=uri, method=DELETE)
         job_id = response.json()['id']
         MonitorTDRJob(tdr=self, job_id=job_id, check_interval=30, return_json=False).run()
+
+    def make_snapshot_public(self, snapshot_id: str) -> requests.Response:
+        """
+        Make a snapshot public.
+
+        **Args:**
+        - snapshot_id (str): The ID of the snapshot to be made public.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        uri = f"{self.tdr_link}/snapshots/{snapshot_id}/public"
+        logging.info(f"Making snapshot {snapshot_id} public")
+        return self.request_util.run_request(uri=uri, method=PUT, content_type="application/json", data="true")
 
     def get_snapshot_info(
             self,
