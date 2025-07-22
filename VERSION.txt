@@ -1,4 +1,2 @@
-11.0.0
-- Adding ability to create snapshots
-- Be able to pass in environment variables to terra and TDR
-- Be able to pass in service account json for Token and GCP util
+11.1.0
+- Add API to make snapshot public
