@@ -270,12 +270,10 @@ class TerraWorkspace:
             content_type="application/json"
         )
         raw_text = response.text
-        print(raw_text)
         first_page_json = json.loads(
             raw_text,
             parse_float=lambda x: int(float(x)) if float(x).is_integer() else float(x)
         )
-        print(f"First page of {entity} metrics: {first_page_json}")
         yield first_page_json
         total_pages = first_page_json["resultMetadata"]["filteredPageCount"]
         logging.info(

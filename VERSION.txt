@@ -1,2 +1,2 @@
-11.1.0
-- Add API to make snapshot public
+11.3.0
+- Convert floats back to integers from Terra tables
