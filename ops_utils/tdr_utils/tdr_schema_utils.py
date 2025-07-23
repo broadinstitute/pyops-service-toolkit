@@ -164,12 +164,8 @@ class InferTDRSchema:
         # If all values are int, return int type
         if all(isinstance(row_value, int) for row_value in non_nan_numbers):
             return self.PYTHON_TDR_DATA_TYPE_MAPPING[int]
-        # If all values are float, return float type
-        elif all(isinstance(row_value, float) for row_value in non_nan_numbers):
-            return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
-        # If ANY are float, return float type
-        else:
-            return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
+        # If ANY or ALL values are float, return float type
+        return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
 
     def _python_type_to_tdr_type_conversion(self, values_for_header: list[Any]) -> str:
         """
@@ -221,7 +217,6 @@ class InferTDRSchema:
 
         # If none of the above special cases apply, use the first of the non-null values to determine the
         # TDR data type
-
         first_value = non_none_values[0]
         if isinstance(first_value, list):
             return self.PYTHON_TDR_DATA_TYPE_MAPPING[type(first_value[0])]
