@@ -157,6 +157,20 @@ class InferTDRSchema:
             return int(x)
         return x
 
+    def _determine_if_float_or_int(self, interpreted_numbers: list[Union[int, float]]) -> str:
+        # Remove NaNs before type checks
+        non_nan_numbers = [x for x in interpreted_numbers if not (isinstance(x, float) and math.isnan(x))]
+
+        # If all values are int, return int type
+        if all(isinstance(row_value, int) for row_value in non_nan_numbers):
+            return self.PYTHON_TDR_DATA_TYPE_MAPPING[int]
+        # If all values are float, return float type
+        elif all(isinstance(row_value, float) for row_value in non_nan_numbers):
+            return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
+        # If ANY are float, return float type
+        else:
+            return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
+
     def _python_type_to_tdr_type_conversion(self, values_for_header: list[Any]) -> str:
         """
         Convert Python data types to TDR data types.
@@ -191,32 +205,18 @@ class InferTDRSchema:
         # Case 1: All values are plain numbers (int or float)
         if all(isinstance(x, (int, float)) for x in non_none_values):
             interpreted_numbers = [self._interpret_number(row_value) for row_value in non_none_values]
-
-            # Remove NaNs before type checks
-            non_nan_numbers = [x for x in interpreted_numbers if not (isinstance(x, float) and math.isnan(x))]
-
-            if all(isinstance(row_value, int) for row_value in non_nan_numbers):
-                return self.PYTHON_TDR_DATA_TYPE_MAPPING[int]
-            elif all(isinstance(row_value, float) for row_value in non_nan_numbers):
-                return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
-            elif any(isinstance(row_value, float) for row_value in non_nan_numbers):
-                return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
+            return self._determine_if_float_or_int(interpreted_numbers)
 
         # Case 2: Values are lists of numbers (e.g., [[1, 2], [3.1], [4]])
         if all(isinstance(row_value, list) for row_value in non_none_values):
-            # Flatten the list of lists and interpret all non-None elements
-            flat_values = [self._interpret_number(item)
-                           for row_value in non_none_values for item in row_value if item is not None]
+            if all(
+                    all(isinstance(item, (int, float)) for item in row_value) for row_value in non_none_values
+            ):
+                # Flatten the list of lists and interpret all non-None elements
+                interpreted_numbers = [self._interpret_number(item)
+                                       for row_value in non_none_values for item in row_value if item is not None]
 
-            # Remove NaNs before type checks
-            non_nan_values = [x for x in flat_values if not (isinstance(x, float) and math.isnan(x))]
-
-            if all(isinstance(x, int) for x in non_nan_values):
-                return self.PYTHON_TDR_DATA_TYPE_MAPPING[int]
-            elif all(isinstance(x, float) for x in non_nan_values):
-                return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
-            elif any(isinstance(x, float) for x in non_nan_values):
-                return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
+                return self._determine_if_float_or_int(interpreted_numbers)
 
         # If none of the above special cases apply, use the first of the non-null values to determine the
         # TDR data type
