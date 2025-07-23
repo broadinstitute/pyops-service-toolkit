@@ -269,7 +269,12 @@ class TerraWorkspace:
             method=GET,
             content_type="application/json"
         )
-        first_page_json = response.json()
+        raw_text = response.text
+        print(raw_text)
+        first_page_json = json.loads(
+            raw_text,
+            parse_float=lambda x: int(float(x)) if float(x).is_integer() else float(x)
+        )
         print(f"First page of {entity} metrics: {first_page_json}")
         yield first_page_json
         total_pages = first_page_json["resultMetadata"]["filteredPageCount"]
@@ -284,7 +289,12 @@ class TerraWorkspace:
                 content_type="application/json",
                 params={"page": page}
             )
-            yield next_page.json()
+            raw_text = next_page.text
+            page_json = json.loads(
+                raw_text,
+                parse_float=lambda x: int(float(x)) if float(x).is_integer() else float(x)
+            )
+            yield page_json
 
     @staticmethod
     def validate_terra_headers_for_tdr_conversion(table_name: str, headers: list[str]) -> None:
