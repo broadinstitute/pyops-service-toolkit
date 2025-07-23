@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import math
 from datetime import date, datetime
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 
 class InferTDRSchema:
@@ -152,7 +152,7 @@ class InferTDRSchema:
         return disparate_header_info
 
     @staticmethod
-    def _interpret_number(x):
+    def _interpret_number(x: Union[float, int]) -> Union[int, float]:
         if isinstance(x, float) and x.is_integer():
             return int(x)
         return x
@@ -181,8 +181,8 @@ class InferTDRSchema:
                 return self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"]
 
             if isinstance(row_value, list):
-                # Check for a potential array of filerefs - if ANY of the items in a list are of
-                # type "fileref" we assume that the whole column is a fileref
+                # Check for a potential array of filerefs - if ANY of the items in a list are
+                # of type "fileref" we assume that the whole column is a fileref
                 for item in row_value:
                     if isinstance(item, str) and re.search(pattern=gcp_fileref_regex, string=item):
                         return self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"]
@@ -218,7 +218,8 @@ class InferTDRSchema:
             elif any(isinstance(x, float) for x in non_nan_values):
                 return self.PYTHON_TDR_DATA_TYPE_MAPPING[float]
 
-        # If none of the above special cases apply, use the first of the non-null values to determine the TDR data type
+        # If none of the above special cases apply, use the first of the non-null values to determine the
+        # TDR data type
         first_value = non_none_values[0]
         if isinstance(first_value, list):
             return self.PYTHON_TDR_DATA_TYPE_MAPPING[type(first_value[0])]
@@ -248,7 +249,6 @@ class InferTDRSchema:
                 data_type = self.PYTHON_TDR_DATA_TYPE_MAPPING[str]
             else:
                 # Use all existing values for the header to determine the data type
-
                 data_type = self._python_type_to_tdr_type_conversion(values_for_header)
 
             column_metadata = {

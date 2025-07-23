@@ -1,2 +1,2 @@
-11.1.0
-- Add API to make snapshot public
+11.2.0
+- Update logic on how floats and integers are handled when determining a TDR schema from Terra input metadata
