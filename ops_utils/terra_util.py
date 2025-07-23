@@ -263,7 +263,6 @@ class TerraWorkspace:
             Any: The JSON response containing entity metrics.
         """
         url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityQuery/{entity}?pageSize={total_entities_per_page}"  # noqa: E501
-        url = "https://api.firecloud.org/api/workspaces/anvil-datastorage/AnVIL_IGVF_HMB_MDS_R1_Staging/entityQuery/file?page=1&pageSize=40000&sortField=name&sortDirection=asc&filterOperator=and"
         response = self.request_util.run_request(
             uri=url,
             method=GET,
