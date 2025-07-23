@@ -269,6 +269,7 @@ class TerraWorkspace:
             content_type="application/json"
         )
         first_page_json = response.json()
+        print(f"First page of {entity} metrics: {first_page_json}")
         yield first_page_json
         total_pages = first_page_json["resultMetadata"]["filteredPageCount"]
         logging.info(
