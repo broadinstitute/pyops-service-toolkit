@@ -202,15 +202,16 @@ class InferTDRSchema:
                         return self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"]
 
         # INTEGERS/FLOATS AND LISTS OF INTEGERS AND FLOATS
-        # Case 1: All values are plain numbers (int or float)
-        if all(isinstance(x, (int, float)) for x in non_none_values):
+        # Case 1: All values are plain numbers (int or float) - specifically excluding bools
+        if all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in non_none_values):
             interpreted_numbers = [self._interpret_number(row_value) for row_value in non_none_values]
             return self._determine_if_float_or_int(interpreted_numbers)
 
         # Case 2: Values are lists of numbers (e.g., [[1, 2], [3.1], [4]])
         if all(isinstance(row_value, list) for row_value in non_none_values):
             if all(
-                    all(isinstance(item, (int, float)) for item in row_value) for row_value in non_none_values
+                    all(isinstance(item, (int, float)) and not isinstance(item, bool) for item in row_value)
+                    for row_value in non_none_values
             ):
                 # Flatten the list of lists and interpret all non-None elements
                 interpreted_numbers = [self._interpret_number(item)
@@ -220,6 +221,7 @@ class InferTDRSchema:
 
         # If none of the above special cases apply, use the first of the non-null values to determine the
         # TDR data type
+
         first_value = non_none_values[0]
         if isinstance(first_value, list):
             return self.PYTHON_TDR_DATA_TYPE_MAPPING[type(first_value[0])]

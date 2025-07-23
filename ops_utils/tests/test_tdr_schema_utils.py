@@ -127,9 +127,37 @@ class TestInferTDRSchema(TestCase):
         self.assertEqual(actual_disparate_header_info, expected_disparate_header_info)
 
     def test_python_type_to_tdr_type_conversion_file_ref(self):
-        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(value_for_header="gs://bucket/some/file.txt")
+        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(values_for_header=["gs://bucket/some/file.txt"])
         self.assertEqual(res, "fileref")
 
     def test_python_type_to_tdr_type_conversion_boolean(self):
-        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(value_for_header=True)
+        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(values_for_header=[True])
         self.assertEqual(res, "boolean")
+
+    def test_python_type_to_tdr_type_conversion_list_of_booleans(self):
+        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(values_for_header=[[True], [True, False], [False]])
+        self.assertEqual(res, "boolean")
+
+    def test_python_type_to_tdr_type_conversion_ints(self):
+        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(values_for_header=[1.0, 2, 3.0])
+        self.assertEqual(res, "int64")
+
+    def test_python_type_to_tdr_type_conversion_floats(self):
+        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(values_for_header=[1.1, 2.2, 3.3])
+        self.assertEqual(res, "float64")
+
+    def test_python_type_to_tdr_type_conversion_float_and_ints(self):
+        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(values_for_header=[1.1, 2, 3.0])
+        self.assertEqual(res, "float64")
+
+    def test_python_type_to_tdr_type_conversion_list_of_ints(self):
+        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(values_for_header=[[1.0, 2], [3, 4.0], [5]])
+        self.assertEqual(res, "int64")
+
+    def test_python_type_to_tdr_type_conversion_list_of_floats(self):
+        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(values_for_header=[[1.0, 2.2], [3.4, 4.1], [5.9]])
+        self.assertEqual(res, "float64")
+
+    def test_python_type_to_tdr_type_conversion_list_of_floats_and_ints(self):
+        res = self.infer_tdr_schema._python_type_to_tdr_type_conversion(values_for_header=[[1.0, 2], [3.4, 4.1], [5.0]])
+        self.assertEqual(res, "float64")
