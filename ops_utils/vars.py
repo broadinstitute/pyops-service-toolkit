@@ -15,3 +15,6 @@ ARG_DEFAULTS = {
     "docker_image": "us-central1-docker.pkg.dev/operations-portal-427515/ops-toolbox/ops_terra_utils_slim:latest"
 }
 """@private"""
+
+APPLICATION_JSON = "application/json"
+"""@private"""

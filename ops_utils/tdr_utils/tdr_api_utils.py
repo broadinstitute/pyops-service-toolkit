@@ -10,7 +10,7 @@ from ..request_util import GET, POST, DELETE, PUT, RunRequest
 from ..tdr_api_schema.create_dataset_schema import CreateDatasetSchema
 from ..tdr_api_schema.update_dataset_schema import UpdateSchema
 from .tdr_job_utils import MonitorTDRJob, SubmitAndMonitorMultipleJobs
-from ..vars import ARG_DEFAULTS, GCP
+from ..vars import ARG_DEFAULTS, GCP, APPLICATION_JSON
 
 
 class TDR:
@@ -204,7 +204,7 @@ class TDR:
             uri=uri,
             method=POST,
             data=json.dumps(member_dict),
-            content_type="application/json"
+            content_type=APPLICATION_JSON
         )
 
     def remove_user_from_dataset(self, dataset_id: str, user: str, policy: str) -> requests.Response:
@@ -253,7 +253,7 @@ class TDR:
         """
         uri = f"{self.tdr_link}/snapshots/{snapshot_id}/public"
         logging.info(f"Making snapshot {snapshot_id} public")
-        return self.request_util.run_request(uri=uri, method=PUT, content_type="application/json", data="true")
+        return self.request_util.run_request(uri=uri, method=PUT, content_type=APPLICATION_JSON, data="true")
 
     def get_snapshot_info(
             self,
@@ -505,7 +505,7 @@ class TDR:
         return self.request_util.run_request(
             uri=uri,
             method=POST,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=data
         )
 
@@ -539,7 +539,7 @@ class TDR:
         response = self.request_util.run_request(
             uri=uri,
             method=POST,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=json.dumps(data)
         )
         job_id = response.json()['id']
@@ -592,7 +592,7 @@ class TDR:
             response = self.request_util.run_request(
                 uri=uri,
                 method=POST,
-                content_type="application/json",
+                content_type=APPLICATION_JSON,
                 data=json.dumps(search_request)
             )
             if not response or not response.json()["result"]:
@@ -709,7 +709,7 @@ class TDR:
             method=POST,
             uri=uri,
             data=json.dumps(payload),
-            content_type="application/json"
+            content_type=APPLICATION_JSON
         )
         job_id = response.json()["id"]
         return MonitorTDRJob(tdr=self, job_id=job_id, check_interval=check_intervals, return_json=False).run()
@@ -851,7 +851,7 @@ class TDR:
             method=POST,
             uri=uri,
             data=json.dumps(dataset_properties),
-            content_type="application/json"
+            content_type=APPLICATION_JSON
         )
         job_id = response.json()["id"]
         job_results = MonitorTDRJob(tdr=self, job_id=job_id, check_interval=30, return_json=True).run()
@@ -899,7 +899,7 @@ class TDR:
         response = self.request_util.run_request(
             uri=uri,
             method=POST,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=json.dumps(request_body)
         )
         job_id = response.json()["id"]
@@ -1021,7 +1021,7 @@ class TDR:
         response = self.request_util.run_request(
             uri=uri,
             method=POST,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=json.dumps(payload)
         )
         job_id = response.json()["id"]

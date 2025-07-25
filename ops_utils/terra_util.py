@@ -9,7 +9,7 @@ import zipfile
 import os
 
 from . import deprecated
-from .vars import GCP
+from .vars import GCP, APPLICATION_JSON
 from .gcp_utils import GCPCloudFunctions
 from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
@@ -266,7 +266,7 @@ class TerraWorkspace:
         response = self.request_util.run_request(
             uri=url,
             method=GET,
-            content_type="application/json"
+            content_type=APPLICATION_JSON
         )
         raw_text = response.text
         first_page_json = json.loads(
@@ -283,7 +283,7 @@ class TerraWorkspace:
             next_page = self.request_util.run_request(
                 uri=url,
                 method=GET,
-                content_type="application/json",
+                content_type=APPLICATION_JSON,
                 params={"page": page}
             )
             raw_text = next_page.text
@@ -494,7 +494,7 @@ class TerraWorkspace:
         response = self.request_util.run_request(
             uri=url,
             method=PATCH,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data="[" + json.dumps(payload) + "]"
         )
 
@@ -549,7 +549,7 @@ class TerraWorkspace:
         response = self.request_util.run_request(
             uri=url,
             method=PATCH,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=json.dumps(acl_list)
         )
 
@@ -592,7 +592,7 @@ class TerraWorkspace:
         response = self.request_util.run_request(
             uri=f"{self.terra_link}/workspaces",
             method=POST,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=json.dumps(payload),
             accept_return_codes=accept_return_codes
         )
@@ -681,7 +681,7 @@ class TerraWorkspace:
             uri=uri,
             method=POST,
             data=workflow_json,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             accept_return_codes=accept_return_codes
         )
 
@@ -711,7 +711,7 @@ class TerraWorkspace:
             uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/updateAttributes",
             method=PATCH,
             data=json.dumps(attributes),
-            content_type="application/json"
+            content_type=APPLICATION_JSON
         )
 
     def leave_workspace(
@@ -768,7 +768,7 @@ class TerraWorkspace:
         return self.request_util.run_request(
             uri=f"{RAWLS_LINK}/workspaces/v2/{self.billing_project}/{self.workspace_name}/settings",
             method=PUT,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=json.dumps(body)
         )
 
@@ -876,7 +876,7 @@ class TerraWorkspace:
         return self.request_util.run_request(
             uri=f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}",
             method=PATCH,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=json.dumps({"userComment": user_comment}),
         )
 
@@ -928,7 +928,7 @@ class TerraWorkspace:
         return self.request_util.run_request(
             uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/submissions",
             method=POST,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=json.dumps(payload),
         )
       
@@ -950,7 +950,7 @@ class TerraWorkspace:
         return self.request_util.run_request(
             uri=url,
             method=POST,
-            content_type="application/json",
+            content_type=APPLICATION_JSON,
             data=json.dumps(payload)
         )
 

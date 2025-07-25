@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch, MagicMock, call
 
-from ops_utils.tdr_utils.tdr_table_utils import SetUpTDRTables
+from ops_utils.tdr_utils.tdr_table_utils import SetUpTDRTables, MatchSchemas
 
 TARGET_TABLE = "sample"
 PRIMARY_KEY = f'{TARGET_TABLE}_id'
@@ -296,3 +296,153 @@ class TestSetUpTDRTables(TestCase):
         self.assertEqual(
             columns_to_update, [{'name': 'participant', 'required': True, 'datatype': 'string', 'array_of': False, "action": "add"}]
         )
+
+
+class TestMatchSchemas(TestCase):
+    """Tests for the MatchSchemas class"""
+
+    def setUp(self):
+        # Create mock TDR instance
+        self.mock_tdr = MagicMock()
+
+        # Define test data for original dataset
+        self.orig_dataset_info = {
+            "name": "original_dataset",
+            "schema": {
+                "tables": [
+                    {
+                        "name": "table_a",
+                        "columns": [
+                            {"name": "id", "datatype": "string", "mode": "required"},
+                            {"name": "value", "datatype": "string", "mode": "nullable"}
+                        ]
+                    },
+                    {
+                        "name": "table_b",
+                        "columns": [
+                            {"name": "id", "datatype": "string", "mode": "required"},
+                            {"name": "count", "datatype": "integer", "mode": "nullable"}
+                        ]
+                    }
+                ]
+            }
+        }
+
+        # Define test data for destination dataset
+        self.dest_dataset_info = {
+            "name": "destination_dataset",
+            "schema": {
+                "tables": [
+                    {
+                        "name": "table_a",
+                        "columns": [
+                            {"name": "id", "datatype": "string", "mode": "required"},
+                            {"name": "value", "datatype": "string", "mode": "nullable"}
+                        ]
+                    }
+                ]
+            }
+        }
+
+        self.dest_dataset_id = "dest-dataset-123"
+
+        # Create MatchSchemas instance
+        self.match_schemas = MatchSchemas(
+            orig_dataset_info=self.orig_dataset_info,
+            dest_dataset_info=self.dest_dataset_info,
+            dest_dataset_id=self.dest_dataset_id,
+            tdr=self.mock_tdr
+        )
+
+    def test_init(self):
+        """Test initialization of MatchSchemas"""
+        self.assertEqual(self.match_schemas.orig_dataset_info, self.orig_dataset_info)
+        self.assertEqual(self.match_schemas.dest_dataset_info, self.dest_dataset_info)
+        self.assertEqual(self.match_schemas.dest_dataset_id, self.dest_dataset_id)
+        self.assertEqual(self.match_schemas.tdr, self.mock_tdr)
+
+    def test_run_adds_missing_tables(self):
+        """Test that the run method adds tables that exist in the original dataset but not in the destination"""
+        # Run the matching process
+        self.match_schemas.run()
+
+        # Verify that update_dataset_schema was called with the correct parameters
+        self.mock_tdr.update_dataset_schema.assert_called_once()
+
+        # Get the arguments from the call
+        args, kwargs = self.mock_tdr.update_dataset_schema.call_args
+
+        # Check dataset_id
+        self.assertEqual(kwargs['dataset_id'], self.dest_dataset_id)
+
+        # Check that the tables_to_add contains table_b
+        self.assertEqual(len(kwargs['tables_to_add']), 1)
+        self.assertEqual(kwargs['tables_to_add'][0]['name'], 'table_b')
+
+        # Check that the update note is set
+        self.assertTrue('update_note' in kwargs)
+
+    def test_run_no_missing_tables(self):
+        """Test that the run method doesn't update anything when all tables already exist"""
+        # Modify destination dataset to include all tables from the original dataset
+        self.dest_dataset_info = {
+            "name": "destination_dataset",
+            "schema": {
+                "tables": [
+                    {
+                        "name": "table_a",
+                        "columns": [
+                            {"name": "id", "datatype": "string", "mode": "required"},
+                            {"name": "value", "datatype": "string", "mode": "nullable"}
+                        ]
+                    },
+                    {
+                        "name": "table_b",
+                        "columns": [
+                            {"name": "id", "datatype": "string", "mode": "required"},
+                            {"name": "count", "datatype": "integer", "mode": "nullable"}
+                        ]
+                    }
+                ]
+            }
+        }
+
+        # Create a new MatchSchemas instance with the updated destination dataset
+        match_schemas = MatchSchemas(
+            orig_dataset_info=self.orig_dataset_info,
+            dest_dataset_info=self.dest_dataset_info,
+            dest_dataset_id=self.dest_dataset_id,
+            tdr=self.mock_tdr
+        )
+
+        # Run the matching process
+        match_schemas.run()
+
+        # Verify that update_dataset_schema was not called
+        self.mock_tdr.update_dataset_schema.assert_not_called()
+
+    def test_run_multiple_missing_tables(self):
+        """Test that the run method adds multiple missing tables"""
+        # Add another table to the original dataset
+        self.orig_dataset_info["schema"]["tables"].append({
+            "name": "table_c",
+            "columns": [
+                {"name": "id", "datatype": "string", "mode": "required"},
+                {"name": "description", "datatype": "string", "mode": "nullable"}
+            ]
+        })
+
+        # Run the matching process
+        self.match_schemas.run()
+
+        # Verify that update_dataset_schema was called with the correct parameters
+        self.mock_tdr.update_dataset_schema.assert_called_once()
+
+        # Get the arguments from the call
+        args, kwargs = self.mock_tdr.update_dataset_schema.call_args
+
+        # Check that the tables_to_add contains both missing tables
+        self.assertEqual(len(kwargs['tables_to_add']), 2)
+        table_names = [table['name'] for table in kwargs['tables_to_add']]
+        self.assertIn('table_b', table_names)
+        self.assertIn('table_c', table_names)

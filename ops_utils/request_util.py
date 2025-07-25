@@ -4,7 +4,7 @@ import requests
 import backoff
 
 from .token_util import Token
-from .vars import ARG_DEFAULTS
+from .vars import ARG_DEFAULTS, APPLICATION_JSON
 
 GET = "GET"
 """Method used for API GET endpoints"""
@@ -71,7 +71,7 @@ class RunRequest:
             files: Any = None,
             params: Optional[dict] = None,
             factor: int = 15,
-            accept: Optional[str] = "application/json",
+            accept: Optional[str] = APPLICATION_JSON,
             content_type: Optional[str] = None,
             accept_return_codes: list[int] = []
     ) -> requests.Response:
@@ -149,7 +149,7 @@ class RunRequest:
 
         return _make_request()
 
-    def create_headers(self, content_type: Optional[str] = None, accept: Optional[str] = "application/json") -> dict:
+    def create_headers(self, content_type: Optional[str] = None, accept: Optional[str] = APPLICATION_JSON) -> dict:
         """
         Create headers for API calls.
 
