@@ -1,2 +1,2 @@
-11.3.1
-- Clean up float/int logic to be more concise
+11.3.2
+- Adding tests
