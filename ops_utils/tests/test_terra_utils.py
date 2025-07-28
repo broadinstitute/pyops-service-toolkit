@@ -203,3 +203,104 @@ class TestTerraGroups(unittest.TestCase):
             method="PUT",
             accept_return_codes=[409]
         )
+
+
+class TestTerraWorkspaceMethods(unittest.TestCase):
+    def setUp(self):
+        self.mock_request_instance = MagicMock()
+        self.workspace = TerraWorkspace(
+            workspace_name="test_workspace",
+            billing_project="test_billing_project",
+            request_util=self.mock_request_instance
+        )
+
+    def test_validate_terra_headers_for_tdr_conversion_valid(self):
+        # Test with valid headers
+        valid_headers = ["validHeader", "valid_header", "valid2", "v"]
+        result = self.workspace.validate_terra_headers_for_tdr_conversion("test_table", valid_headers)
+        self.assertIsNone(result)
+
+    def test_validate_terra_headers_for_tdr_conversion_too_long(self):
+        # Test with header that's too long (>63 chars)
+        long_header = "a" * 64
+        with self.assertRaises(ValueError) as context:
+            self.workspace.validate_terra_headers_for_tdr_conversion("test_table", ["validHeader", long_header])
+
+        self.assertIn("contain too many", str(context.exception))
+
+    def test_validate_terra_headers_for_tdr_conversion_invalid_chars(self):
+        # Test with header that contains invalid characters
+        invalid_headers = ["invalid-header", "1startsWithNumber", "has space"]
+        with self.assertRaises(ValueError) as context:
+            self.workspace.validate_terra_headers_for_tdr_conversion("test_table", invalid_headers)
+
+        self.assertIn("contain invalid", str(context.exception))
+
+    def test_get_specific_entity_metrics(self):
+        # Test get_specific_entity_metrics method
+        self.workspace.get_specific_entity_metrics("sample", "sample1")
+
+        self.mock_request_instance.run_request.assert_called_once_with(
+            uri=f"{self.workspace.terra_link}/workspaces/test_billing_project/test_workspace/entities/sample/sample1",
+            method="GET"
+        )
+
+    @patch('json.loads')
+    def test_yield_all_entity_metrics_single_page(self, mock_json_loads):
+        # Mock response for first page
+        mock_response = MagicMock()
+        mock_response.text = '{"results": [{"id": "entity1"}, {"id": "entity2"}], "resultMetadata": {"filteredPageCount": 1}}'
+
+        # Mock json.loads to return formatted data
+        mock_json_loads.return_value = {
+            "results": [{"id": "entity1"}, {"id": "entity2"}],
+            "resultMetadata": {"filteredPageCount": 1}
+        }
+
+        # Mock the run_request method to return our mock response
+        self.mock_request_instance.run_request.return_value = mock_response
+
+        # Call the method and collect results
+        results = list(self.workspace._yield_all_entity_metrics("sample"))
+
+        # Assert that the request was made with correct parameters
+        self.mock_request_instance.run_request.assert_called_once()
+
+        # Assert that we got expected results
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["results"], [{"id": "entity1"}, {"id": "entity2"}])
+
+    @patch('json.loads')
+    def test_yield_all_entity_metrics_multiple_pages(self, mock_json_loads):
+        # Mock responses for first and second pages
+        first_response = MagicMock()
+        first_response.text = '{"results": [{"id": "entity1"}], "resultMetadata": {"filteredPageCount": 2}}'
+
+        second_response = MagicMock()
+        second_response.text = '{"results": [{"id": "entity2"}], "resultMetadata": {"filteredPageCount": 2}}'
+
+        # Set up side effects for run_request to return different responses
+        self.mock_request_instance.run_request.side_effect = [first_response, second_response]
+
+        # Set up side effects for json.loads to return different parsed data
+        mock_json_loads.side_effect = [
+            {
+                "results": [{"id": "entity1"}],
+                "resultMetadata": {"filteredPageCount": 2}
+            },
+            {
+                "results": [{"id": "entity2"}],
+                "resultMetadata": {"filteredPageCount": 2}
+            }
+        ]
+
+        # Call the method and collect results
+        results = list(self.workspace._yield_all_entity_metrics("sample"))
+
+        # Assert that requests were made with correct parameters
+        self.assertEqual(self.mock_request_instance.run_request.call_count, 2)
+
+        # Assert that we got expected results from both pages
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["results"], [{"id": "entity1"}])
+        self.assertEqual(results[1]["results"], [{"id": "entity2"}])
