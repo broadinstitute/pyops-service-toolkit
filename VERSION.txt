@@ -1,2 +1,2 @@
-11.3.2
-- Adding tests
+11.4.0
+- Adding methods to check if gcp path is writeable
