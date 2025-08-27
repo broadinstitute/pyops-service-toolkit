@@ -807,8 +807,9 @@ class GCPCloudFunctions:
         start_time = time.time()
         attempt_number = 1
 
-        logging.info(f"Starting to check for write permissions on {cloud_path}")
-        logging.info(f"Will check every {interval_wait_time_minutes} minute(s) for up to {max_wait_time_minutes} minute(s)")
+        logging.info(
+            f"Starting to check for write permissions on {cloud_path}. Will check "
+            f"every {interval_wait_time_minutes} minute(s) for up to {max_wait_time_minutes} minute(s).")
 
         # First check immediately
         if self.has_write_permission(cloud_path):
