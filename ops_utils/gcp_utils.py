@@ -782,7 +782,7 @@ class GCPCloudFunctions:
             logging.warning(f"Error testing write access to {cloud_path}: {e}")
             return False
 
-    def wait_for_write_permission(self, cloud_path: str, interval_wait_time_minutes, max_wait_time_minutes) -> bool:
+    def wait_for_write_permission(self, cloud_path: str, interval_wait_time_minutes: int, max_wait_time_minutes: int) -> bool:
         """
         Wait for write permissions on a GCP path, checking at regular intervals.
 
@@ -791,8 +791,8 @@ class GCPCloudFunctions:
 
         **Args:**
         - cloud_path (str): The GCS path to check for write permissions.
-        - interval_wait_time_minutes (int, optional): Time in minutes to wait between permission checks. Defaults to 1 minute.
-        - max_wait_time_minutes (int, optional): Maximum time in minutes to wait for permissions. Defaults to 30 minutes.
+        - interval_wait_time_minutes (int): Time in minutes to wait between permission checks.
+        - max_wait_time_minutes (int): Maximum time in minutes to wait for permissions.
 
         **Returns:**
         - bool: True if write permission is granted within the wait time, False otherwise.
@@ -801,8 +801,8 @@ class GCPCloudFunctions:
             raise ValueError("cloud_path must start with 'gs://'")
 
         # Convert minutes to seconds for the sleep function
-        interval_seconds = 15#interval_wait_time_minutes * 60
-        max_wait_seconds = 40#max_wait_time_minutes * 60
+        interval_seconds = interval_wait_time_minutes * 60
+        max_wait_seconds = max_wait_time_minutes * 60
 
         start_time = time.time()
         attempt_number = 1
