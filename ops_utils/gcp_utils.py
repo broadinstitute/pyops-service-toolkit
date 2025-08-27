@@ -746,26 +746,11 @@ class GCPCloudFunctions:
         - bool: True if the user has write permission, False otherwise.
         """
         if cloud_path.endswith("/"):
-            logging.warning(f"Provided cloud path {cloud_path} is a directory, will check {cloud_path}/permission_test_temp")
+            logging.warning(f"Provided cloud path {cloud_path} is a directory, will check {cloud_path}permission_test_temp")
             cloud_path = f"{cloud_path}permission_test_temp"
 
-        # Process the cloud path to get the bucket and blob name
-        components = self._process_cloud_path(cloud_path)
-        bucket_name = components["bucket"]
-
-        # Get the bucket with user_project set for requester pays buckets
-        bucket = self.client.bucket(bucket_name, user_project=self.client.project)
-
-        # Check if we can access the bucket at all
-        if not bucket.exists():
-            logging.warning(f"Bucket {bucket_name} does not exist or you don't have access to it")
-            return False
-
-        # Use the existing load_blob_from_full_path method to get the blob
         blob = self.load_blob_from_full_path(cloud_path)
-        blob_exists = blob.exists()
-
-        if blob_exists:
+        if blob.exists():
             # Try updating metadata (doesn't change the content)
             try:
                 original_metadata = blob.metadata or {}
@@ -782,29 +767,25 @@ class GCPCloudFunctions:
                 logging.info(f"Write permission confirmed for existing blob {cloud_path}")
                 return True
             except Forbidden:
-                logging.error(f"No write permission on existing blob {cloud_path}")
+                logging.warning(f"No write permission on existing blob {cloud_path}")
                 return False
             except GoogleAPICallError as e:
-                logging.error(f"Error accessing blob {cloud_path}: {e}")
+                logging.warning(f"Error accessing blob {cloud_path}: {e}")
                 return False
         else:
-            # If blob doesn't exist, try to create a temporary zero-byte file
-            # in the same directory to test write permissions
-            test_file = f"{cloud_path}.permission_test_temp"
-            test_blob = self.load_blob_from_full_path(test_file)
-
             try:
                 # Try writing a temporary file to the bucket
-                test_blob.upload_from_string("")
+                blob.upload_from_string("")
+
                 # Clean up the test file
-                test_blob.delete()
-                logging.info(f"Write permission confirmed for new path {cloud_path}")
+                blob.delete()
+                logging.info(f"Write permission confirmed for {cloud_path}")
                 return True
             except Forbidden:
-                logging.error(f"No write permission on path {cloud_path}")
+                logging.warning(f"No write permission on path {cloud_path}")
                 return False
             except GoogleAPICallError as e:
-                logging.error(f"Error accessing path {cloud_path}: {e}")
+                logging.warning(f"Error testing write access to {cloud_path}: {e}")
                 return False
 
     def wait_for_write_permission(self, cloud_path: str, interval_wait_time_minutes, max_wait_time_minutes) -> bool:
@@ -864,4 +845,3 @@ class GCPCloudFunctions:
         logging.warning(f"Maximum wait time of {max_wait_time_minutes} minute(s) exceeded. "
                        f"Write permission was not granted for {cloud_path} after {attempt_number} attempts.")
         return False
-
