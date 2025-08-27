@@ -750,9 +750,9 @@ class GCPCloudFunctions:
             cloud_path = f"{cloud_path}permission_test_temp"
 
         blob = self.load_blob_from_full_path(cloud_path)
-        if blob.exists():
-            # Try updating metadata (doesn't change the content)
-            try:
+        try:
+            if blob.exists():
+                # Try updating metadata (doesn't change the content)
                 original_metadata = blob.metadata or {}
                 test_metadata = original_metadata.copy()
                 test_metadata["_write_permission_test"] = "true"
@@ -766,14 +766,7 @@ class GCPCloudFunctions:
 
                 logging.info(f"Write permission confirmed for existing blob {cloud_path}")
                 return True
-            except Forbidden:
-                logging.warning(f"No write permission on existing blob {cloud_path}")
-                return False
-            except GoogleAPICallError as e:
-                logging.warning(f"Error accessing blob {cloud_path}: {e}")
-                return False
-        else:
-            try:
+            else:
                 # Try writing a temporary file to the bucket
                 blob.upload_from_string("")
 
@@ -781,12 +774,12 @@ class GCPCloudFunctions:
                 blob.delete()
                 logging.info(f"Write permission confirmed for {cloud_path}")
                 return True
-            except Forbidden:
-                logging.warning(f"No write permission on path {cloud_path}")
-                return False
-            except GoogleAPICallError as e:
-                logging.warning(f"Error testing write access to {cloud_path}: {e}")
-                return False
+        except Forbidden:
+            logging.warning(f"No write permission on path {cloud_path}")
+            return False
+        except GoogleAPICallError as e:
+            logging.warning(f"Error testing write access to {cloud_path}: {e}")
+            return False
 
     def wait_for_write_permission(self, cloud_path: str, interval_wait_time_minutes, max_wait_time_minutes) -> bool:
         """
