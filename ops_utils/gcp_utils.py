@@ -745,12 +745,13 @@ class GCPCloudFunctions:
         **Returns:**
         - bool: True if the user has write permission, False otherwise.
         """
+        if not cloud_path.startswith("gs://"):
+            raise ValueError("cloud_path must start with 'gs://'")
         if cloud_path.endswith("/"):
             logging.warning(f"Provided cloud path {cloud_path} is a directory, will check {cloud_path}permission_test_temp")
             cloud_path = f"{cloud_path}permission_test_temp"
-
-        blob = self.load_blob_from_full_path(cloud_path)
         try:
+            blob = self.load_blob_from_full_path(cloud_path)
             if blob.exists():
                 # Try updating metadata (doesn't change the content)
                 original_metadata = blob.metadata or {}
