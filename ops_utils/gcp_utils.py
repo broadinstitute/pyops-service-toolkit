@@ -1,6 +1,7 @@
 """Module for GCP utilities."""
 import os
 import logging
+import time
 import io
 import json
 import hashlib
@@ -744,74 +745,69 @@ class GCPCloudFunctions:
         **Returns:**
         - bool: True if the user has write permission, False otherwise.
         """
-        try:
-            if cloud_path.endswith("/"):
-                logging.warning(f"Provided cloud path {cloud_path} is a directory, will check {cloud_path}/permission_test_temp")
-                cloud_path = f"{cloud_path}permission_test_temp"
+        if cloud_path.endswith("/"):
+            logging.warning(f"Provided cloud path {cloud_path} is a directory, will check {cloud_path}/permission_test_temp")
+            cloud_path = f"{cloud_path}permission_test_temp"
 
-            # Process the cloud path to get the bucket and blob name
-            components = self._process_cloud_path(cloud_path)
-            bucket_name = components["bucket"]
+        # Process the cloud path to get the bucket and blob name
+        components = self._process_cloud_path(cloud_path)
+        bucket_name = components["bucket"]
 
-            # Get the bucket with user_project set for requester pays buckets
-            bucket = self.client.bucket(bucket_name, user_project=self.client.project)
+        # Get the bucket with user_project set for requester pays buckets
+        bucket = self.client.bucket(bucket_name, user_project=self.client.project)
 
-            # Check if we can access the bucket at all
-            if not bucket.exists():
-                logging.warning(f"Bucket {bucket_name} does not exist or you don't have access to it")
-                return False
-
-            # Use the existing load_blob_from_full_path method to get the blob
-            blob = self.load_blob_from_full_path(cloud_path)
-            blob_exists = blob.exists()
-
-            if blob_exists:
-                # Try updating metadata (doesn't change the content)
-                try:
-                    original_metadata = blob.metadata or {}
-                    test_metadata = original_metadata.copy()
-                    test_metadata["_write_permission_test"] = "true"
-
-                    blob.metadata = test_metadata
-                    blob.patch()
-
-                    # Restore the original metadata
-                    blob.metadata = original_metadata
-                    blob.patch()
-
-                    logging.info(f"Write permission confirmed for existing blob {cloud_path}")
-                    return True
-                except Forbidden:
-                    logging.error(f"No write permission on existing blob {cloud_path}")
-                    return False
-                except GoogleAPICallError as e:
-                    logging.error(f"Error accessing blob {cloud_path}: {e}")
-                    return False
-            else:
-                # If blob doesn't exist, try to create a temporary zero-byte file
-                # in the same directory to test write permissions
-                test_file = f"{cloud_path}.permission_test_temp"
-                test_blob = self.load_blob_from_full_path(test_file)
-
-                try:
-                    # Try writing a temporary file to the bucket
-                    test_blob.upload_from_string("")
-                    # Clean up the test file
-                    test_blob.delete()
-                    logging.info(f"Write permission confirmed for new path {cloud_path}")
-                    return True
-                except Forbidden:
-                    logging.error(f"No write permission on path {cloud_path}")
-                    return False
-                except GoogleAPICallError as e:
-                    logging.error(f"Error accessing path {cloud_path}: {e}")
-                    return False
-
-        except Exception as e:
-            logging.warning(f"Failed to check write permission for {cloud_path}: {str(e)}")
+        # Check if we can access the bucket at all
+        if not bucket.exists():
+            logging.warning(f"Bucket {bucket_name} does not exist or you don't have access to it")
             return False
 
-    def wait_for_write_permission(self, cloud_path: str, interval_wait_time_minutes: int = 1, max_wait_time_minutes: int = 30) -> bool:
+        # Use the existing load_blob_from_full_path method to get the blob
+        blob = self.load_blob_from_full_path(cloud_path)
+        blob_exists = blob.exists()
+
+        if blob_exists:
+            # Try updating metadata (doesn't change the content)
+            try:
+                original_metadata = blob.metadata or {}
+                test_metadata = original_metadata.copy()
+                test_metadata["_write_permission_test"] = "true"
+
+                blob.metadata = test_metadata
+                blob.patch()
+
+                # Restore the original metadata
+                blob.metadata = original_metadata
+                blob.patch()
+
+                logging.info(f"Write permission confirmed for existing blob {cloud_path}")
+                return True
+            except Forbidden:
+                logging.error(f"No write permission on existing blob {cloud_path}")
+                return False
+            except GoogleAPICallError as e:
+                logging.error(f"Error accessing blob {cloud_path}: {e}")
+                return False
+        else:
+            # If blob doesn't exist, try to create a temporary zero-byte file
+            # in the same directory to test write permissions
+            test_file = f"{cloud_path}.permission_test_temp"
+            test_blob = self.load_blob_from_full_path(test_file)
+
+            try:
+                # Try writing a temporary file to the bucket
+                test_blob.upload_from_string("")
+                # Clean up the test file
+                test_blob.delete()
+                logging.info(f"Write permission confirmed for new path {cloud_path}")
+                return True
+            except Forbidden:
+                logging.error(f"No write permission on path {cloud_path}")
+                return False
+            except GoogleAPICallError as e:
+                logging.error(f"Error accessing path {cloud_path}: {e}")
+                return False
+
+    def wait_for_write_permission(self, cloud_path: str, interval_wait_time_minutes, max_wait_time_minutes) -> bool:
         """
         Wait for write permissions on a GCP path, checking at regular intervals.
 
@@ -826,11 +822,12 @@ class GCPCloudFunctions:
         **Returns:**
         - bool: True if write permission is granted within the wait time, False otherwise.
         """
-        import time
+        if not cloud_path.startswith("gs://"):
+            raise ValueError("cloud_path must start with 'gs://'")
 
         # Convert minutes to seconds for the sleep function
-        interval_seconds = interval_wait_time_minutes * 60
-        max_wait_seconds = max_wait_time_minutes * 60
+        interval_seconds = 15#interval_wait_time_minutes * 60
+        max_wait_seconds = 40#max_wait_time_minutes * 60
 
         start_time = time.time()
         attempt_number = 1
