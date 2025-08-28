@@ -782,7 +782,7 @@ class GCPCloudFunctions:
             logging.warning(f"Error testing write access to {cloud_path}: {e}")
             return False
 
-    def wait_for_write_permission(self, cloud_path: str, interval_wait_time_minutes: int, max_wait_time_minutes: int) -> bool:
+    def wait_for_write_permission(self, cloud_path: str, interval_wait_time_minutes: int, max_wait_time_minutes: int) -> None:
         """
         Wait for write permissions on a GCP path, checking at regular intervals.
 
@@ -814,7 +814,7 @@ class GCPCloudFunctions:
         # First check immediately
         if self.has_write_permission(cloud_path):
             logging.info(f"Write permission confirmed on initial check for {cloud_path}")
-            return True
+            return
 
         # If first check fails, start periodic checks
         while time.time() - start_time < max_wait_seconds:
@@ -834,9 +834,9 @@ class GCPCloudFunctions:
             if self.has_write_permission(cloud_path):
                 elapsed_minutes = (time.time() - start_time) / 60
                 logging.info(f"Write permission confirmed after {elapsed_minutes:.1f} minute(s) on attempt {attempt_number}")
-                return True
+                return
 
         # If we get here, we've exceeded the maximum wait time
-        logging.warning(f"Maximum wait time of {max_wait_time_minutes} minute(s) exceeded. "
-                       f"Write permission was not granted for {cloud_path} after {attempt_number} attempts.")
-        return False
+        raise PermissionError(
+            f"Maximum wait time of {max_wait_time_minutes} minute(s) exceeded. Write permission was not granted for "
+            f"{cloud_path} after {attempt_number} attempts.")
