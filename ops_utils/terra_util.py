@@ -381,7 +381,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"  # noqa: E501
         return self.request_util.run_request(uri=url, method=GET)
 
     def _remove_dict_from_attributes(self, attributes: dict) -> dict:
@@ -800,7 +800,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         response = self.request_util.run_request(
-            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",
+            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",  # noqa: E501
             method=DELETE
         )
         if response.status_code == 204:
@@ -931,7 +931,7 @@ class TerraWorkspace:
             content_type=APPLICATION_JSON,
             data=json.dumps(payload),
         )
-      
+
     def retry_failed_submission(self, submission_id: str) -> requests.Response:
         """
         Retry a failed submission in Terra.
@@ -966,7 +966,26 @@ class TerraWorkspace:
         """
         url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}"
         logging.info(
-            f"Getting status for submission: '{submission_id}' in workspace {self.billing_project}/{self.workspace_name}"
+            f"Getting status for submission: '{submission_id}' in workspace {self.billing_project}/{self.workspace_name}"  # noqa: E501
+        )
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
+
+    def get_all_entities_of_entity_type(self, entity_type: str) -> requests.Response:
+        """
+        Get all entities of a specific entity type in the workspace.
+
+        **Args:**
+        - entity_type (str): The type of entity to get.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}"
+        logging.info(
+            f"Getting all entities of type '{entity_type}' in workspace {self.billing_project}/{self.workspace_name}"
         )
         return self.request_util.run_request(
             uri=url,
