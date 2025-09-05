@@ -1042,6 +1042,14 @@ class TerraWorkspace:
                 f"and the count of ids still running/pending, {len(workflow_statuses['id_still_running'])}. "
                 "Workflows may have completed between API calls."
             )
+        workflow_statuses['success_rate'] = (
+            round(
+                100 * workflow_statuses['succeeded'] / sum(workflow_statuses[status] for status in workflow_statuses
+                                                           if status in ['succeeded', 'failed']),
+                2
+            )
+            if (workflow_statuses['succeeded'] + workflow_statuses['failed']) > 0 else 0.0
+        )
         return workflow_statuses
 
 
