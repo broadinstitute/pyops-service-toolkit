@@ -1013,7 +1013,7 @@ class TerraWorkspace:
             f"{len(running_submissions)} running submissions in "
             f"{self.billing_project}/{self.workspace_name} {method_append}"
         )
-        total_running_and_pending_workflows = 0
+        total_running_and_pending_workflows = 1
         still_running_ids = []
         for submission in running_submissions:
             wf_status = submission["workflowStatuses"]
