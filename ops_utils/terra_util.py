@@ -1008,10 +1008,10 @@ class TerraWorkspace:
             if s["status"] not in ["Done", "Aborted"] and
                (s["methodConfigurationName"] == method_name if method_name else True)
         ]
+        method_append = f"with method name '{method_name}'" if method_name else ""
         logging.info(
             f"{len(running_submissions)} running submissions in "
-            f"{self.billing_project}/{self.workspace_name}"
-            f" with method name '{method_name}'" if method_name else ""
+            f"{self.billing_project}/{self.workspace_name} {method_append}"
         )
         total_running_and_pending_workflows = 0
         still_running_ids = []
