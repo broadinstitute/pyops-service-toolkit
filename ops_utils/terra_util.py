@@ -1013,7 +1013,7 @@ class TerraWorkspace:
             f"{len(running_submissions)} running submissions in "
             f"{self.billing_project}/{self.workspace_name} {method_append}"
         )
-        total_running_and_pending_workflows = 10
+        total_running_and_pending_workflows = 0
         still_running_ids = []
         for submission in running_submissions:
             wf_status = submission["workflowStatuses"]
@@ -1027,7 +1027,8 @@ class TerraWorkspace:
         if len(still_running_ids) != total_running_and_pending_workflows:
             logging.warning(
                 f"Discrepancy found between total running/pending workflows, {total_running_and_pending_workflows}, "
-                f"and the count of ids still running, {len(still_running_ids)}. Workflows may have just completed."
+                f"and the count of ids still running/pending, {len(still_running_ids)}. "
+                "Workflows may have completed between API calls."
             )
         return total_running_and_pending_workflows, still_running_ids
 
