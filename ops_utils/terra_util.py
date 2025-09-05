@@ -1034,15 +1034,15 @@ class TerraWorkspace:
                 for workflow in submission_detailed["workflows"]:
                     if workflow["status"] in ["Running", "Submitted", "Queued"]:
                         entity_id = workflow["workflowEntity"]["entityName"]
-                        workflow_statuses['id_still_running'].append(entity_id)
-        running_count = workflow_statuses['running'] + workflow_statuses['submitted'] + workflow_statuses['queued']
-        if retrieve_running_ids and len(workflow_statuses['id_still_running']) != running_count:
+                        workflow_statuses['id_still_running'].append(entity_id)  # type: ignore[attr-defined]
+        running_count = workflow_statuses['running'] + workflow_statuses['submitted'] + workflow_statuses['queued']  # type: ignore[operator]
+        if retrieve_running_ids and len(workflow_statuses['id_still_running']) != running_count:  # type: ignore[arg-type]
             logging.warning(
                 f"Discrepancy found between total running/pending workflows, {running_count}, "
-                f"and the count of ids still running/pending, {len(workflow_statuses['id_still_running'])}. "
+                f"and the count of ids still running/pending, {len(workflow_statuses['id_still_running'])}. "  # type: ignore[arg-type]
                 "Workflows may have completed between API calls."
             )
-        denominator = workflow_statuses['succeeded'] + workflow_statuses['failed']
+        denominator = workflow_statuses['succeeded'] + workflow_statuses['failed']  # type: ignore[operator]
         if denominator > 0:
             workflow_statuses['success_rate'] = round(
                 workflow_statuses['succeeded'] / denominator,
