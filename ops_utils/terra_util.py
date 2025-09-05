@@ -1044,7 +1044,7 @@ class TerraWorkspace:
             )
         workflow_statuses['success_rate'] = (
             round(
-                100 * workflow_statuses['succeeded'] / sum(workflow_statuses[status] for status in workflow_statuses
+                workflow_statuses['succeeded'] / sum(workflow_statuses[status] for status in workflow_statuses
                                                            if status in ['succeeded', 'failed']),
                 2
             )
