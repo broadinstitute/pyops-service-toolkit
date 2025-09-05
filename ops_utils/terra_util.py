@@ -1011,13 +1011,23 @@ class TerraWorkspace:
                # If method_name is provided, filter submissions to only those with that method name
                (s["methodConfigurationName"] == method_name if method_name else True)
         ]
+        print(json.dumps(running_submissions, indent=2))
         method_append = f"with method name '{method_name}'" if method_name else ""
         logging.info(
             f"{len(running_submissions)} running submissions in "
             f"{self.billing_project}/{self.workspace_name} {method_append}"
         )
         total_running_and_pending_workflows = 0
-        still_running_ids = []
+        workflow_statuses = {
+            "submitted": 0,
+            "queued": 0,
+            "running": 0,
+            "aborting": 0,
+            "aborted": 0,
+            "failed": 0,
+            "succeeded": 0,
+            "id_still_running": []
+        }
         for submission in running_submissions:
             wf_status = submission["workflowStatuses"]
             running_and_queued_workflows = wf_status["Queued"] + wf_status["Running"] + wf_status["Submitted"]
