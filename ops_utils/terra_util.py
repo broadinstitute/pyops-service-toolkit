@@ -989,16 +989,19 @@ class TerraWorkspace:
             method=GET
         )
 
-    def get_workspace_submission_stats(self, method_name: Optional[str] = None) -> tuple[int, list[str]]:
+    def get_workspace_submission_stats(self, method_name: Optional[str] = None, retrieve_running_ids: bool = True) -> tuple[int, list[str]]:
         """
         Get submission statistics for a Terra workspace, optionally filtered by method name.
 
         **Args:**
         - method_name (str, optional): The name of the method to filter statistics by. Defaults to None.
+        - retrieve_running_ids (bool, optional): Whether to retrieve the IDs of workflows that are still running.
+          Defaults to `True`.
 
         **Returns:**
         - tuple[int, list[str]]: A tuple containing the total number of running and pending workflows,
-          and a list of IDs for workflows that are still running.
+          and a list of IDs for workflows that are still running. If `retrieve_running_ids` is `False`,
+          the list of IDs will be empty.
         """
         submissions = self.get_workspace_submission_status().json()
         running_submissions = [
@@ -1019,12 +1022,14 @@ class TerraWorkspace:
             wf_status = submission["workflowStatuses"]
             running_and_queued_workflows = wf_status["Queued"] + wf_status["Running"] + wf_status["Submitted"]
             total_running_and_pending_workflows += running_and_queued_workflows
-            submission_detailed = self.get_submission_status(submission_id=submission["submissionId"]).json()
-            for workflow in submission_detailed["workflows"]:
-                if workflow["status"] in ["Running", "Submitted", "Queued"]:
-                    entity_id = workflow["workflowEntity"]["entityName"]
-                    still_running_ids.append(entity_id)
-        if len(still_running_ids) != total_running_and_pending_workflows:
+            # Only get the IDs of workflows still running/queued if requested and there are any
+            if retrieve_running_ids and running_and_queued_workflows != 0:
+                submission_detailed = self.get_submission_status(submission_id=submission["submissionId"]).json()
+                for workflow in submission_detailed["workflows"]:
+                    if workflow["status"] in ["Running", "Submitted", "Queued"]:
+                        entity_id = workflow["workflowEntity"]["entityName"]
+                        still_running_ids.append(entity_id)
+        if retrieve_running_ids and len(still_running_ids) != total_running_and_pending_workflows:
             logging.warning(
                 f"Discrepancy found between total running/pending workflows, {total_running_and_pending_workflows}, "
                 f"and the count of ids still running/pending, {len(still_running_ids)}. "
