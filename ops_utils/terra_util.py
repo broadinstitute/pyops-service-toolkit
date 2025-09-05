@@ -989,3 +989,38 @@ class TerraWorkspace:
             method=GET
         )
 
+    def get_workspace_submission_stats(self, method_name: Optional[str] = None) -> tuple[int, list[str]]:
+        """
+        Get submission statistics for a Terra workspace, optionally filtered by method name.
+
+        **Args:**
+        - method_name (str, optional): The name of the method to filter statistics by. Defaults to None.
+
+        **Returns:**
+        - tuple[int, list[str]]: A tuple containing the total number of running and pending workflows,
+          and a list of IDs for workflows that are still running.
+        """
+        submissions = self.get_workspace_submission_status().json()
+        # If method_name is provided, filter submissions to only those with that method name
+        running_submissions = [
+            s
+            for s in submissions
+            if s["status"] not in ["Done", "Aborted"] and
+               (s["methodConfigurationName"] == method_name if method_name else True)
+        ]
+        logging.info(
+            f"{len(running_submissions)} running submissions in {self.billing_project}/{self.workspace_name}")
+        total_running_and_pending_workflows = 0
+        still_running_ids = []
+        for submission in running_submissions:
+            wf_status = submission["workflowStatuses"]
+            running_and_queued_workflows = wf_status["Queued"] + wf_status["Running"] + wf_status['Submitted']
+            total_running_and_pending_workflows += running_and_queued_workflows
+            submission_detailed = self.get_submission_status(submission_id=submission["submissionId"]).json()
+            for workflow in submission_detailed["workflows"]:
+                if workflow["status"] in ["Running", "Submitted", "Queued"]:
+                    entity_id = workflow["workflowEntity"]["entityName"]
+                    still_running_ids.append(entity_id)
+        return total_running_and_pending_workflows, still_running_ids
+
+
