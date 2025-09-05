@@ -1024,6 +1024,11 @@ class TerraWorkspace:
                 if workflow["status"] in ["Running", "Submitted", "Queued"]:
                     entity_id = workflow["workflowEntity"]["entityName"]
                     still_running_ids.append(entity_id)
+        if len(still_running_ids) != total_running_and_pending_workflows:
+            logging.warning(
+                f"Discrepancy found between total running/pending workflows, {total_running_and_pending_workflows}, "
+                f"and the count of ids still running, {len(still_running_ids)}. Workflows may have just completed."
+            )
         return total_running_and_pending_workflows, still_running_ids
 
 
