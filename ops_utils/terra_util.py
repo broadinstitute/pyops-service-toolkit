@@ -972,3 +972,20 @@ class TerraWorkspace:
             uri=url,
             method=GET
         )
+
+    def get_workspace_submission_status(self) ->requests.Response:
+        """
+        Get the status of all submissions in a Terra workspace.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions"
+        logging.info(
+            f"Getting status for all submissions in workspace {self.billing_project}/{self.workspace_name}"
+        )
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
+
