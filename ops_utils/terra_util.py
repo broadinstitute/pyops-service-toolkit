@@ -1020,7 +1020,7 @@ class TerraWorkspace:
             "aborted": 0,
             "failed": 0,
             "succeeded": 0,
-            "id_still_running": []
+            "id_still_running": [] if retrieve_running_ids else "NA"
         }
         for submission in submissions:
             wf_status = submission["workflowStatuses"]
