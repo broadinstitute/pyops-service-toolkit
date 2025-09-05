@@ -1001,11 +1001,11 @@ class TerraWorkspace:
           and a list of IDs for workflows that are still running.
         """
         submissions = self.get_workspace_submission_status().json()
-        # If method_name is provided, filter submissions to only those with that method name
         running_submissions = [
             s
             for s in submissions
             if s["status"] not in ["Done", "Aborted"] and
+               # If method_name is provided, filter submissions to only those with that method name
                (s["methodConfigurationName"] == method_name if method_name else True)
         ]
         method_append = f"with method name '{method_name}'" if method_name else ""
@@ -1017,7 +1017,7 @@ class TerraWorkspace:
         still_running_ids = []
         for submission in running_submissions:
             wf_status = submission["workflowStatuses"]
-            running_and_queued_workflows = wf_status["Queued"] + wf_status["Running"] + wf_status['Submitted']
+            running_and_queued_workflows = wf_status["Queued"] + wf_status["Running"] + wf_status["Submitted"]
             total_running_and_pending_workflows += running_and_queued_workflows
             submission_detailed = self.get_submission_status(submission_id=submission["submissionId"]).json()
             for workflow in submission_detailed["workflows"]:
