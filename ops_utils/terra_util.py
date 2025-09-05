@@ -1009,7 +1009,10 @@ class TerraWorkspace:
                (s["methodConfigurationName"] == method_name if method_name else True)
         ]
         logging.info(
-            f"{len(running_submissions)} running submissions in {self.billing_project}/{self.workspace_name}")
+            f"{len(running_submissions)} running submissions in "
+            f"{self.billing_project}/{self.workspace_name}"
+            f" with method name '{method_name}'" if method_name else ""
+        )
         total_running_and_pending_workflows = 0
         still_running_ids = []
         for submission in running_submissions:
