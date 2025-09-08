@@ -989,3 +989,67 @@ class TerraWorkspace:
             method=GET
         )
 
+    def get_workspace_submission_stats(self, method_name: Optional[str] = None, retrieve_running_ids: bool = True) -> dict:
+        """
+        Get submission statistics for a Terra workspace, optionally filtered by method name.
+
+        **Args:**
+        - method_name (str, optional): The name of the method to filter statistics by. Defaults to None.
+        - retrieve_running_ids (bool, optional): Whether to retrieve the IDs of workflows that are still running.
+          Defaults to `True`.
+
+        **Returns:**
+        - dict: A dictionary containing submission statistics, including counts of workflows in various states
+        """
+        submissions = [
+            s
+            for s in self.get_workspace_submission_status().json()
+            # If method_name is provided, filter submissions to only those with that method name
+            if (s["methodConfigurationName"] == method_name if method_name else True)
+        ]
+        method_append = f"with method name '{method_name}'" if method_name else ""
+        logging.info(
+            f"{len(submissions)} submissions in "
+            f"{self.billing_project}/{self.workspace_name} {method_append}"
+        )
+        workflow_statuses = {
+            "submitted": 0,
+            "queued": 0,
+            "running": 0,
+            "aborting": 0,
+            "aborted": 0,
+            "failed": 0,
+            "succeeded": 0,
+            "id_still_running": [] if retrieve_running_ids else "NA"
+        }
+        for submission in submissions:
+            wf_status = submission["workflowStatuses"]
+            for status, count in wf_status.items():
+                if status.lower() in workflow_statuses:
+                    workflow_statuses[status.lower()] += count
+            # Only look at individual submissions if retrieve running ids set to true
+            # and only look at submissions that are still running
+            if retrieve_running_ids and submission['status'] not in ["Done", "Aborted"]:
+                submission_detailed = self.get_submission_status(submission_id=submission["submissionId"]).json()
+                for workflow in submission_detailed["workflows"]:
+                    if workflow["status"] in ["Running", "Submitted", "Queued"]:
+                        entity_id = workflow["workflowEntity"]["entityName"]
+                        workflow_statuses['id_still_running'].append(entity_id)  # type: ignore[attr-defined]
+        running_count = workflow_statuses['running'] + workflow_statuses['submitted'] + workflow_statuses['queued']  # type: ignore[operator]
+        if retrieve_running_ids and len(workflow_statuses['id_still_running']) != running_count:  # type: ignore[arg-type]
+            logging.warning(
+                f"Discrepancy found between total running/pending workflows, {running_count}, "
+                f"and the count of ids still running/pending, {len(workflow_statuses['id_still_running'])}. "  # type: ignore[arg-type]
+                "Workflows may have completed between API calls."
+            )
+        denominator = workflow_statuses['succeeded'] + workflow_statuses['failed']  # type: ignore[operator]
+        if denominator > 0:
+            workflow_statuses['success_rate'] = round(
+                workflow_statuses['succeeded'] / denominator,
+                2
+            )
+        else:
+            workflow_statuses['success_rate'] = 0.0
+        return workflow_statuses
+
+

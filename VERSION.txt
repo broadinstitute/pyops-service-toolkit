@@ -1,2 +1,2 @@
-11.5.0
-- Adding methods to see workspace workflow status
+11.6.0
+- Adding methods to get more specific workflow details in workspace
