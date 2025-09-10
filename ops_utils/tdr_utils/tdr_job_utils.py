@@ -110,7 +110,10 @@ class SubmitAndMonitorMultipleJobs:
         Run the process to submit and monitor multiple jobs in batches.
 
         Logs the progress and status of each batch and job.
+
+        Failed jobs are collected and printed out at the end of processing.
         """
+        failed_jobs = []
         total_jobs = len(self.job_args_list)
         logging.info(f"Processing {total_jobs} {self.job_function.__name__} jobs in batches of {self.batch_size}")
 
@@ -133,13 +136,19 @@ class SubmitAndMonitorMultipleJobs:
             # Monitor jobs for the current batch
             logging.info(f"Monitoring {len(current_batch)} jobs in batch {i // self.batch_size + 1}")
             for job_id in job_ids:
-                MonitorTDRJob(
-                    tdr=self.tdr,
-                    job_id=job_id,
-                    check_interval=self.check_interval,
-                    return_json=False
-                ).run()
+                try:
+                    MonitorTDRJob(
+                        tdr=self.tdr,
+                        job_id=job_id,
+                        check_interval=self.check_interval,
+                        return_json=False
+                    ).run()
+                except Exception as e:
+                    logging.error(f"Job {job_id} failed: {e}")
+                    failed_jobs.append(job_id)
 
             logging.info(f"Completed batch {i // self.batch_size + 1} with {len(current_batch)} jobs.")
 
-        logging.info(f"Successfully processed {total_jobs} jobs.")
+        logging.info(f"Successfully processed {total_jobs - len(failed_jobs)} jobs.")
+        if failed_jobs:
+            logging.error(f"The following job IDs failed: {', '.join(failed_jobs)}")
