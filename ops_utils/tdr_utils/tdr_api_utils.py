@@ -937,6 +937,10 @@ class TDR:
                 break
 
             metadata.extend(response_json)
+            if len(response_json) < limit:
+                logging.info(f"Retrieved final batch of results, found {len(metadata)} total records")
+                break
+
             # Increment the offset by limit for the next page
             offset += limit
             batch += 1
