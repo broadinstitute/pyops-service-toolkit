@@ -20,7 +20,7 @@ class TDR:
     DEV_LINK = "https://jade.datarepo-dev.broadinstitute.org/api/repository/v1"
     """(str): The base URL for the TDR API."""
 
-    def __init__(self, request_util: RunRequest, env: str = 'prod'):
+    def __init__(self, request_util: RunRequest, env: str = 'prod', dry_run: bool = False):
         """
         Initialize the TDR class (A class to interact with the Terra Data Repository (TDR) API).
 
@@ -28,6 +28,8 @@ class TDR:
         - request_util (`ops_utils.request_util.RunRequest`): Utility for making HTTP requests.
         """
         self.request_util = request_util
+        # NOTE: dry_run is not fully implemented in this class, only in delete_files_and_snapshots
+        self.dry_run = dry_run
         if env.lower() == 'prod':
             self.tdr_link = self.PROD_LINK
         elif env.lower() == 'dev':
@@ -179,6 +181,58 @@ class TDR:
             batch_size=batch_size_to_delete_files,
             check_interval=check_interval
         ).run()
+
+    def _delete_snapshots(self, dataset_id: str, file_ids: set[str]) -> None:
+        """Delete snapshots that reference any of the provided file IDs."""
+        snapshots_resp = self.get_dataset_snapshots(dataset_id=dataset_id)
+        snapshot_items = snapshots_resp.json().get('items', [])
+        snapshots_to_delete = []
+        logging.info(
+            "Checking %d snapshots for references",
+            len(snapshot_items),
+        )
+        for snap in snapshot_items:
+            snap_id = snap.get('id')
+            if not snap_id:
+                continue
+            snap_files = self.get_files_from_snapshot(snapshot_id=snap_id)
+            snap_file_ids = {
+                fd.get('fileId') for fd in snap_files if fd.get('fileId')
+            }
+            # Use set intersection to check for any matching file IDs
+            if snap_file_ids & file_ids:
+                snapshots_to_delete.append(snap_id)
+        if snapshots_to_delete:
+            logging.info(
+                f"{self.dry_run_msg()}Deleting {len(snapshots_to_delete)} snapshots that reference "
+                "target files")
+            if not self.dry_run:
+                for snap_id in snapshots_to_delete:
+                    job_id = self.delete_snapshot(snap_id).json()['id']
+                    MonitorTDRJob(
+                        tdr=self,
+                        job_id=job_id,
+                        check_interval=10,
+                        return_json=False
+                    ).run()
+        else:
+            logging.info("No snapshots reference the provided file ids")
+
+    def dry_run_msg(self) -> str:
+        return '[Dry run] ' if self.dry_run else ''
+
+    def delete_files_and_snapshots(self, dataset_id: str, file_ids: set[str]) -> None:
+        """Delete files from a dataset by their IDs, handling snapshots."""
+        self._delete_snapshots(dataset_id=dataset_id, file_ids=file_ids)
+
+        logging.info(
+            f"{self.dry_run_msg()}Submitting delete request for {len(file_ids)} files in "
+            f"dataset {dataset_id}")
+        if not self.dry_run:
+            self.delete_files(
+                file_ids=list(file_ids),
+                dataset_id=dataset_id
+            )
 
     def add_user_to_dataset(self, dataset_id: str, user: str, policy: str) -> requests.Response:
         """
