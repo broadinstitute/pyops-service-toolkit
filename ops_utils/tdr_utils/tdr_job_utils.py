@@ -150,5 +150,7 @@ class SubmitAndMonitorMultipleJobs:
             logging.info(f"Completed batch {i // self.batch_size + 1} with {len(current_batch)} jobs.")
 
         logging.info(f"Successfully processed {total_jobs - len(failed_jobs)} jobs.")
-        if failed_jobs:
-            logging.error(f"The following job IDs failed: {', '.join(failed_jobs)}")
+
+        if len(failed_jobs) > 0:
+            raise Exception(
+                f"The following job IDs failed: {', '.join(failed_jobs)}")
