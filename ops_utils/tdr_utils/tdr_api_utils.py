@@ -182,7 +182,7 @@ class TDR:
             check_interval=check_interval
         ).run()
 
-    def _delete_snapshots(self, dataset_id: str, file_ids: set[str]) -> None:
+    def _delete_snapshots_for_files(self, dataset_id: str, file_ids: set[str]) -> None:
         """Delete snapshots that reference any of the provided file IDs."""
         snapshots_resp = self.get_dataset_snapshots(dataset_id=dataset_id)
         snapshot_items = snapshots_resp.json().get('items', [])
@@ -203,18 +203,7 @@ class TDR:
             if snap_file_ids & file_ids:
                 snapshots_to_delete.append(snap_id)
         if snapshots_to_delete:
-            logging.info(
-                f"{self.dry_run_msg()}Deleting {len(snapshots_to_delete)} snapshots that reference "
-                "target files")
-            if not self.dry_run:
-                for snap_id in snapshots_to_delete:
-                    job_id = self.delete_snapshot(snap_id).json()['id']
-                    MonitorTDRJob(
-                        tdr=self,
-                        job_id=job_id,
-                        check_interval=10,
-                        return_json=False
-                    ).run()
+            self.delete_snapshots(snapshot_ids=snapshots_to_delete)
         else:
             logging.info("No snapshots reference the provided file ids")
 
@@ -223,7 +212,7 @@ class TDR:
 
     def delete_files_and_snapshots(self, dataset_id: str, file_ids: set[str]) -> None:
         """Delete files from a dataset by their IDs, handling snapshots."""
-        self._delete_snapshots(dataset_id=dataset_id, file_ids=file_ids)
+        self._delete_snapshots_for_files(dataset_id=dataset_id, file_ids=file_ids)
 
         logging.info(
             f"{self.dry_run_msg()}Submitting delete request for {len(file_ids)} files in "
@@ -376,14 +365,16 @@ class TDR:
         - check_interval (int, optional): The interval in seconds to wait between status checks. Defaults to `10`.
         - verbose (bool, optional): Whether to log detailed information about each job. Defaults to `False`.
         """
-        SubmitAndMonitorMultipleJobs(
-            tdr=self,
-            job_function=self.delete_snapshot,
-            job_args_list=[(snapshot_id,) for snapshot_id in snapshot_ids],
-            batch_size=batch_size,
-            check_interval=check_interval,
-            verbose=verbose
-        ).run()
+        logging.info(f"{self.dry_run_msg()}Deleting {len(snapshot_ids)} snapshots")
+        if not self.dry_run:
+            SubmitAndMonitorMultipleJobs(
+                tdr=self,
+                job_function=self.delete_snapshot,
+                job_args_list=[(snapshot_id,) for snapshot_id in snapshot_ids],
+                batch_size=batch_size,
+                check_interval=check_interval,
+                verbose=verbose
+            ).run()
 
     def delete_snapshot(self, snapshot_id: str) -> requests.Response:
         """
