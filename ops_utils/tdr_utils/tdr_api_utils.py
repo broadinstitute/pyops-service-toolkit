@@ -207,7 +207,7 @@ class TDR:
         else:
             logging.info("No snapshots reference the provided file ids")
 
-    def dry_run_msg(self) -> str:
+    def _dry_run_msg(self) -> str:
         return '[Dry run] ' if self.dry_run else ''
 
     def delete_files_and_snapshots(self, dataset_id: str, file_ids: set[str]) -> None:
@@ -215,7 +215,7 @@ class TDR:
         self._delete_snapshots_for_files(dataset_id=dataset_id, file_ids=file_ids)
 
         logging.info(
-            f"{self.dry_run_msg()}Submitting delete request for {len(file_ids)} files in "
+            f"{self._dry_run_msg()}Submitting delete request for {len(file_ids)} files in "
             f"dataset {dataset_id}")
         if not self.dry_run:
             self.delete_files(
@@ -365,7 +365,7 @@ class TDR:
         - check_interval (int, optional): The interval in seconds to wait between status checks. Defaults to `10`.
         - verbose (bool, optional): Whether to log detailed information about each job. Defaults to `False`.
         """
-        logging.info(f"{self.dry_run_msg()}Deleting {len(snapshot_ids)} snapshots")
+        logging.info(f"{self._dry_run_msg()}Deleting {len(snapshot_ids)} snapshots")
         if not self.dry_run:
             SubmitAndMonitorMultipleJobs(
                 tdr=self,
