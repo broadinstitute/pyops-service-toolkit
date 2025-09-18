@@ -20,7 +20,7 @@ class TDR:
     DEV_LINK = "https://jade.datarepo-dev.broadinstitute.org/api/repository/v1"
     """(str): The base URL for the TDR API."""
 
-    def __init__(self, request_util: RunRequest, env: str = 'prod'):
+    def __init__(self, request_util: RunRequest, env: str = 'prod', dry_run: bool = False):
         """
         Initialize the TDR class (A class to interact with the Terra Data Repository (TDR) API).
 
@@ -28,6 +28,8 @@ class TDR:
         - request_util (`ops_utils.request_util.RunRequest`): Utility for making HTTP requests.
         """
         self.request_util = request_util
+        # NOTE: dry_run is not fully implemented in this class, only in delete_files_and_snapshots
+        self.dry_run = dry_run
         if env.lower() == 'prod':
             self.tdr_link = self.PROD_LINK
         elif env.lower() == 'dev':
@@ -180,6 +182,47 @@ class TDR:
             check_interval=check_interval
         ).run()
 
+    def _delete_snapshots_for_files(self, dataset_id: str, file_ids: set[str]) -> None:
+        """Delete snapshots that reference any of the provided file IDs."""
+        snapshots_resp = self.get_dataset_snapshots(dataset_id=dataset_id)
+        snapshot_items = snapshots_resp.json().get('items', [])
+        snapshots_to_delete = []
+        logging.info(
+            "Checking %d snapshots for references",
+            len(snapshot_items),
+        )
+        for snap in snapshot_items:
+            snap_id = snap.get('id')
+            if not snap_id:
+                continue
+            snap_files = self.get_files_from_snapshot(snapshot_id=snap_id)
+            snap_file_ids = {
+                fd.get('fileId') for fd in snap_files if fd.get('fileId')
+            }
+            # Use set intersection to check for any matching file IDs
+            if snap_file_ids & file_ids:
+                snapshots_to_delete.append(snap_id)
+        if snapshots_to_delete:
+            self.delete_snapshots(snapshot_ids=snapshots_to_delete)
+        else:
+            logging.info("No snapshots reference the provided file ids")
+
+    def _dry_run_msg(self) -> str:
+        return '[Dry run] ' if self.dry_run else ''
+
+    def delete_files_and_snapshots(self, dataset_id: str, file_ids: set[str]) -> None:
+        """Delete files from a dataset by their IDs, handling snapshots."""
+        self._delete_snapshots_for_files(dataset_id=dataset_id, file_ids=file_ids)
+
+        logging.info(
+            f"{self._dry_run_msg()}Submitting delete request for {len(file_ids)} files in "
+            f"dataset {dataset_id}")
+        if not self.dry_run:
+            self.delete_files(
+                file_ids=list(file_ids),
+                dataset_id=dataset_id
+            )
+
     def add_user_to_dataset(self, dataset_id: str, user: str, policy: str) -> requests.Response:
         """
         Add a user to a dataset with a specified policy.
@@ -322,14 +365,16 @@ class TDR:
         - check_interval (int, optional): The interval in seconds to wait between status checks. Defaults to `10`.
         - verbose (bool, optional): Whether to log detailed information about each job. Defaults to `False`.
         """
-        SubmitAndMonitorMultipleJobs(
-            tdr=self,
-            job_function=self.delete_snapshot,
-            job_args_list=[(snapshot_id,) for snapshot_id in snapshot_ids],
-            batch_size=batch_size,
-            check_interval=check_interval,
-            verbose=verbose
-        ).run()
+        logging.info(f"{self._dry_run_msg()}Deleting {len(snapshot_ids)} snapshots")
+        if not self.dry_run:
+            SubmitAndMonitorMultipleJobs(
+                tdr=self,
+                job_function=self.delete_snapshot,
+                job_args_list=[(snapshot_id,) for snapshot_id in snapshot_ids],
+                batch_size=batch_size,
+                check_interval=check_interval,
+                verbose=verbose
+            ).run()
 
     def delete_snapshot(self, snapshot_id: str) -> requests.Response:
         """
@@ -937,6 +982,10 @@ class TDR:
                 break
 
             metadata.extend(response_json)
+            if len(response_json) < limit:
+                logging.info(f"Retrieved final batch of results, found {len(metadata)} total records")
+                break
+
             # Increment the offset by limit for the next page
             offset += limit
             batch += 1
