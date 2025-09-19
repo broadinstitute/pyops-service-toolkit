@@ -4,6 +4,8 @@ import logging
 import time
 from typing import Callable, Optional, Any
 
+import requests
+
 from ..vars import ARG_DEFAULTS
 
 
@@ -75,7 +77,7 @@ class SubmitAndMonitorMultipleJobs:
 
     def __init__(
             self, tdr: Any,
-            job_function: Callable,
+            job_function: Callable[..., requests.Response],
             job_args_list: list[tuple],
             batch_size: int = ARG_DEFAULTS["batch_size"],  # type: ignore[assignment]
             check_interval: int = ARG_DEFAULTS["waiting_time_to_poll"],  # type: ignore[assignment]
@@ -113,9 +115,9 @@ class SubmitAndMonitorMultipleJobs:
 
         Failed jobs are collected and printed out at the end of processing.
         """
-        failed_jobs = []
+        failed_jobs: list[str] = []
         total_jobs = len(self.job_args_list)
-        batch_durations = []
+        batch_durations: list[Any] = []
         logging.info(f"Processing {total_jobs} {self.job_function.__name__} jobs in batches of {self.batch_size}")
 
         # Process jobs in batches
