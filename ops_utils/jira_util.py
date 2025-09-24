@@ -115,6 +115,7 @@ class JiraUtil:
         - list[dict]: The list of issues matching the criteria
         """
         logging.info(f"Getting issues by criteria: {criteria}")
+        logging.info("REACHED HERREEEEE")
         if fields:
             return self.jira_connection.jql(criteria, fields=fields, limit=max_results, expand=expand_info)
         return self.jira_connection.jql(criteria, limit=max_results, expand=expand_info)
