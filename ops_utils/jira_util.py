@@ -71,8 +71,7 @@ class JiraUtil:
         - field_update_dict (dict): The field values to update. Formatted with the field ID as the key,
         and the updated value as the key's value.
         """
-        issue = self.jira_connection.issue(issue_key)
-        issue.update(fields=field_update_dict)
+        self.jira_connection.issue_update(issue_key, field_update_dict)
 
     def add_comment(self, issue_key: str, comment: str) -> None:
         """
@@ -82,7 +81,7 @@ class JiraUtil:
         - issue_key (str): The issue key to update
         - comment (str): The comment to add
         """
-        self.jira_connection.add_comment(issue_key, comment)
+        self.jira_connection.issue_add_comment(issue_key, comment)
 
     def transition_ticket(self, issue_key: str, transition_id: int) -> None:
         """
@@ -92,7 +91,7 @@ class JiraUtil:
         - issue_key (str): The issue key to update
         - transition_id (int): The status ID to transition the issue to
         """
-        self.jira_connection.transition_issue(issue_key, transition_id)
+        self.jira_connection.set_issue_status_by_transition_id(issue_key, transition_id)
 
     def get_issues_by_criteria(
             self,
