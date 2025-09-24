@@ -5745,7 +5745,7 @@ responses:
       X-Xss-Protection: 1; mode=block
     method: GET
     status: 200
-    url: https://broadinstitute.atlassian.net/rest/api/2/field
+    url: https://broadinstitute.atlassian.net/rest/api/3/search/jql
 - response:
     auto_calculate_content_length: false
     body: "{\"expand\":\"schema,names\",\"startAt\":0,\"maxResults\":100,\"total\"\
