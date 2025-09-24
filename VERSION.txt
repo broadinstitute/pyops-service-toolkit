@@ -1,4 +1,2 @@
-11.7.0
-- Added delete_files_and_snapshots()
-- Modify SubmitAndMonitorMultipleJobs to collect job failures and report instead of exiting early
-- Added dry_run property to TDR
+12.0.0
+- Update Jira utilities to use new API endpoints and remove deprecated methods
