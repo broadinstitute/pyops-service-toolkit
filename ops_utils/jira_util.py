@@ -107,8 +107,8 @@ class JiraUtil:
         - criteria (str): The criteria to search for. This should be formatted in a supported JIRA search filter
         (i.e. `project = '{project}' AND sprint = '{sprint_name}' AND status = {status}`)
         - max_results (int): The maximum number of results to return. Defaults to 200.
-        - fields (list[string], optional): The fields to include in the return for each
-        ticket separated by commas (i.e. `["summary","status","assignee"]`)
+        - fields (list[string], optional): A list of the fields to include in the return for each
+        ticket (i.e. `["summary", "status", "assignee"]`)
 
         **Returns:**
         - list[dict]: The list of issues matching the criteria
