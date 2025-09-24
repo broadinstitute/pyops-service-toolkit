@@ -98,7 +98,7 @@ class JiraUtil:
             self,
             criteria: str,
             max_results: int = 200,
-            fields: Optional[str] = None,
+            fields: Optional[list[str]] = None,
             expand_info: Optional[str] = None
     ) -> list[dict]:
         """
@@ -108,14 +108,22 @@ class JiraUtil:
         - criteria (str): The criteria to search for. This should be formatted in a supported JIRA search filter
         (i.e. `project = '{project}' AND sprint = '{sprint_name}' AND status = {status}`)
         - max_results (int): The maximum number of results to return. Defaults to 200.
-        - fields (string, optional): The fields to include in the return for each
-        ticket separated by commas (i.e. `"summary,status,assignee"`)
+        - fields (list[string], optional): The fields to include in the return for each
+        ticket separated by commas (i.e. `["summary","status","assignee"]`)
 
         **Returns:**
         - list[dict]: The list of issues matching the criteria
         """
         logging.info(f"Getting issues by criteria: {criteria}")
-        logging.info("REACHED HERREEEEE")
+
+        payload = {
+            "jql": criteria,
+            "maxResults": max_results
+        }
+
         if fields:
-            return self.jira_connection.jql(criteria, fields=fields, limit=max_results, expand=expand_info)
-        return self.jira_connection.jql(criteria, limit=max_results, expand=expand_info)
+            payload["fields"] = fields
+        if expand_info:
+            payload["expand"] = expand_info
+
+        return self.jira_connection.post("rest/api/3/search/jql", data=payload)
