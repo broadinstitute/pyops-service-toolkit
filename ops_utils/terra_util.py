@@ -989,6 +989,27 @@ class TerraWorkspace:
             method=GET
         )
 
+    def get_workflow_status(self, submission_id: str, workflow_id: str) -> requests.Response:
+        """
+        Get the status of a workflow in a submission in Terra.
+
+        **Args:**
+        - submission_id (str): The ID of the submission.
+        - workflow_id (str): The ID of the workflow.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}/workflows/{workflow_id}"  # noqa: E501
+        logging.info(
+            f"Getting status for workflow: '{workflow_id}' in submission: '{submission_id}' "
+            f"in workspace {self.billing_project}/{self.workspace_name}"
+        )
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
+
     def get_workspace_submission_stats(self, method_name: Optional[str] = None, retrieve_running_ids: bool = True) -> dict:
         """
         Get submission statistics for a Terra workspace, optionally filtered by method name.

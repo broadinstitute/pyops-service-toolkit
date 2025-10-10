@@ -1,2 +1,2 @@
-12.0.0
-- Update Jira utilities to use new API endpoints and remove deprecated methods
+12.1.0
+- Add ability to get workflow information
