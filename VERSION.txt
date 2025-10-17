@@ -1,2 +1,2 @@
-12.1.0
-- Add ability to get workflow information
+12.2.0
+- When updating columns in TDR convert to str in case it is an int and subsitution does not work

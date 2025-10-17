@@ -112,8 +112,8 @@ class GetRowAndFileInfoForReingest:
         # Create list of all files for copy to temp location
         temp_copy_list = []
         # Get basename to replace
-        og_basename = row_dict[self.original_column]
-        new_basename = row_dict[self.new_column]
+        og_basename = str(row_dict[self.original_column])
+        new_basename = str(row_dict[self.new_column])
         # If the new basename is the same as the old one, don't do anything
         if og_basename == new_basename:
             return None, None
