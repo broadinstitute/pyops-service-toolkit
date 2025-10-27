@@ -147,6 +147,7 @@ class SetUpTDRTables:
                 logging.info("All tables in dataset exist and are up to date")
         else:
             logging.warning("Tables do not appear to be valid")
+            print(f'ignore existing schema mistmatch: {self.ignore_existing_schema_mismatch}')
             if self.ignore_existing_schema_mismatch:
                 logging.warning("Ignoring schema mismatch because ignore_existing_schema_mismatch was used")
             else:
