@@ -1,4 +1,2 @@
-11.7.0
-- Added delete_files_and_snapshots()
-- Modify SubmitAndMonitorMultipleJobs to collect job failures and report instead of exiting early
-- Added dry_run property to TDR
+11.7.1
+- Add time remaining display for batch TDR job execution.
