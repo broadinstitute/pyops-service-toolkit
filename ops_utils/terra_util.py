@@ -381,7 +381,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"  # noqa: E501
         return self.request_util.run_request(uri=url, method=GET)
 
     def _remove_dict_from_attributes(self, attributes: dict) -> dict:
@@ -800,7 +800,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         response = self.request_util.run_request(
-            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",
+            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",  # noqa: E501
             method=DELETE
         )
         if response.status_code == 204:
@@ -931,7 +931,7 @@ class TerraWorkspace:
             content_type=APPLICATION_JSON,
             data=json.dumps(payload),
         )
-      
+
     def retry_failed_submission(self, submission_id: str) -> requests.Response:
         """
         Retry a failed submission in Terra.
@@ -966,14 +966,14 @@ class TerraWorkspace:
         """
         url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}"
         logging.info(
-            f"Getting status for submission: '{submission_id}' in workspace {self.billing_project}/{self.workspace_name}"
+            f"Getting status for submission: '{submission_id}' in workspace {self.billing_project}/{self.workspace_name}"  # noqa: E501
         )
         return self.request_util.run_request(
             uri=url,
             method=GET
         )
 
-    def get_workspace_submission_status(self) ->requests.Response:
+    def get_workspace_submission_status(self) -> requests.Response:
         """
         Get the status of all submissions in a Terra workspace.
 
@@ -1010,7 +1010,9 @@ class TerraWorkspace:
             method=GET
         )
 
-    def get_workspace_submission_stats(self, method_name: Optional[str] = None, retrieve_running_ids: bool = True) -> dict:
+    def get_workspace_submission_stats(
+            self, method_name: Optional[str] = None, retrieve_running_ids: bool = True
+    ) -> dict:
         """
         Get submission statistics for a Terra workspace, optionally filtered by method name.
 
@@ -1056,11 +1058,11 @@ class TerraWorkspace:
                     if workflow["status"] in ["Running", "Submitted", "Queued"]:
                         entity_id = workflow["workflowEntity"]["entityName"]
                         workflow_statuses['id_still_running'].append(entity_id)  # type: ignore[attr-defined]
-        running_count = workflow_statuses['running'] + workflow_statuses['submitted'] + workflow_statuses['queued']  # type: ignore[operator]
-        if retrieve_running_ids and len(workflow_statuses['id_still_running']) != running_count:  # type: ignore[arg-type]
+        running_count = workflow_statuses['running'] + workflow_statuses['submitted'] + workflow_statuses['queued']  # type: ignore[operator]  # noqa: E501
+        if retrieve_running_ids and len(workflow_statuses['id_still_running']) != running_count:  # type: ignore[arg-type]  # noqa: E501
             logging.warning(
                 f"Discrepancy found between total running/pending workflows, {running_count}, "
-                f"and the count of ids still running/pending, {len(workflow_statuses['id_still_running'])}. "  # type: ignore[arg-type]
+                f"and the count of ids still running/pending, {len(workflow_statuses['id_still_running'])}. "  # type: ignore[arg-type]  # noqa: E501
                 "Workflows may have completed between API calls."
             )
         denominator = workflow_statuses['succeeded'] + workflow_statuses['failed']  # type: ignore[operator]
@@ -1073,4 +1075,19 @@ class TerraWorkspace:
             workflow_statuses['success_rate'] = 0.0
         return workflow_statuses
 
+    def get_workspace_details(self, terra_google_project_id: str) -> requests.Response:
+        """
+        Get details of a Terra workspace using the Google project ID.
 
+        **Args:**
+        - terra_google_project_id (str): The Google project ID of the Terra workspace.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}?userProject={terra_google_project_id}"  # noqa: E501
+        logging.info(f"Getting workspace details using Terra Google project ID: '{terra_google_project_id}'")
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
