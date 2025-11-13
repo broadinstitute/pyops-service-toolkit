@@ -1,2 +1,2 @@
-12.2.0
-- When updating columns in TDR convert to str in case it is an int and subsitution does not work
+12.3.0
+- Add ability to query Terra workspace info using RAWLS API endpoint
