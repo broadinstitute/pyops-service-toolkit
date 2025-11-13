@@ -1086,7 +1086,10 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}?userProject={terra_google_project_id}"  # noqa: E501
-        logging.info(f"Getting workspace details using Terra Google project ID: '{terra_google_project_id}'")
+        logging.info(
+            f"Getting workspace details for workspace '{self.workspace_name}' using Terra Google"
+            f" project ID: '{terra_google_project_id}'"
+        )
         return self.request_util.run_request(
             uri=url,
             method=GET
