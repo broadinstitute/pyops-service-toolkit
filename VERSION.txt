@@ -1,2 +1,2 @@
-12.3.0
-- Add ability to query Terra workspace info using RAWLS API endpoint
+12.4.0
+- Add methods to google sheets class
