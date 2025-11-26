@@ -993,20 +993,20 @@ class TerraWorkspace:
             self,
             submission_id: str,
             workflow_id: str,
-            expand_workflow_metadata: bool = False) -> requests.Response:
+            expand_sub_workflow_metadata: bool = False) -> requests.Response:
         """
         Get the status of a workflow in a submission in Terra.
 
         **Args:**
         - submission_id (str): The ID of the submission.
         - workflow_id (str): The ID of the workflow.
-        - expand_workflow_metadata (bool, optional): Whether to expand the workflow metadata.
+        - expand_sub_workflow_metadata (bool, optional): Whether to expand the expand_sub workflow metadata.
           Defaults to `False`.
 
         **Returns:**
         - requests.Response: The response from the request.
         """
-        expand_metadata = '?expandSubWorkflows=true' if expand_workflow_metadata else ''
+        expand_metadata = '?expandSubWorkflows=true' if expand_sub_workflow_metadata else ''
         url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}/workflows/{workflow_id}{expand_metadata}"  # noqa: E501
         logging.info(
             f"Getting status for workflow: '{workflow_id}' in submission: '{submission_id}' "
