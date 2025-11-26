@@ -117,3 +117,22 @@ class GoogleSheets:
             column_index = int(column)
 
         return ws.col_values(column_index)
+
+    def get_worksheet_as_dict(self, spreadsheet_id: str, worksheet_name: str) -> list[dict]:
+        """
+        Get all data from a worksheet as a list of dictionaries.
+
+        The first row is used as the header/keys for the dictionaries.
+        Each subsequent row becomes a dictionary with the header values as keys.
+
+        **Args:**
+        - spreadsheet_id (str): Spreadsheet ID.
+        - worksheet_name (str): Sheet/tab name.
+
+        **Returns:**
+        - list[dict]: List of dictionaries, where each dictionary represents a row
+                      with column headers as keys.
+        """
+        ws = self._open_worksheet(spreadsheet_id, worksheet_name)
+        return ws.get_all_records()
+
