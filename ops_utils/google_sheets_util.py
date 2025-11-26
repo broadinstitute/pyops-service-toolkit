@@ -136,3 +136,41 @@ class GoogleSheets:
         ws = self._open_worksheet(spreadsheet_id, worksheet_name)
         return ws.get_all_records()
 
+    def batch_update_cells(self, spreadsheet_id: str, worksheet_name: str, updates: list[dict[str, str]]) -> None:
+        """
+        Update multiple cells in a single batch request.
+
+        This method is more efficient than calling update_cell multiple times
+        as it sends all updates in a single API request.
+
+        **Args:**
+        - spreadsheet_id (str): Spreadsheet ID.
+        - worksheet_name (str): Sheet/tab name.
+        - updates (list[dict[str, str]]): List of dictionaries, each containing:
+            - 'cell': A1-style cell notation (e.g., 'A1', 'B5')
+            - 'value': Value to insert
+
+        **Example:**
+        ```python
+        updates = [
+            {'cell': 'A1', 'value': 'Name'},
+            {'cell': 'B1', 'value': 'Age'},
+            {'cell': 'A2', 'value': 'John'},
+            {'cell': 'B2', 'value': '30'}
+        ]
+        gs.batch_update_cells(spreadsheet_id, worksheet_name, updates)
+        ```
+        """
+        worksheet = self._open_worksheet(spreadsheet_id, worksheet_name)
+
+        # Build the batch update data
+        batch_data = []
+        for update in updates:
+            batch_data.append({
+                'range': update['cell'],
+                'values': [[update['value']]]
+            })
+
+        # Perform batch update
+        worksheet.batch_update(batch_data)
+
