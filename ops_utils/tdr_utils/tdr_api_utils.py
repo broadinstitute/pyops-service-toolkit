@@ -1104,7 +1104,6 @@ class TDR:
         **Returns:**
         - requests.Response: The response from the request.
         """
-
         sort_options = ["created_date", "name", "description"]
         if sort not in sort_options:
             raise ValueError(f"Invalid sort value: {sort}. Options include: {','.join(sort_options)}")
