@@ -1089,6 +1089,7 @@ class TDR:
     ) -> requests.Response:
         """
         Return all snapshots with optional filtering and sorting.
+
         **Args:**
         - offset (int, optional): The starting point for the results. Defaults to `0`
         - limit (int, optional): The maximum number of results to return. Defaults to `1000`.
