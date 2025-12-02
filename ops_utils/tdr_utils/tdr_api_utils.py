@@ -1078,6 +1078,48 @@ class TDR:
         snapshot_id = job_results["id"]  # type: ignore[index]
         logging.info(f"Successfully created snapshot {snapshot_name} - {snapshot_id}")
 
+    def get_all_snapshots(
+            self,
+            offset: int = 0,
+            limit: int = 1000,
+            sort: str = "created_date",
+            direction: str = "asc",
+            filter_string: Optional[str] = None,
+            region: Optional[str] = None,
+    ) -> requests.Response:
+        """
+        Return all snapshots with optional filtering and sorting.
+
+        **Args:**
+        - offset (int, optional): The starting point for the results. Defaults to `0`
+        - limit (int, optional): The maximum number of results to return. Defaults to `1000`.
+        - sort (str, optional): The field to sort by. Options include: `created_date`, `name`, `description`.
+        Defaults to `created_date`.
+        - direction (str, optional): The sort direction. Options include: `asc`, `desc`. Defaults to `asc`.
+        - filter_string (str, optional): A string to filter the results where this string is a case-insensitive
+         match in the name or description of the dataset.
+        - region: (str, optional): A region to filter the results where this string is a case-insensitive match in
+        any of the cloud storage regions used by the source datasets.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        sort_options = ["created_date", "name", "description"]
+        if sort not in sort_options:
+            raise ValueError(f"Invalid sort value: {sort}. Options include: {','.join(sort_options)}")
+
+        order_options = ["asc", "desc"]
+        if direction not in order_options:
+            raise ValueError(f"Invalid direction value: {direction}. Options include: {','.join(order_options)}")
+
+        uri = f"{self.tdr_link}/snapshots?offset={offset}&limit={limit}&sort={sort}&direction={direction}"
+        if filter_string:
+            uri += f"&filter={filter_string}"
+        if region:
+            uri += f"&region={region}"
+
+        return self.request_util.run_request(uri=uri, method=GET, content_type=APPLICATION_JSON)
+
 
 class FilterOutSampleIdsAlreadyInDataset:
     """Class to filter ingest metrics to remove sample IDs that already exist in the dataset."""
