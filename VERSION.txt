@@ -1,2 +1,2 @@
-12.4.0
-- Add methods to google sheets class
+12.5.0
+- Add ability to query for all TDR snapshots and optionally filter/sort results.
