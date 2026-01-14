@@ -840,3 +840,74 @@ class GCPCloudFunctions:
         raise PermissionError(
             f"Maximum wait time of {max_wait_time_minutes} minute(s) exceeded. Write permission was not granted for "
             f"{cloud_path} after {attempt_number} attempts.")
+
+    def _load_blob_full_path_to_bucket_contents_dict(self, full_path: str, file_name_only: bool) -> dict:
+        """Load a blob from a full GCS path and convert it to a bucket-contents dict.
+
+        This is intended for use with multithreaded batch operations.
+
+        Raises:
+            ValueError: If the blob does not exist.
+        """
+        file_path_components = self._process_cloud_path(full_path)
+        blob = self.load_blob_from_full_path(full_path)
+
+        # load_blob_from_full_path reloads metadata when exists() is True.
+        # Ensure the object exists so downstream consumers always get a valid dict.
+        if not blob.exists():
+            raise ValueError(f"Blob does not exist: {full_path}")
+
+        return self._create_bucket_contents_dict(
+            bucket_name=file_path_components["bucket"],
+            blob=blob,
+            file_name_only=file_name_only
+        )
+
+    def load_blobs_from_full_paths_multithreaded(
+            self,
+            full_paths: list[str],
+            file_name_only: bool = False,
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
+            job_complete_for_logging: int = 500
+    ) -> list[dict]:
+        """Load multiple blobs in parallel from a list of full GCS paths.
+
+        Args:
+            full_paths: List of full GCS paths (e.g. gs://bucket/path/to/object).
+            file_name_only: Whether to return only the file path in each dict.
+            workers: Number of worker threads.
+            max_retries: Maximum number of retries per job.
+            job_complete_for_logging: Emit progress logs every N completed jobs.
+
+        Returns:
+            List of dictionaries shaped like :meth:`_create_bucket_contents_dict`.
+
+        Raises:
+            Exception: If any blob cannot be loaded / does not exist / returns no output.
+        """
+        if not full_paths:
+            return []
+
+        # De-duplicate input paths and keep order
+        unique_paths = list(dict.fromkeys(full_paths))
+        jobs = [(path, file_name_only) for path in unique_paths]
+
+        results = MultiThreadedJobs().run_multi_threaded_job(
+            workers=workers,
+            function=self._load_blob_full_path_to_bucket_contents_dict,
+            list_of_jobs_args_list=jobs,
+            collect_output=True,
+            max_retries=max_retries,
+            fail_on_error=True,
+            jobs_complete_for_logging=job_complete_for_logging
+        )
+
+        # If any jobs failed, MultiThreadedJobs would have raised. Still defensively validate output.
+        if results is None or (unique_paths and (None in results)):  # type: ignore[operator]
+            raise Exception("Failed to load all blobs")
+
+        if len(results) != len(unique_paths) or any(not item for item in results):  # type: ignore[arg-type]
+            raise Exception("Failed to load all blobs")
+
+        return results  # type: ignore[return-value]
