@@ -1,2 +1,2 @@
-12.6.0
-- Add ability run multithreaded job to get GCP file info
+12.7.0
+- Add ability run multithreaded job to get GCP check of file existence
