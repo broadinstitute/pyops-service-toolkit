@@ -882,21 +882,18 @@ class GCPCloudFunctions:
         - dict[str, bool]: A dictionary where each key is a GCS path and the value is ``True`` if the file exists,
           ``False`` otherwise.
         """
-        if not full_paths:
-            return {}
-
-        # _check_single is needed because check_file_exists returns a plain bool, which would make it
+        # _check_file_exists_in_gcs is needed because check_file_exists returns a plain bool, which would make it
         # impossible to associate each result back to its path after the threads complete. By wrapping
         # it here we return both the path and the result together, so the final dict comprehension
         # can correctly map path -> bool regardless of the order results come back from the thread pool.
-        def _check_single(path: str) -> dict:
+        def _check_file_exists_in_gcs(path: str) -> dict:
             return {"path": path, "exists": self.check_file_exists(path)}
 
         jobs = [[path] for path in full_paths]
 
         results = MultiThreadedJobs().run_multi_threaded_job(
             workers=workers,
-            function=_check_single,
+            function=_check_file_exists_in_gcs,
             list_of_jobs_args_list=jobs,
             collect_output=True,
             max_retries=max_retries,
@@ -925,18 +922,18 @@ class GCPCloudFunctions:
         **Returns:**
         - dict[str, str]: A dictionary where each key is a GCS path and the value is the file's contents as a string.
         """
-        # _read_single is needed because read_file returns a plain str, which would make it
+        # _read_file_contents_from_gcs is needed because read_file returns a plain str, which would make it
         # impossible to associate each result back to its path after the threads complete. By wrapping
         # it here we return both the path and the contents together, so the final dict comprehension
         # can correctly map path -> contents regardless of the order results come back from the thread pool.
-        def _read_single(path: str) -> dict:
+        def _read_file_contents_from_gcs(path: str) -> dict:
             return {"path": path, "contents": self.read_file(path, encoding=encoding)}
 
         jobs = [[path] for path in full_paths]
 
         results = MultiThreadedJobs().run_multi_threaded_job(
             workers=workers,
-            function=_read_single,
+            function=_read_file_contents_from_gcs,
             list_of_jobs_args_list=jobs,
             collect_output=True,
             max_retries=max_retries,
