@@ -863,6 +863,85 @@ class GCPCloudFunctions:
             file_name_only=file_name_only
         )
 
+    def check_files_exist_multithreaded(
+            self,
+            full_paths: list[str],
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
+            job_complete_for_logging: int = 500
+    ) -> dict[str, bool]:
+        """Check existence of multiple GCS files in parallel.
+
+        **Args:**
+        - full_paths (list[str]): List of full GCS paths (e.g. ``gs://bucket/path/to/object``) to check.
+        - workers (int, optional): Number of worker threads. Defaults to `10`.
+        - max_retries (int, optional): Maximum number of retries per job. Defaults to `5`.
+        - job_complete_for_logging (int, optional): Emit progress logs every N completed jobs. Defaults to `500`.
+
+        **Returns:**
+        - dict[str, bool]: A dictionary where each key is a GCS path and the value is ``True`` if the file exists,
+          ``False`` otherwise.
+        """
+        # _check_file_exists_in_gcs is needed because check_file_exists returns a plain bool, which would make it
+        # impossible to associate each result back to its path after the threads complete. By wrapping
+        # it here we return both the path and the result together, so the final dict comprehension
+        # can correctly map path -> bool regardless of the order results come back from the thread pool.
+        def _check_file_exists_in_gcs(path: str) -> dict:
+            return {"path": path, "exists": self.check_file_exists(path)}
+
+        jobs = [[path] for path in full_paths]
+
+        results = MultiThreadedJobs().run_multi_threaded_job(
+            workers=workers,
+            function=_check_file_exists_in_gcs,
+            list_of_jobs_args_list=jobs,
+            collect_output=True,
+            max_retries=max_retries,
+            fail_on_error=True,
+            jobs_complete_for_logging=job_complete_for_logging
+        )
+        return {item["path"]: item["exists"] for item in results}  # type: ignore[union-attr]
+
+    def read_files_multithreaded(
+            self,
+            full_paths: list[str],
+            encoding: str = "utf-8",
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
+            job_complete_for_logging: int = 500
+    ) -> dict[str, str]:
+        """Read the contents of multiple GCS files in parallel.
+
+        **Args:**
+        - full_paths (list[str]): List of full GCS paths (e.g. ``gs://bucket/path/to/object``) to read.
+        - encoding (str, optional): The encoding to use when decoding file contents. Defaults to `utf-8`.
+        - workers (int, optional): Number of worker threads. Defaults to `10`.
+        - max_retries (int, optional): Maximum number of retries per job. Defaults to `5`.
+        - job_complete_for_logging (int, optional): Emit progress logs every N completed jobs. Defaults to `500`.
+
+        **Returns:**
+        - dict[str, str]: A dictionary where each key is a GCS path and the value is the file's contents as a string.
+        """
+        # _read_file_contents_from_gcs is needed because read_file returns a plain str, which would make it
+        # impossible to associate each result back to its path after the threads complete. By wrapping
+        # it here we return both the path and the contents together, so the final dict comprehension
+        # can correctly map path -> contents regardless of the order results come back from the thread pool.
+        def _read_file_contents_from_gcs(path: str) -> dict:
+            return {"path": path, "contents": self.read_file(path, encoding=encoding)}
+
+        jobs = [[path] for path in full_paths]
+
+        results = MultiThreadedJobs().run_multi_threaded_job(
+            workers=workers,
+            function=_read_file_contents_from_gcs,
+            list_of_jobs_args_list=jobs,
+            collect_output=True,
+            max_retries=max_retries,
+            fail_on_error=True,
+            jobs_complete_for_logging=job_complete_for_logging
+        )
+        return {item["path"]: item["contents"] for item in results}  # type: ignore[union-attr]
+
     def load_blobs_from_full_paths_multithreaded(
             self,
             full_paths: list[str],
