@@ -746,6 +746,41 @@ class TerraWorkspace:
             )
         return res
 
+    def set_table_column_order(self, column_order: dict) -> requests.Response:
+        """
+        Set the column order for one or more entity tables in the workspace.
+
+        **Args:**
+        - column_order (dict): A dictionary mapping table names to their column configuration. Each table entry
+            should have the following structure:
+
+            ```
+            {
+                "table_name": {
+                    "shown": ["col1", "col2", ...],  # Columns to display, in order
+                    "hidden": ["col3", "col4", ...]  # Columns to hide
+                },
+                ...
+            }
+            ```
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        logging.info(
+            f"Setting column order for tables {list(column_order.keys())} "
+            f"in workspace {self.billing_project}/{self.workspace_name}"
+        )
+        return self.update_workspace_attributes(
+            attributes=[
+                {
+                    "op": "AddUpdateAttribute",
+                    "attributeName": "workspace-column-defaults",
+                    "addUpdateAttribute": json.dumps(column_order)
+                }
+            ]
+        )
+
     def change_workspace_public_setting(self, public: bool) -> requests.Response:
         """
         Change a workspace's public setting.
