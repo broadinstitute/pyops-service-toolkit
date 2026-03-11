@@ -1,3 +1,2 @@
-12.8.0
-- Add ability run use verbose in Csv
-- Add method update_workspace_attribute to terra_util
+12.9.0
+- Add ability to check members in Terra group

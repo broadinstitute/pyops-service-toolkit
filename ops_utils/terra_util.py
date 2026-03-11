@@ -198,6 +198,26 @@ class TerraGroups:
             accept_return_codes=accept_return_codes
         )
 
+    def check_group_members(self, group: str, role: str) -> requests.Response:
+        """
+        Check the members of a group.
+
+        **Args:**
+        - group (str): The name of the group.
+        - role (str): The role to check for in the group
+            (must be one of `ops_utils.terra_utils.MEMBER` or `ops_utils.terra_utils.ADMIN`).
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{SAM_LINK}/groups/v1/{group}/{role}"
+        self._check_role(role)
+        logging.info(f"Checking {role}s in group {group}")
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
+
 
 class TerraWorkspace:
     """Terra workspace class to manage workspaces and their attributes."""
