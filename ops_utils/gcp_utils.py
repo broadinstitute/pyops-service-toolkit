@@ -453,7 +453,7 @@ class GCPCloudFunctions:
             transfer_type: str
     ) -> None:
         """
-        Internal method to copy or move multiple files in parallel with validation.
+        Copy or move multiple files in parallel with validation.
 
         **Args:**
         - files_to_transfer (list[dict]): List of dictionaries containing source and destination file paths.
