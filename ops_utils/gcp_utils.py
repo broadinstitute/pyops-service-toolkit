@@ -465,7 +465,6 @@ class GCPCloudFunctions:
         - transfer_type (str, optional): The action to perform (should be one of `ops_utils.gcp_utils.MOVE`
         or `ops_utils.gcp_utils.COPY`).
         """
-
         if transfer_type not in [COPY, MOVE]:
             raise Exception(f"Invalid value for `transfer_type`: {transfer_type}. Must be one of {COPY, MOVE}")
 
