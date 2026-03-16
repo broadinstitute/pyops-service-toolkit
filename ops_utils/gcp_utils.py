@@ -444,6 +444,67 @@ class GCPCloudFunctions:
             logging.info(f"Validation complete. {len(not_identical_files)} files are not identical.")
         return not_identical_files
 
+    def _copy_or_move_files_multithreaded_with_validation(
+            self,
+            files_to_transfer: list[dict],
+            workers: int,
+            max_retries: int,
+            skip_check_if_already_transferred: bool,
+            transfer_type: str
+    ) -> None:
+        """
+        Internal method to copy or move multiple files in parallel with validation.
+
+        **Args:**
+        - files_to_transfer (list[dict]): List of dictionaries containing source and destination file paths.
+                Dictionary should have keys `source_file` and `full_destination_path`
+        - workers (int): Number of worker threads. Defaults to `10`.
+        - max_retries (int): Maximum number of retries. Defaults to `5`
+        - skip_check_if_already_transferred (bool, optional): Whether to skip checking
+                if files are already transferred and start transferring right away. Defaults to `False`.
+        - transfer_type (str, optional): The action to perform (should be one of `ops_utils.gcp_utils.MOVE`
+        or `ops_utils.gcp_utils.COPY`).
+        """
+
+        if transfer_type not in [COPY, MOVE]:
+            raise Exception(f"Invalid value for `transfer_type`: {transfer_type}. Must be one of {COPY, MOVE}")
+
+        if skip_check_if_already_transferred:
+            logging.info("Skipping check if files are already transferred")
+            updated_files_to_transfer = files_to_transfer
+        else:
+            updated_files_to_transfer = self.loop_and_log_validation_files_multithreaded(
+                files_to_transfer,
+                log_difference=False,
+                workers=workers,
+                max_retries=max_retries
+            )
+        # If all files are already transferred, return
+        if not updated_files_to_transfer:
+            logging.info("All files are already transferred")
+            return None
+
+        logging.info(f"Attempting to {transfer_type} {len(updated_files_to_transfer)} files")
+        self.move_or_copy_multiple_files(updated_files_to_transfer, transfer_type, workers, max_retries)
+
+        logging.info(f"Validating all {len(updated_files_to_transfer)} new files are identical to original")
+        # Validate that all files were transferred successfully
+        files_not_transferred_successfully = self.loop_and_log_validation_files_multithreaded(
+            files_to_transfer,
+            workers=workers,
+            log_difference=True,
+            max_retries=max_retries
+        )
+        if files_not_transferred_successfully:
+            logging.error(f"Failed to {transfer_type} {len(files_not_transferred_successfully)} files")
+            raise Exception(f"Failed to {transfer_type} all files")
+
+        if transfer_type == COPY:
+            logging.info(f"Successfully copied {len(updated_files_to_transfer)} files")
+        else:
+            logging.info(f"Successfully moved {len(updated_files_to_transfer)} files")
+        return None
+
     def multithread_copy_of_files_with_validation(
             self,
             files_to_copy: list[dict],
@@ -462,35 +523,39 @@ class GCPCloudFunctions:
         - skip_check_if_already_copied (bool, optional): Whether to skip checking
                 if files are already copied and start copying right away. Defaults to `False`.
         """
-        if skip_check_if_already_copied:
-            logging.info("Skipping check if files are already copied")
-            updated_files_to_move = files_to_copy
-        else:
-            updated_files_to_move = self.loop_and_log_validation_files_multithreaded(
-                files_to_copy,
-                log_difference=False,
-                workers=workers,
-                max_retries=max_retries
-            )
-        # If all files are already copied, return
-        if not updated_files_to_move:
-            logging.info("All files are already copied")
-            return None
-        logging.info(f"Attempting to {COPY} {len(updated_files_to_move)} files")
-        self.move_or_copy_multiple_files(updated_files_to_move, COPY, workers, max_retries)
-        logging.info(f"Validating all {len(updated_files_to_move)} new files are identical to original")
-        # Validate that all files were copied successfully
-        files_not_moved_successfully = self.loop_and_log_validation_files_multithreaded(
-            files_to_copy,
+        self._copy_or_move_files_multithreaded_with_validation(
+            files_to_transfer=files_to_copy,
             workers=workers,
-            log_difference=True,
-            max_retries=max_retries
+            max_retries=max_retries,
+            skip_check_if_already_transferred=skip_check_if_already_copied,
+            transfer_type=COPY
         )
-        if files_not_moved_successfully:
-            logging.error(f"Failed to copy {len(files_not_moved_successfully)} files")
-            raise Exception("Failed to copy all files")
-        logging.info(f"Successfully copied {len(updated_files_to_move)} files")
-        return None
+
+    def multithread_move_of_files_with_validation(
+            self,
+            files_to_move: list[dict],
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
+            skip_check_if_already_moved: bool = False,
+    ) -> None:
+        """
+        Move multiple files in parallel with validation.
+
+        **Args:**
+        - files_to_move (list[dict]): List of dictionaries containing source and destination file paths.
+                Dictionary should have keys `source_file` and `full_destination_path`
+        - workers (int): Number of worker threads. Defaults to `10`.
+        - max_retries (int): Maximum number of retries. Defaults to `5`
+        - skip_check_if_already_moved (bool, optional): Whether to skip checking
+                if files are already moved and starts moving right away. Defaults to `False`.
+        """
+        self._copy_or_move_files_multithreaded_with_validation(
+            files_to_transfer=files_to_move,
+            workers=workers,
+            max_retries=max_retries,
+            skip_check_if_already_transferred=skip_check_if_already_moved,
+            transfer_type=MOVE,
+        )
 
     def move_or_copy_multiple_files(
             self, files_to_move: list[dict],
@@ -671,7 +736,7 @@ class GCPCloudFunctions:
     def get_file_contents_of_most_recent_blob_in_bucket(self, bucket_name: str) -> Optional[tuple[str, str]]:
         """
         Get the most recent blob in the bucket.
-        
+
         If the blob with the most recent timestamp doesn't have
         any logging besides the basic "storage_byte_hours" logging, will continue to look at the next most
         recent file until a log with useful information is encountered. This is useful when combing through
@@ -748,7 +813,8 @@ class GCPCloudFunctions:
         if not cloud_path.startswith("gs://"):
             raise ValueError("cloud_path must start with 'gs://'")
         if cloud_path.endswith("/"):
-            logging.warning(f"Provided cloud path {cloud_path} is a directory, will check {cloud_path}permission_test_temp")
+            logging.warning(
+                f"Provided cloud path {cloud_path} is a directory, will check {cloud_path}permission_test_temp")
             cloud_path = f"{cloud_path}permission_test_temp"
         try:
             blob = self.load_blob_from_full_path(cloud_path)
@@ -782,7 +848,9 @@ class GCPCloudFunctions:
             logging.warning(f"Error testing write access to {cloud_path}: {e}")
             return False
 
-    def wait_for_write_permission(self, cloud_path: str, interval_wait_time_minutes: int, max_wait_time_minutes: int) -> None:
+    def wait_for_write_permission(
+            self, cloud_path: str, interval_wait_time_minutes: int, max_wait_time_minutes: int
+    ) -> None:
         """
         Wait for write permissions on a GCP path, checking at regular intervals.
 
@@ -833,7 +901,8 @@ class GCPCloudFunctions:
 
             if self.has_write_permission(cloud_path):
                 elapsed_minutes = (time.time() - start_time) / 60
-                logging.info(f"Write permission confirmed after {elapsed_minutes:.1f} minute(s) on attempt {attempt_number}")
+                logging.info(
+                    f"Write permission confirmed after {elapsed_minutes:.1f} minute(s) on attempt {attempt_number}")
                 return
 
         # If we get here, we've exceeded the maximum wait time
