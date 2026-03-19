@@ -669,6 +669,80 @@ class TerraWorkspace:
             data=data
         )
 
+    def _batch_upsert(self, update_dict: list) -> requests.Response:
+        """
+        Runs batch upsert on workspace table.
+
+        **Args:**
+        - update_dict (dict): A dictionary to update the workspace table.
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        endpoint = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entities/batchUpsert"
+        return self.request_util.run_request(
+            uri=endpoint,
+            data=json.dumps(update_dict),
+            content_type=APPLICATION_JSON,
+            method=POST
+        )
+
+    def upload_metadata_with_batch_upsert(self, table_data: dict) -> requests.Response:
+        """
+        Upload metadata to one or more workspace entity tables using batch upsert.
+
+        Builds the Terra batch upsert payload from a structured input dictionary and calls
+        `batch_upsert` with the result.
+
+        **Args:**
+        - table_data (dict): A dictionary mapping table names to their data configuration.
+            Each entry should have the following structure:
+
+            ```python
+            {
+                "table_name": {
+                    "table_id_column": "column_that_is_the_entity_id",
+                    "row_data": [
+                        {"column_that_is_the_entity_id": "row1_id", "column_b": "value1", ...},
+                        ...
+                    ]
+                },
+                ...
+            }
+            ```
+
+            - `table_id_column`: The name of the column whose value is used as the entity name
+              (`name` field in the upsert payload). This column is **not** included as an attribute
+              operation.
+            - `row_data`: A list of row dictionaries. Every key except `table_id_column` becomes
+              an `AddUpdateAttribute` operation.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        upsert_payload = []
+        for table_name, config in table_data.items():
+            id_column = config["table_id_column"]
+            rows = config["row_data"]
+            for row in rows:
+                entity_name = row[id_column]
+                operations = [
+                    {
+                        "op": "AddUpdateAttribute",
+                        "attributeName": col,
+                        "addUpdateAttribute": value,
+                    }
+                    for col, value in row.items()
+                    if col != id_column
+                ]
+                upsert_payload.append(
+                    {
+                        "name": entity_name,
+                        "entityType": table_name,
+                        "operations": operations,
+                    }
+                )
+        return self._batch_upsert(upsert_payload)
+
     def get_workspace_workflows(self) -> requests.Response:
         """
         Get the workflows for the workspace.
