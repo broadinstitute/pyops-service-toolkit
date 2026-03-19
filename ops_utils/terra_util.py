@@ -686,7 +686,7 @@ class TerraWorkspace:
             method=POST
         )
 
-    def upload_metadata_with_batch_upsert(self, table_data: dict) -> requests.Response:
+    def upload_metadata_with_batch_upsert(self, table_data: dict, force: bool = False) -> requests.Response:
         """
         Upload metadata to one or more workspace entity tables using batch upsert.
 
@@ -715,13 +715,20 @@ class TerraWorkspace:
               operation.
             - `row_data`: A list of row dictionaries. Every key except `table_id_column` becomes
               an `AddUpdateAttribute` operation.
+        - force (bool, optional): Whether to force update if id column does not match table name + _id.
 
         **Returns:**
         - requests.Response: The response from the request.
         """
         upsert_payload = []
+        table_name_failures = []
         for table_name, config in table_data.items():
             id_column = config["table_id_column"]
+            if id_column != f"{table_name}_id":
+                table_name_failures.append(
+                    f"id column, {id_column}, does not match table {table_name}. This column will be renamed to {table_name}_id."
+                    "Use force=True to force update."
+                )
             rows = config["row_data"]
             for row in rows:
                 entity_name = row[id_column]
@@ -741,6 +748,15 @@ class TerraWorkspace:
                         "operations": operations,
                     }
                 )
+        if table_name_failures:
+            for message in table_name_failures:
+                if force:
+                    logging.warning(message)
+                else:
+                    logging.error(message)
+            if not force:
+                raise Exception("One or more tables have id columns that do not match the expected format."
+                                " See error messages above for details. Use force=True to force update.")
         return self._batch_upsert(upsert_payload)
 
     def get_workspace_workflows(self) -> requests.Response:
