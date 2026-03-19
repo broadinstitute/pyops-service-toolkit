@@ -731,7 +731,9 @@ class TerraWorkspace:
                 )
             rows = config["row_data"]
             for row in rows:
-                entity_name = row[id_column]
+                entity_name = row.get(id_column)
+                if entity_name is None:
+                    raise Exception(f"Primary key column '{id_column}' is missing from row data - {row}")
                 operations = [
                     {
                         "op": "AddUpdateAttribute",
