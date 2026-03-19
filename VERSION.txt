@@ -1,2 +1,2 @@
-12.9.0
-- Add ability to check members in Terra group
+12.10.0
+- Add ability to use batch upsert
