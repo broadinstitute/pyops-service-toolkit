@@ -1,2 +1,2 @@
-12.10.0
-- Add ability to use batch upsert
+12.11.0
+- Add get_flat_list_of_table_entity to terra_utils
