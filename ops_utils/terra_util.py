@@ -398,6 +398,7 @@ class TerraWorkspace:
         **Args:**
         - entity_type (str): The type of entity to get metrics for.
         - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
+
         **Returns:**
         - list[dict]: A list of dictionaries containing entity metrics.
         """
@@ -690,7 +691,7 @@ class TerraWorkspace:
 
     def _batch_upsert(self, update_dict: list) -> requests.Response:
         """
-        Runs batch upsert on workspace table.
+        Run batch upsert on workspace table.
 
         **Args:**
         - update_dict (dict): A dictionary to update the workspace table.
