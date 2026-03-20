@@ -390,6 +390,27 @@ class TerraWorkspace:
                 row['attributes'] = self._remove_dict_from_attributes(row['attributes'])
         return results
 
+    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False) -> list[dict]:
+        """
+        Convert metrics returned by get_gcp_workspace_metrics to a flat list of dictionaries and add
+        the entity name to the dictionary with key "{entity_type}_id".
+
+        **Args:**
+        - entity_type (str): The type of entity to get metrics for.
+        - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
+        **Returns:**
+        - list[dict]: A list of dictionaries containing entity metrics.
+        """
+        table_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type, remove_dicts=remove_dicts)
+        convert_metrics = []
+        for row in table_metrics:
+            converted_row = row['attributes']
+            converted_row[f"{row['entityType']}_id"] = row['name']
+            convert_metrics.append(converted_row)
+        return convert_metrics
+
+
+
     def get_specific_entity_metrics(self, entity_type: str, entity_name: str) -> requests.Response:
         """
         Get specific entity metrics for a given entity type and name.
