@@ -409,8 +409,6 @@ class TerraWorkspace:
             convert_metrics.append(converted_row)
         return convert_metrics
 
-
-
     def get_specific_entity_metrics(self, entity_type: str, entity_name: str) -> requests.Response:
         """
         Get specific entity metrics for a given entity type and name.
