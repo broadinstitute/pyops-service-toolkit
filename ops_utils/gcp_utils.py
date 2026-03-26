@@ -199,7 +199,9 @@ class GCPCloudFunctions:
             file_extensions_to_ignore: list[str] = [],
             file_strings_to_ignore: list[str] = [],
             file_extensions_to_include: list[str] = [],
-            file_name_only: bool = False
+            file_name_only: bool = False,
+            verbose: bool = False,
+            log_progress_interval: int = 10000
     ) -> list[dict]:
         """
         List contents of a GCS bucket and return a list of dictionaries with file information.
@@ -211,6 +213,8 @@ class GCPCloudFunctions:
         - file_strings_to_ignore (list[str], optional): List of file name substrings to ignore. Defaults to [].
         - file_extensions_to_include (list[str], optional): List of file extensions to include. Defaults to [].
         - file_name_only (bool, optional): Whether to return only the file list and no extra info. Defaults to `False`.
+        - verbose (bool, optional): Whether to log files not being included. Defaults to `False`.
+        - log_progress_interval (int, optional): Log a progress message every N files processed. Defaults to `10000`.
 
         **Returns:**
         - list[dict]: A list of dictionaries containing file information.
@@ -248,7 +252,7 @@ class GCPCloudFunctions:
                     blob=blob, bucket_name=bucket_name, file_name_only=file_name_only
                 )
             )
-            if len(file_list) % 1000 == 0:
+            if verbose and len(file_list) % log_progress_interval == 0:
                 logging.info(f"Processed {len(file_list):,} files so far...")
 
         logging.info(f"Found {len(file_list):,} files in bucket")
