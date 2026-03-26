@@ -150,7 +150,8 @@ class GCPCloudFunctions:
             "content_type": blob.content_type or guess_type(blob.name)[0] or "application/octet-stream",
             "file_extension": os.path.splitext(blob.name)[1],
             "size_in_bytes": blob.size,
-            "md5_hash": blob.md5_hash
+            "md5_hash": blob.md5_hash,
+            "last_modified": blob.updated,
         }
 
     @staticmethod
