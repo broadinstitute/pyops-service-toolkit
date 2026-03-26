@@ -224,25 +224,34 @@ class GCPCloudFunctions:
         # Get the bucket object and set user_project for Requester Pays
         bucket = self.client.bucket(bucket_name, user_project=self.client.project)
 
-        # List blobs within the bucket
-        blobs = bucket.list_blobs(prefix=prefix)
-        logging.info("Finished listing blobs. Processing files now.")
+        # list_blobs returns a lazy iterator — no network calls happen until we iterate.
+        # page_size=1000 is the GCS maximum, minimising the number of paginated round-trips.
+        prefix_msg = f" with prefix '{prefix}'" if prefix else ""
+        logging.info(f"Starting to page through blobs in bucket '{bucket_name}'{prefix_msg}...")
+        blobs = bucket.list_blobs(prefix=prefix, page_size=1000)
 
-        # Create a list of dictionaries containing file information
-        file_list = [
-            self._create_bucket_contents_dict(
-                blob=blob, bucket_name=bucket_name, file_name_only=file_name_only
-            )
-            for blob in blobs
-            if self._validate_include_blob(
+        # Iterate with progress logging so large buckets don't appear stuck
+        file_list = []
+        for blob in blobs:
+            if blob.name.endswith("/"):
+                continue
+            if not self._validate_include_blob(
                 blob=blob,
                 file_extensions_to_ignore=file_extensions_to_ignore,
                 file_strings_to_ignore=file_strings_to_ignore,
                 file_extensions_to_include=file_extensions_to_include,
                 bucket_name=bucket_name
-            ) and not blob.name.endswith("/")
-        ]
-        logging.info(f"Found {len(file_list)} files in bucket")
+            ):
+                continue
+            file_list.append(
+                self._create_bucket_contents_dict(
+                    blob=blob, bucket_name=bucket_name, file_name_only=file_name_only
+                )
+            )
+            if len(file_list) % 1000 == 0:
+                logging.info(f"Processed {len(file_list):,} files so far...")
+
+        logging.info(f"Found {len(file_list):,} files in bucket")
         return file_list
 
     def copy_cloud_file(self, src_cloud_path: str, full_destination_path: str, verbose: bool = False) -> None:
