@@ -151,7 +151,7 @@ class GCPCloudFunctions:
             "file_extension": os.path.splitext(blob.name)[1],
             "size_in_bytes": blob.size,
             "md5_hash": blob.md5_hash,
-            "last_modified": blob.updated,
+            "last_modified": blob.updated.isoformat() if blob.updated else None,
         }
 
     @staticmethod
