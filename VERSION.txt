@@ -1,2 +1,2 @@
-12.11.0
-- Add get_flat_list_of_table_entity to terra_utils
+12.12.0
+- Add option to not log when fetching terra metrics

@@ -271,13 +271,14 @@ class TerraWorkspace:
         """
         return f"{self.billing_project}/{self.workspace_name}"
 
-    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000) -> Any:
+    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000, verbose = True) -> Any:
         """
         Yield all entity metrics from the workspace.
 
         Args:
             entity (str): The type of entity to query.
             total_entities_per_page (int, optional): The number of entities per page. Defaults to 40000.
+            verbose (bool): If True, will log the progress of fetching entity metrics. Defaults to True.
 
         Yields:
             Any: The JSON response containing entity metrics.
@@ -295,11 +296,13 @@ class TerraWorkspace:
         )
         yield first_page_json
         total_pages = first_page_json["resultMetadata"]["filteredPageCount"]
-        logging.info(
-            f"Looping through {total_pages} pages of data")
+        if verbose:
+            logging.info(
+                f"Looping through {total_pages} pages of data")
 
         for page in range(2, total_pages + 1):
-            logging.info(f"Getting page {page} of {total_pages}")
+            if verbose:
+                logging.info(f"Getting page {page} of {total_pages}")
             next_page = self.request_util.run_request(
                 uri=url,
                 method=GET,
@@ -367,21 +370,23 @@ class TerraWorkspace:
             f"Getting workspace info for {self.billing_project}/{self.workspace_name}")
         return self.request_util.run_request(uri=url, method=GET)
 
-    def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False) -> list[dict]:
+    def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False, verbose = True) -> list[dict]:
         """
         Get metrics for a specific entity type in the workspace (specifically for Terra on GCP).
 
         **Args:**
         - entity_type (str): The type of entity to get metrics for.
         - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
+        - verbose (bool, optional): Whether to log verbose output. Defaults to `True`.
 
         **Returns:**
         - list[dict]: A list of dictionaries containing entity metrics.
         """
         results = []
-        logging.info(f"Getting {entity_type} metadata for {self.billing_project}/{self.workspace_name}")
+        if verbose:
+            logging.info(f"Getting {entity_type} metadata for {self.billing_project}/{self.workspace_name}")
 
-        for page in self._yield_all_entity_metrics(entity=entity_type):
+        for page in self._yield_all_entity_metrics(entity=entity_type, verbose=verbose):
             results.extend(page["results"])
 
         # If remove_dicts is True, remove dictionaries from the workspace metrics
@@ -390,7 +395,7 @@ class TerraWorkspace:
                 row['attributes'] = self._remove_dict_from_attributes(row['attributes'])
         return results
 
-    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False) -> list[dict]:
+    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False, verbose = True) -> list[dict]:
         """
         Convert metrics returned by get_gcp_workspace_metrics to a flat list of dictionaries and add
         the entity name to the dictionary with key "{entity_type}_id".
@@ -398,11 +403,12 @@ class TerraWorkspace:
         **Args:**
         - entity_type (str): The type of entity to get metrics for.
         - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
+        - verbose (bool, optional): Whether to log verbose output. Defaults to `True`.
 
         **Returns:**
         - list[dict]: A list of dictionaries containing entity metrics.
         """
-        table_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type, remove_dicts=remove_dicts)
+        table_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type, remove_dicts=remove_dicts, verbose=verbose)
         convert_metrics = []
         for row in table_metrics:
             converted_row = row['attributes']
@@ -900,8 +906,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         logging.info(
-            f"Setting column order for tables {list(column_order.keys())} "
-            f"in workspace {self.billing_project}/{self.workspace_name}"
+            f"Setting column order for tables in workspace {self.billing_project}/{self.workspace_name}"
         )
         return self.update_workspace_attributes(
             attributes=[
