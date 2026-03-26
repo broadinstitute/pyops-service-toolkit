@@ -395,7 +395,7 @@ class TerraWorkspace:
                 row['attributes'] = self._remove_dict_from_attributes(row['attributes'])
         return results
 
-    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False) -> list[dict]:
+    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False, verbose = True) -> list[dict]:
         """
         Convert metrics returned by get_gcp_workspace_metrics to a flat list of dictionaries and add
         the entity name to the dictionary with key "{entity_type}_id".
@@ -403,11 +403,12 @@ class TerraWorkspace:
         **Args:**
         - entity_type (str): The type of entity to get metrics for.
         - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
+        - verbose (bool, optional): Whether to log verbose output. Defaults to `True`.
 
         **Returns:**
         - list[dict]: A list of dictionaries containing entity metrics.
         """
-        table_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type, remove_dicts=remove_dicts)
+        table_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type, remove_dicts=remove_dicts, verbose=verbose)
         convert_metrics = []
         for row in table_metrics:
             converted_row = row['attributes']
@@ -905,8 +906,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         logging.info(
-            f"Setting column order for tables {list(column_order.keys())} "
-            f"in workspace {self.billing_project}/{self.workspace_name}"
+            f"Setting column order for tables in workspace {self.billing_project}/{self.workspace_name}"
         )
         return self.update_workspace_attributes(
             attributes=[
