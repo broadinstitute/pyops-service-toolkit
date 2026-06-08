@@ -108,6 +108,19 @@ class TerraGroups:
         if role not in self.GROUP_MEMBERSHIP_OPTIONS:
             raise ValueError(f"Role must be one of {self.GROUP_MEMBERSHIP_OPTIONS}")
 
+    def get_all_groups(self) -> requests.Response:
+        """
+        Get all groups.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{SAM_LINK}/groups/v1"
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
+
     def remove_user_from_group(self, group: str, email: str, role: str) -> requests.Response:
         """
         Remove a user from a group.
