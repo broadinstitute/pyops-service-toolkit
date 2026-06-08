@@ -1,2 +1,2 @@
-12.13.0
-- List bucket returns more metadata and logging options
+12.14.0
+- Add ability to get all Terra groups a user is part of
