@@ -1,2 +1,2 @@
-12.14.0
-- Add ability to get all Terra groups a user is part of
+12.15.0
+- Add to create spreadsheets and worksheets in google sheets
