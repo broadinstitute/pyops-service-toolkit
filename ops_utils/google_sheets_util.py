@@ -177,7 +177,7 @@ class GoogleSheets:
         # Perform batch update
         worksheet.batch_update(batch_data)
 
-    def create_spreadsheet(self, title: str) -> gspread.Spreadsheet:
+    def create_spreadsheet(self, title: str) -> str:
         """
         Create a new Google Spreadsheet.
 
@@ -185,7 +185,7 @@ class GoogleSheets:
         - title (str): The title of the new spreadsheet.
 
         **Returns:**
-        - gspread.Spreadsheet: The newly created spreadsheet object.
+        - str: The ID of the newly created spreadsheet.
         """
         return self.gc.create(title).id
 
@@ -195,7 +195,7 @@ class GoogleSheets:
         tab_name: str,
         rows: int = 1000,
         cols: int = 26,
-    ) -> gspread.Worksheet:
+    ) -> str:
         """
         Add a new tab (worksheet) to an existing spreadsheet.
 
@@ -206,10 +206,10 @@ class GoogleSheets:
         - cols (int): Initial number of columns (default 26).
 
         **Returns:**
-        - gspread.Worksheet: The newly created worksheet object.
+        - str: The title of the newly created tab.
         """
         spreadsheet = self.gc.open_by_key(spreadsheet_id)
-        return spreadsheet.add_worksheet(title=tab_name, rows=rows, cols=cols)
+        return spreadsheet.add_worksheet(title=tab_name, rows=rows, cols=cols).title
 
     def write_dicts_to_tab(
         self,
