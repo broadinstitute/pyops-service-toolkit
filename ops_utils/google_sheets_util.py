@@ -8,7 +8,10 @@ import gspread
 class GoogleSheets:
     """Class to interact with Google Sheets API."""
 
-    _SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    _SCOPES = [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive',
+    ]
 
     def __init__(self, service_account_info: Optional[dict] = None):
         """
@@ -173,4 +176,103 @@ class GoogleSheets:
 
         # Perform batch update
         worksheet.batch_update(batch_data)
+
+    def create_spreadsheet(self, title: str) -> gspread.Spreadsheet:
+        """
+        Create a new Google Spreadsheet.
+
+        **Args:**
+        - title (str): The title of the new spreadsheet.
+
+        **Returns:**
+        - gspread.Spreadsheet: The newly created spreadsheet object.
+        """
+        return self.gc.create(title)
+
+    def add_tab(
+        self,
+        spreadsheet_id: str,
+        tab_name: str,
+        rows: int = 1000,
+        cols: int = 26,
+    ) -> gspread.Worksheet:
+        """
+        Add a new tab (worksheet) to an existing spreadsheet.
+
+        **Args:**
+        - spreadsheet_id (str): The ID of the Google Sheet.
+        - tab_name (str): The name for the new tab.
+        - rows (int): Initial number of rows (default 1000).
+        - cols (int): Initial number of columns (default 26).
+
+        **Returns:**
+        - gspread.Worksheet: The newly created worksheet object.
+        """
+        spreadsheet = self.gc.open_by_key(spreadsheet_id)
+        return spreadsheet.add_worksheet(title=tab_name, rows=rows, cols=cols)
+
+    def write_dicts_to_tab(
+        self,
+        spreadsheet_id: str,
+        worksheet_name: str,
+        data: list[dict],
+        row_order: list[str],
+        start_cell: str = "A1",
+    ) -> None:
+        """
+        Write a list of dictionaries to a worksheet tab using a specified column order.
+
+        The first row written will be the headers (from row_order), followed by
+        one row per dictionary in data.
+
+        **Args:**
+        - spreadsheet_id (str): Spreadsheet ID.
+        - worksheet_name (str): Sheet/tab name.
+        - data (list[dict]): List of dictionaries to write.
+        - row_order (list[str]): Ordered list of keys defining the column order.
+                                 Also used as the header row.
+        - start_cell (str): A1-style cell to begin writing at (default "A1").
+
+        **Example:**
+        ```python
+        data = [
+            {'name': 'Alice', 'age': 30},
+            {'name': 'Bob',   'age': 25},
+        ]
+        gs.write_dicts_to_tab(spreadsheet_id, 'Sheet1', data, row_order=['name', 'age'])
+        ```
+        """
+        ws = self._open_worksheet(spreadsheet_id, worksheet_name)
+        rows = [row_order]  # Header row
+        for record in data:
+            rows.append([record.get(key, "") for key in row_order])
+        ws.update(rows, range_name=start_cell)
+
+    def share_spreadsheet(
+        self,
+        spreadsheet_id: str,
+        email: str,
+        role: str = "writer",
+        notify: bool = True,
+        email_message: Optional[str] = None,
+    ) -> None:
+        """
+        Share a spreadsheet with a specified email address.
+
+        Requires the ``https://www.googleapis.com/auth/drive`` scope. When using
+        application-default credentials, make sure to include it:
+        ```
+        gcloud auth application-default login \
+        --scopes=https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/cloud-platform
+        ```
+
+        **Args:**
+        - spreadsheet_id (str): The ID of the Google Sheet to share.
+        - email (str): The email address to share the spreadsheet with.
+        - role (str): Permission role — ``"reader"``, ``"writer"``, or ``"owner"`` (default ``"writer"``).
+        - notify (bool): Whether to send a notification email to the recipient (default ``True``).
+        - email_message (Optional[str]): Custom message to include in the notification email.
+        """
+        spreadsheet = self.gc.open_by_key(spreadsheet_id)
+        spreadsheet.share(email, perm_type="user", role=role, notify=notify, email_message=email_message)
 
