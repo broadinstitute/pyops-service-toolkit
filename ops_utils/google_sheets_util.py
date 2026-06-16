@@ -187,7 +187,7 @@ class GoogleSheets:
         **Returns:**
         - gspread.Spreadsheet: The newly created spreadsheet object.
         """
-        return self.gc.create(title)
+        return self.gc.create(title).id
 
     def add_tab(
         self,
