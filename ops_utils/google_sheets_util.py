@@ -2,6 +2,7 @@
 from typing import Optional
 from google.auth import default
 from google.auth.transport.requests import Request
+import logging
 import gspread
 
 
@@ -190,11 +191,12 @@ class GoogleSheets:
         return self.gc.create(title).id
 
     def add_tab(
-        self,
-        spreadsheet_id: str,
-        tab_name: str,
-        rows: int = 1000,
-        cols: int = 26,
+            self,
+            spreadsheet_id: str,
+            tab_name: str,
+            rows: int = 1000,
+            cols: int = 26,
+            continue_if_exists: bool = False,
     ) -> str:
         """
         Add a new tab (worksheet) to an existing spreadsheet.
@@ -204,12 +206,25 @@ class GoogleSheets:
         - tab_name (str): The name for the new tab.
         - rows (int): Initial number of rows (default 1000).
         - cols (int): Initial number of columns (default 26).
+        - continue_if_exists (bool): If True, return the existing tab name without
+                                     raising an error if the tab already exists (default False).
 
         **Returns:**
-        - str: The title of the newly created tab.
+        - str: The title of the tab (newly created or existing).
+
+        **Raises:**
+        - ValueError: If the tab already exists and continue_if_exists is False.
         """
         spreadsheet = self.gc.open_by_key(spreadsheet_id)
-        return spreadsheet.add_worksheet(title=tab_name, rows=rows, cols=cols).title
+        try:
+            spreadsheet.worksheet(tab_name)
+            # Tab already exists
+            if continue_if_exists:
+                logging.info(f"Tab '{tab_name}' already exists. Not failing because continue_if_exists is True.")
+                return tab_name
+            raise ValueError(f"Tab '{tab_name}' already exists in spreadsheet '{spreadsheet_id}'. Use continue_if_exists to bypass")
+        except gspread.exceptions.WorksheetNotFound:
+            return spreadsheet.add_worksheet(title=tab_name, rows=rows, cols=cols).title
 
     def write_dicts_to_tab(
         self,
