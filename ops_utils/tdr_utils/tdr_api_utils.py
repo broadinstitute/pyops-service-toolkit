@@ -532,6 +532,27 @@ class TDR:
         acceptable_return_code = list(range(100, 600)) if expect_failure else []
         return self.request_util.run_request(uri=uri, method=GET, accept_return_codes=acceptable_return_code)
 
+    def unlock_dataset(self, dataset_id: str, lock_name:str, force_unlock:bool = False) -> requests.Response:
+        """Unlock a dataset.
+
+        **Args:**
+        - dataset_id (str): The ID of the dataset.
+        - lock_name (str): The name of the lock.
+
+        **Returns:**
+        - requests.Response: The response from the request."""
+        uri = f"{self.tdr_link}/datasets/{dataset_id}/unlock"
+        payload = {
+            "lockName": lock_name,
+            "forceUnlock": force_unlock
+        }
+        return self.request_util.run_request(
+            uri=uri,
+            method=PUT,
+            content_type=APPLICATION_JSON,
+            data=json.dumps(payload)
+        )
+
     def ingest_to_dataset(self, dataset_id: str, data: dict) -> requests.Response:
         """
         Load data into a TDR dataset.

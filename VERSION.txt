@@ -1,2 +1,2 @@
 12.15.0
-- Add to create spreadsheets and worksheets in google sheets
+- Add ability to unlock dataset
