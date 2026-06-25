@@ -32,7 +32,7 @@ class SCP:
         url = f"{self.scp_link}/site/studies"
         return self.request_util.run_request(method=GET, uri=url, content_type=APPLICATION_JSON)
 
-    def search_studies(self, type: str, facets: str | None = None, return_all_pages: bool = False) -> requests.Response:
+    def search_studies(self, type: str, facets: str | None = None, return_all_pages: bool = False, pages_before_logging: int = 10) -> requests.Response:
         """Search studies in SCP.
 
         **Args:**
@@ -40,6 +40,7 @@ class SCP:
         - facets (`str`): For human use NCBITaxon_9606
         - return_all_pages (`bool`): Whether to return all pages or only the first page.
             If you just want study list that will be all listed in first page under 'matching_accessions'
+        - pages_before_logging (`int`): Number of pages before logging study list
 
         **Returns:**
         - `requests.Response`: The HTTP response object containing study information from all pages."""
@@ -67,7 +68,8 @@ class SCP:
             ]
 
         for page in range(2, total_pages + 1):
-            logging.info(f"Processing page {page}")
+            if page % pages_before_logging == 0:
+                logging.info(f"Processing page {page}")
             page_url = f"{url}&page={page}"
             page_response = self.request_util.run_request(method=GET, uri=page_url, content_type=APPLICATION_JSON)
             page_json = page_response.json()
