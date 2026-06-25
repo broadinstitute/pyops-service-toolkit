@@ -5,7 +5,7 @@ from .gcp_utils import GCPCloudFunctions
 from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
 class SCP:
-    PROD_LINK = ("https://singlecell.broadinstitute.org/single_cell/api/v1")
+    PROD_LINK = "https://singlecell.broadinstitute.org/single_cell/api/v1"
 
     def __init__(self, request_util: RunRequest, env: str = 'prod'):
         """
@@ -29,6 +29,7 @@ class SCP:
         - `requests.Response`: The HTTP response object containing the list of studies.
         """
         url = f"{self.tdr_link}/site/studies"
+        print(url)
         return self.request_util.run_request(GET, url, content_type=APPLICATION_JSON)
 
     def get_study_information(self, study: str) -> requests.Response:
