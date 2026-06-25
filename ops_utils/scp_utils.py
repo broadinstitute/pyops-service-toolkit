@@ -3,6 +3,7 @@ import requests
 from .vars import APPLICATION_JSON
 from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 import json
+import logging
 
 class SCP:
     PROD_LINK = "https://singlecell.broadinstitute.org/single_cell/api/v1"
@@ -54,6 +55,8 @@ class SCP:
             return response
         response_json = response.json()
         total_pages = int(response_json.get("total_pages") or 1)
+        if total_pages > 1:
+            logging.info(f"Found {total_pages} pages, going to loop through all of them.")
 
         result_keys = ["studies", "results", "search_results", "items"]
         paged_keys = [key for key in result_keys if isinstance(response_json.get(key), list)]
@@ -64,6 +67,7 @@ class SCP:
             ]
 
         for page in range(2, total_pages + 1):
+            logging.info(f"Processing page {page}")
             page_url = f"{url}&page={page}"
             page_response = self.request_util.run_request(method=GET, uri=page_url, content_type=APPLICATION_JSON)
             page_json = page_response.json()
