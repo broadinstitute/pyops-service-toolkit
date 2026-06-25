@@ -30,7 +30,7 @@ class SCP:
         """
         url = f"{self.tdr_link}/site/studies"
         print(url)
-        return self.request_util.run_request(GET, url, content_type=APPLICATION_JSON)
+        return self.request_util.run_request(method=GET, uri=url, content_type=APPLICATION_JSON)
 
     def get_study_information(self, study: str) -> requests.Response:
         """
@@ -40,5 +40,5 @@ class SCP:
         - `requests.Response`: The HTTP response object containing the study information.
         """
         url = f"{self.tdr_link}/site/studies/{study}"
-        return self.request_util.run_request(GET, url, content_type=APPLICATION_JSON)
+        return self.request_util.run_request(method=GET, uri=url, content_type=APPLICATION_JSON)
 
