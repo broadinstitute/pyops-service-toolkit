@@ -1,7 +1,7 @@
 import requests
 
 from .vars import APPLICATION_JSON
-from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
+from .request_util import GET, RunRequest
 import json
 import logging
 
@@ -92,16 +92,44 @@ class SCP:
         url = f"{self.scp_link}/site/studies/{study}"
         return self.request_util.run_request(method=GET, uri=url, content_type=APPLICATION_JSON)
 
-    def download_file(self, file_name:str, study: str) -> requests.Response:
+    def download_file(
+            self,
+            file_name: str,
+            study: str,
+            destination: str | None = None,
+            chunk_size: int = 1024 * 1024
+    ) -> requests.Response | str:
         """
         Download file from SCP.
+
+        If destination is provided, stream the download directly to that file path instead
+        of loading the full file into memory. If destination is not provided, return the
+        response object with the file contents loaded, preserving the previous behavior.
+
+        To access file contents from the returned response example below:
+
+                Raw bytes (e.g. for binary files like .h5ad / AnnData)
+                content_bytes = response.content
+                with open(file['name'], "wb") as f:
+                    f.write(response.content)
 
         **Args:**
         - file_name (`str`): File name
         - study (`str`): study
+        - destination (`str`, optional): Local file path to stream the download to.
+            Defaults to None.
+        - chunk_size (`int`, optional): Number of bytes to write per chunk when streaming.
+            Defaults to 1 MiB.
 
         **Returns:**
-        - `requests.Response`: The HTTP response object containing the file download.
+        - `requests.Response | str`: The HTTP response object if destination is not provided,
+            otherwise the destination file path.
         """
         url = f"{self.scp_link}/site/studies/{study}/download?filename={file_name}"
+        if destination:
+            return self.request_util.download_file(
+                uri=url,
+                destination=destination,
+                chunk_size=chunk_size
+            )
         return self.request_util.run_request(method=GET, uri=url, content_type=APPLICATION_JSON)
