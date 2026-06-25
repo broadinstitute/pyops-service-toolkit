@@ -92,3 +92,16 @@ class SCP:
         url = f"{self.scp_link}/site/studies/{study}"
         return self.request_util.run_request(method=GET, uri=url, content_type=APPLICATION_JSON)
 
+    def download_file(self, file_name:str, study: str) -> requests.Response:
+        """
+        Download file from SCP.
+
+        **Args:**
+        - file_name (`str`): File name
+        - study (`str`): study
+
+        **Returns:**
+        - `requests.Response`: The HTTP response object containing the file download.
+        """
+        url = f"{self.scp_link}/site/studies/{study}/download?filename={file_name}"
+        return self.request_util.run_request(method=GET, uri=url, content_type=APPLICATION_JSON)
