@@ -1,4 +1,5 @@
 """Module to handle web requests."""
+import os
 from typing import Any, Optional
 import requests
 import backoff
@@ -189,3 +190,60 @@ class RunRequest:
             files=data,
             accept=accept,
         )
+
+    def download_file(
+            self,
+            uri: str,
+            destination: str | os.PathLike[str],
+            chunk_size: int = 1024 * 1024,
+            factor: int = 15,
+            accept: Optional[str] = "*/*",
+            content_type: Optional[str] = None,
+            accept_return_codes: Optional[list[int]] = None
+    ) -> str:
+        """
+        Stream a file download directly to a local file.
+
+        **Args:**
+        - uri (str): The URI for the file download.
+        - destination (str | os.PathLike[str]): Local path where the file should be written.
+        - chunk_size (int, optional): Number of bytes to write per chunk. Defaults to 1 MiB.
+        - factor (int, optional): The exponential backoff factor. Defaults to 15.
+        - accept (str, optional): The accept header for the request. Defaults to "*/*".
+        - content_type (str, optional): The content type for the request. Defaults to None.
+        - accept_return_codes (list[int], optional): List of acceptable return codes. Defaults to None.
+
+        **Returns:**
+        - str: The destination file path.
+        """
+        accepted_return_codes = accept_return_codes or []
+        destination_path = os.fspath(destination)
+
+        backoff_decorator = self._create_backoff_decorator(
+            max_tries=self.max_retries,
+            factor=factor,
+            max_time=self.max_backoff_time
+        )
+
+        @backoff_decorator
+        def _download_file() -> str:
+            headers = self.create_headers(content_type=content_type, accept=accept)
+            destination_dir = os.path.dirname(os.path.abspath(destination_path))
+            if destination_dir:
+                os.makedirs(destination_dir, exist_ok=True)
+
+            with requests.get(uri, headers=headers, stream=True) as response:
+                if ((300 <= response.status_code or response.status_code < 200)
+                        and response.status_code not in accepted_return_codes):
+                    print(response.text)
+                    response.raise_for_status()
+
+                with open(destination_path, "wb") as file:
+                    for chunk in response.iter_content(chunk_size=chunk_size):
+                        if chunk:
+                            file.write(chunk)
+
+            return destination_path
+
+        return _download_file()
+
