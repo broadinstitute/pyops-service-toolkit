@@ -1,2 +1,2 @@
-12.16.0
-- Add ability to interact with SCP
+12.17.0
+- Add DUOS util
