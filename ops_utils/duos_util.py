@@ -2,6 +2,7 @@
 import json
 import logging
 import re
+import requests
 
 from .request_util import POST, RunRequest
 
