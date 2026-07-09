@@ -3,7 +3,7 @@ import json
 import logging
 import re
 
-from .request_util import GET, POST, RunRequest
+from .request_util import POST, RunRequest
 
 DUOS_PROD_LINK = "https://consent.dsde-prod.broadinstitute.org"
 """@private"""
@@ -22,6 +22,23 @@ class DUOS:
         """
         self.request_util = request_util
         """@private"""
+
+    def search_dataset_index(self, query: dict) -> requests.Response:
+        """
+        Search the DUOS ElasticSearch dataset index.
+
+        **Args:**
+        - query (dict): An ElasticSearch query object.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        return self.request_util.run_request(
+            uri=f"{DUOS_PROD_LINK}/api/dataset/search/index/v2",
+            method=POST,
+            data=json.dumps(query),
+            content_type="application/json",
+        )
 
     def get_all_workspaces(self) -> list[dict]:
         """
@@ -57,14 +74,7 @@ class DUOS:
         }
 
         logging.info("Fetching all workspaces registered in DUOS")
-        uri = f"{DUOS_PROD_LINK}/api/dataset/search/index/v2"
-        response = self.request_util.run_request(
-            uri=uri,
-            method=POST,
-            data=json.dumps(query),
-            content_type="application/json",
-        )
-        data = response.json()
+        data = self.search_dataset_index(query).json()
         buckets = data.get("aggregations", {}).get("studies", {}).get("buckets", [])
 
         workspaces = []
@@ -101,10 +111,10 @@ class DUOS:
             to workspace info dicts (same structure as returned by `get_all_workspaces`).
             Workspaces whose URLs do not match the expected pattern are excluded.
         """
+        workspace_url_pattern = re.compile(r"https?://[^/]+/#workspaces/([^/]+)/(.+)")
         lookup: dict[tuple[str, str], dict] = {}
-        workspace_url_patters = re.compile(r"https?://[^/]+/#workspaces/([^/]+)/(.+)")
         for ws in self.get_all_workspaces():
-            match = workspace_url_patters.match(ws.get("url", ""))
+            match = workspace_url_pattern.match(ws.get("url", ""))
             if not match:
                 continue
             key = (match.group(1), match.group(2))
