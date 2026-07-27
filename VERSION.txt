@@ -1,2 +1,2 @@
-12.17.0
-- Add DUOS util
+12.18.0
+- Give option to yield less per page when getting Terra metrics
