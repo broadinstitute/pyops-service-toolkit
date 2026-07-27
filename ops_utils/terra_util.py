@@ -284,14 +284,14 @@ class TerraWorkspace:
         """
         return f"{self.billing_project}/{self.workspace_name}"
 
-    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000, verbose = True) -> Any:
+    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000, verbose: bool = True) -> Any:
         """
         Yield all entity metrics from the workspace.
 
         Args:
             entity (str): The type of entity to query.
             total_entities_per_page (int, optional): The number of entities per page. Defaults to 40000.
-            verbose (bool): If True, will log the progress of fetching entity metrics. Defaults to True.
+            verbose (bool, optional): If True, will log the progress of fetching entity metrics. Defaults to True.
 
         Yields:
             Any: The JSON response containing entity metrics.
@@ -383,13 +383,14 @@ class TerraWorkspace:
             f"Getting workspace info for {self.billing_project}/{self.workspace_name}")
         return self.request_util.run_request(uri=url, method=GET)
 
-    def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False, verbose = True) -> list[dict]:
+    def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False, total_entities_per_page: int = 40000, verbose: bool = True) -> list[dict]:
         """
         Get metrics for a specific entity type in the workspace (specifically for Terra on GCP).
 
         **Args:**
         - entity_type (str): The type of entity to get metrics for.
         - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
+        - total_entities_per_page (int, optional): The total number of entities per page. Defaults to 40000.
         - verbose (bool, optional): Whether to log verbose output. Defaults to `True`.
 
         **Returns:**
@@ -399,7 +400,7 @@ class TerraWorkspace:
         if verbose:
             logging.info(f"Getting {entity_type} metadata for {self.billing_project}/{self.workspace_name}")
 
-        for page in self._yield_all_entity_metrics(entity=entity_type, verbose=verbose):
+        for page in self._yield_all_entity_metrics(entity=entity_type, total_entities_per_page=total_entities_per_page, verbose=verbose):
             results.extend(page["results"])
 
         # If remove_dicts is True, remove dictionaries from the workspace metrics
