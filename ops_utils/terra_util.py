@@ -284,7 +284,7 @@ class TerraWorkspace:
         """
         return f"{self.billing_project}/{self.workspace_name}"
 
-    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000, verbose: bool = True) -> Any:
+    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000, verbose: bool = True, columns_to_return : list | None = None) -> Any:
         """
         Yield all entity metrics from the workspace.
 
@@ -292,11 +292,14 @@ class TerraWorkspace:
             entity (str): The type of entity to query.
             total_entities_per_page (int, optional): The number of entities per page. Defaults to 40000.
             verbose (bool, optional): If True, will log the progress of fetching entity metrics. Defaults to True.
+            columns_to_return (list, optional): A list of columns to return. Defaults to None.
 
         Yields:
             Any: The JSON response containing entity metrics.
         """
         url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityQuery/{entity}?pageSize={total_entities_per_page}"  # noqa: E501
+        if columns_to_return is not None:
+            url += f"&fields={','.join(columns_to_return)}"
         response = self.request_util.run_request(
             uri=url,
             method=GET,
@@ -383,7 +386,7 @@ class TerraWorkspace:
             f"Getting workspace info for {self.billing_project}/{self.workspace_name}")
         return self.request_util.run_request(uri=url, method=GET)
 
-    def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False, total_entities_per_page: int = 40000, verbose: bool = True) -> list[dict]:
+    def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False, total_entities_per_page: int = 40000, columns_to_return: list | None = None, verbose: bool = True) -> list[dict]:
         """
         Get metrics for a specific entity type in the workspace (specifically for Terra on GCP).
 
@@ -391,6 +394,7 @@ class TerraWorkspace:
         - entity_type (str): The type of entity to get metrics for.
         - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
         - total_entities_per_page (int, optional): The total number of entities per page. Defaults to 40000.
+        - columns_to_return (list | None, optional): A list of columns to return. Defaults to None.
         - verbose (bool, optional): Whether to log verbose output. Defaults to `True`.
 
         **Returns:**
@@ -400,7 +404,7 @@ class TerraWorkspace:
         if verbose:
             logging.info(f"Getting {entity_type} metadata for {self.billing_project}/{self.workspace_name}")
 
-        for page in self._yield_all_entity_metrics(entity=entity_type, total_entities_per_page=total_entities_per_page, verbose=verbose):
+        for page in self._yield_all_entity_metrics(entity=entity_type, total_entities_per_page=total_entities_per_page, columns_to_return=columns_to_return, verbose=verbose):
             results.extend(page["results"])
 
         # If remove_dicts is True, remove dictionaries from the workspace metrics
@@ -409,7 +413,7 @@ class TerraWorkspace:
                 row['attributes'] = self._remove_dict_from_attributes(row['attributes'])
         return results
 
-    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False, verbose = True) -> list[dict]:
+    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False, columns_to_return: list | None = None, verbose = True) -> list[dict]:
         """
         Convert metrics returned by get_gcp_workspace_metrics to a flat list of dictionaries and add
         the entity name to the dictionary with key "{entity_type}_id".
@@ -417,12 +421,13 @@ class TerraWorkspace:
         **Args:**
         - entity_type (str): The type of entity to get metrics for.
         - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
+        - columns_to_return (list | None, optional): A list of columns to return. Defaults to None.
         - verbose (bool, optional): Whether to log verbose output. Defaults to `True`.
 
         **Returns:**
         - list[dict]: A list of dictionaries containing entity metrics.
         """
-        table_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type, remove_dicts=remove_dicts, verbose=verbose)
+        table_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type, remove_dicts=remove_dicts, columns_to_return=columns_to_return, verbose=verbose)
         convert_metrics = []
         for row in table_metrics:
             converted_row = row['attributes']
