@@ -1,2 +1,2 @@
-12.18.0
-- Give option to yield less per page when getting Terra metrics
+12.19.0
+- Give option to return specific columns from Terra
