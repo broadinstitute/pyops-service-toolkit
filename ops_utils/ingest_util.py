@@ -1,9 +1,15 @@
 """Utilities for working with the DataIngest API."""
+import base64
 import json
 import logging
 import time
+from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 import requests
+from google.auth import default as google_auth_default
+from google.auth.transport.requests import Request as GoogleAuthRequest
+from google.oauth2.credentials import Credentials as GoogleUserCredentials
+from google.oauth2.id_token import fetch_id_token
 
 from .vars import ARG_DEFAULTS, APPLICATION_JSON
 from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
@@ -17,6 +23,57 @@ RUNNING = "RUNNING"
 SUCCEEDED = "SUCCEEDED"
 FAILED = "FAILED"
 
+# Audience gcloud itself uses for `gcloud auth print-identity-token`. DataIngest's backend
+# (Tessera) only checks that an ID token is issued/signed by Google, not its audience, so this
+# constant is only exercised for non-interactive credentials (e.g. a service account) that can't
+# produce an id_token tied to the audience of an interactive OAuth consent.
+_IDENTITY_TOKEN_AUDIENCE = "32555940559.apps.googleusercontent.com"
+
+
+class _IdentityToken:
+    """
+    Fetches and auto-refreshes a Google-issued OIDC identity token (JWT).
+
+    DataIngest's backend authenticates callers as Google OIDC identity tokens rather than
+    OAuth access tokens, so this exists instead of `ops_utils.token_util.Token`, which only
+    produces the latter. Duck-types the subset of `Token`'s interface (`get_token`,
+    `token_string`) that `RunRequest` relies on.
+    """
+
+    def __init__(self) -> None:
+        self.token_string: str = ""
+        """@private"""
+        self._expiry: Optional[datetime] = None
+
+    def get_token(self) -> str:
+        """
+        Return a cached identity token, refreshing it if missing or close to expiry.
+
+        **Returns:**
+        - string: The generated identity token
+        """
+        if not self.token_string or not self._expiry or self._expiry < datetime.now(timezone.utc) + timedelta(minutes=5):  # noqa: E501
+            credentials, _ = google_auth_default()
+            http_request = GoogleAuthRequest()
+            if isinstance(credentials, GoogleUserCredentials):
+                # Interactive user ADC (e.g. `gcloud auth application-default login`): Google's
+                # token endpoint returns an id_token alongside the access_token for these.
+                credentials.refresh(http_request)
+                self.token_string = credentials.id_token
+            else:
+                # Service account / GCE metadata server credentials.
+                self.token_string = fetch_id_token(http_request, _IDENTITY_TOKEN_AUDIENCE)
+            self._expiry = self._decode_expiry(self.token_string)
+            logging.info(f"New DataIngest identity token expires at {self._expiry.isoformat()}")
+        return self.token_string
+
+    @staticmethod
+    def _decode_expiry(token: str) -> datetime:
+        payload = token.split(".")[1]
+        payload += "=" * (-len(payload) % 4)
+        exp = json.loads(base64.urlsafe_b64decode(payload))["exp"]
+        return datetime.fromtimestamp(exp, tz=timezone.utc)
+
 
 class DataIngest:
     """Class for interacting with the DataIngest API (a lightweight, cloud-native data repository)."""
@@ -26,17 +83,20 @@ class DataIngest:
     GROUP_ROLE_OPTIONS = ["OWNER", "MEMBER"]
     """@private"""
 
-    def __init__(self, request_util: RunRequest, base_url: str = DATA_INGEST_LOCAL_LINK):
+    def __init__(self, request_util: Optional[RunRequest] = None, base_url: str = DATA_INGEST_LOCAL_LINK):
         """
         Initialize the DataIngest class.
 
         **Args:**
-        - request_util (`ops_utils.request_util.RunRequest`): An instance of a
-            request utility class to handle HTTP requests.
+        - request_util (`ops_utils.request_util.RunRequest`, optional): An instance of a
+            request utility class to handle HTTP requests. If not provided, one is created
+            with a self-refreshing Google identity token, which is what DataIngest's backend
+            requires (as opposed to the OAuth access token `ops_utils.token_util.Token`
+            produces).
         - base_url (str, optional): The base URL for the DataIngest API.
             Defaults to the locally-running instance at `http://localhost:8080/api/v1`.
         """
-        self.request_util = request_util
+        self.request_util = request_util if request_util is not None else RunRequest(token=_IdentityToken())  # type: ignore[arg-type]  # noqa: E501
         """@private"""
         self.base_url = base_url
         """@private"""
