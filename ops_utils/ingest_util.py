@@ -24,7 +24,7 @@ SUCCEEDED = "SUCCEEDED"
 FAILED = "FAILED"
 
 # Audience gcloud itself uses for `gcloud auth print-identity-token`. DataIngest's backend
-# (Tessera) only checks that an ID token is issued/signed by Google, not its audience, so this
+# only checks that an ID token is issued/signed by Google, not its audience, so this
 # constant is only exercised for non-interactive credentials (e.g. a service account) that can't
 # produce an id_token tied to the audience of an interactive OAuth consent.
 _IDENTITY_TOKEN_AUDIENCE = "32555940559.apps.googleusercontent.com"
