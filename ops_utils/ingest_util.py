@@ -1,4 +1,4 @@
-"""Utilities for working with the Tessera API."""
+"""Utilities for working with the DataIngest API."""
 import json
 import logging
 import time
@@ -8,8 +8,8 @@ import requests
 from .vars import ARG_DEFAULTS, APPLICATION_JSON
 from .request_util import GET, POST, PATCH, PUT, DELETE, RunRequest
 
-# Constant for the locally-running Tessera API
-TESSERA_LOCAL_LINK = "http://localhost:8080/api/v1"
+# Constant for the locally-running DataIngest API
+DATA_INGEST_LOCAL_LINK = "http://localhost:8080/api/v1"
 """@private"""
 
 QUEUED = "QUEUED"
@@ -18,22 +18,22 @@ SUCCEEDED = "SUCCEEDED"
 FAILED = "FAILED"
 
 
-class Tessera:
-    """Class for interacting with the Tessera API (a lightweight, cloud-native data repository)."""
+class DataIngest:
+    """Class for interacting with the DataIngest API (a lightweight, cloud-native data repository)."""
 
     ROLE_OPTIONS = ["STEWARD", "CUSTODIAN", "READER", "DISCOVERER"]
     """@private"""
     GROUP_ROLE_OPTIONS = ["OWNER", "MEMBER"]
     """@private"""
 
-    def __init__(self, request_util: RunRequest, base_url: str = TESSERA_LOCAL_LINK):
+    def __init__(self, request_util: RunRequest, base_url: str = DATA_INGEST_LOCAL_LINK):
         """
-        Initialize the Tessera class.
+        Initialize the DataIngest class.
 
         **Args:**
         - request_util (`ops_utils.request_util.RunRequest`): An instance of a
             request utility class to handle HTTP requests.
-        - base_url (str, optional): The base URL for the Tessera API.
+        - base_url (str, optional): The base URL for the DataIngest API.
             Defaults to the locally-running instance at `http://localhost:8080/api/v1`.
         """
         self.request_util = request_util
@@ -43,13 +43,13 @@ class Tessera:
 
     @staticmethod
     def _check_role(role: str) -> None:
-        if role not in Tessera.ROLE_OPTIONS:
-            raise ValueError(f"Role must be one of {Tessera.ROLE_OPTIONS}")
+        if role not in DataIngest.ROLE_OPTIONS:
+            raise ValueError(f"Role must be one of {DataIngest.ROLE_OPTIONS}")
 
     @staticmethod
     def _check_group_role(role: str) -> None:
-        if role not in Tessera.GROUP_ROLE_OPTIONS:
-            raise ValueError(f"Role must be one of {Tessera.GROUP_ROLE_OPTIONS}")
+        if role not in DataIngest.GROUP_ROLE_OPTIONS:
+            raise ValueError(f"Role must be one of {DataIngest.GROUP_ROLE_OPTIONS}")
 
     @staticmethod
     def _build_payload(**kwargs: Any) -> dict:
@@ -500,11 +500,11 @@ class Tessera:
             job = self.get_job(job_id).json()
             status = job["status"]
             if status == SUCCEEDED:
-                logging.info(f"Tessera job {job_id} succeeded")
+                logging.info(f"DataIngest job {job_id} succeeded")
                 return job.get("result")
             if status == FAILED:
-                raise Exception(f"Tessera job {job_id} failed: {job.get('result')}")
-            logging.info(f"Tessera job {job_id} is {status.lower()}")
+                raise Exception(f"DataIngest job {job_id} failed: {job.get('result')}")
+            logging.info(f"DataIngest job {job_id} is {status.lower()}")
             time.sleep(poll_interval)
 
     # --------------------------------------------------------------- Snapshots
