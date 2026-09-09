@@ -37,7 +37,8 @@ class SCP:
 
         **Args:**
         - type (`str`): Can be 'gene' or 'study'
-        - facets (`str`): For human use NCBITaxon_9606
+        - facets (`str`): Must be in `facet_name:value` form, e.g. `species:NCBITaxon_9606` for human.
+            Multiple facets are joined with `;`, e.g. `species:NCBITaxon_9606;disease:MONDO_0007254`.
         - return_all_pages (`bool`): Whether to return all pages or only the first page.
             If you just want study list that will be all listed in first page under 'matching_accessions'
         - pages_before_logging (`int`): Number of pages before logging study list
