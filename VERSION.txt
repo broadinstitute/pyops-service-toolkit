@@ -1,2 +1,2 @@
-12.19.0
-- Give option to return specific columns from Terra
+12.20.0
+- Updating google-cloud-storage versiongit
