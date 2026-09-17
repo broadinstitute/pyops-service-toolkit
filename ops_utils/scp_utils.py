@@ -1,3 +1,4 @@
+"""Module for Single Cell Portal (SCP) utilities."""
 import requests
 
 from .vars import APPLICATION_JSON
@@ -5,12 +6,15 @@ from .request_util import GET, RunRequest
 import json
 import logging
 
+
 class SCP:
+    """Class to handle Single Cell Portal (SCP) API interactions."""
+
     PROD_LINK = "https://singlecell.broadinstitute.org/single_cell/api/v1"
 
     def __init__(self, request_util: RunRequest, env: str = 'prod'):
         """
-        Initialize SCP class
+        Initialize SCP class.
 
         **Args:**
         - request_util (`ops_utils.request_util.RunRequest`): Utility for making HTTP requests.
@@ -44,7 +48,8 @@ class SCP:
         - pages_before_logging (`int`): Number of pages before logging study list
 
         **Returns:**
-        - `requests.Response`: The HTTP response object containing study information from all pages."""
+        - `requests.Response`: The HTTP response object containing study information from all pages.
+        """
         if type not in ['gene', 'study']:
             raise ValueError(f"Invalid type: {type}. Must be 'gene' or 'study'.")
 

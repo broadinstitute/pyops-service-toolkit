@@ -413,10 +413,11 @@ class TerraWorkspace:
                 row['attributes'] = self._remove_dict_from_attributes(row['attributes'])
         return results
 
-    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False, columns_to_return: list | None = None, verbose = True) -> list[dict]:
+    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False, columns_to_return: list | None = None, verbose: bool = True) -> list[dict]:
         """
-        Convert metrics returned by get_gcp_workspace_metrics to a flat list of dictionaries and add
-        the entity name to the dictionary with key "{entity_type}_id".
+        Convert metrics returned by get_gcp_workspace_metrics to a flat list of dictionaries.
+
+        Adds the entity name to the dictionary with key "{entity_type}_id".
 
         **Args:**
         - entity_type (str): The type of entity to get metrics for.

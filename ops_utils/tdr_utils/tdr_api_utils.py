@@ -540,7 +540,8 @@ class TDR:
         - lock_name (str): The name of the lock.
 
         **Returns:**
-        - requests.Response: The response from the request."""
+        - requests.Response: The response from the request.
+        """
         uri = f"{self.tdr_link}/datasets/{dataset_id}/unlock"
         payload = {
             "lockName": lock_name,
