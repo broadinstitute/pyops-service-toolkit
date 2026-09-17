@@ -580,7 +580,7 @@ class DataIngest:
         """
         return self.request_util.run_request(uri=f"{self.base_url}/jobs/{job_id}", method=GET)
 
-    def wait_for_job(self, job_id: str, poll_interval: int = ARG_DEFAULTS["waiting_time_to_poll"]) -> Any:
+    def wait_for_job(self, job_id: str, poll_interval: int = ARG_DEFAULTS["waiting_time_to_poll"]) -> Any:  # type: ignore[assignment]
         """
         Poll a job until it reaches a terminal state (`SUCCEEDED` or `FAILED`).
 
