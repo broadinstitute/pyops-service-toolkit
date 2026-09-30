@@ -1,2 +1,2 @@
-12.20.0
-- Updating google-cloud-storage versiongit
+12.21.0
+- Add more features to DUOS

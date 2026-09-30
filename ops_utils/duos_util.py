@@ -2,6 +2,7 @@
 import json
 import logging
 import re
+
 import requests
 
 from .request_util import POST, RunRequest
@@ -99,6 +100,59 @@ class DUOS:
 
         logging.info(f"Found {len(workspaces)} workspaces registered in DUOS")
         return workspaces
+
+    def find_studies_by_phs_id(self, phs_id: str) -> list[dict]:
+        """
+        Find all DUOS studies registered for a dbGaP PHS accession.
+
+        Matches on the `study.phsId` field of the dataset search index, ignoring case and
+        dbGaP version, so searching for `"phs002591"` will also match a DUOS study registered
+        with `"phs002591.v2.p1"`. It is left to the caller to decide what to do if more than
+        one study is returned (e.g. treat it as an error, or pick one).
+
+        **Args:**
+        - phs_id (str): The dbGaP PHS accession to search for, with or without a version
+            (e.g. `"phs002591"` or `"phs002591.v2.p1"`).
+
+        **Returns:**
+        - list[dict]: The matching studies (the `study.*` fields from the search index,
+            including `studyId`, `studyName`, and `phsId`), or an empty list if no DUOS
+            study has this PHS ID.
+        """
+        base_phs_id = phs_id.strip().split(".")[0]
+        query = {
+            "size": 0,
+            "query": {
+                "bool": {
+                    "should": [
+                        {"wildcard": {"study.phsId.keyword": {"value": base_phs_id, "case_insensitive": True}}},
+                        {"wildcard": {"study.phsId.keyword": {"value": f"{base_phs_id}.*", "case_insensitive": True}}},
+                    ],
+                    "minimum_should_match": 1,
+                }
+            },
+            "aggs": {
+                "studies": {
+                    "terms": {"field": "study.studyId", "size": 10000},
+                    "aggs": {
+                        "study_details": {"top_hits": {"size": 1, "_source": ["study.*"]}}
+                    },
+                }
+            },
+        }
+
+        logging.info(f"Searching DUOS for studies with PHS ID '{phs_id}'")
+        data = self.search_dataset_index(query).json()
+        buckets = data.get("aggregations", {}).get("studies", {}).get("buckets", [])
+
+        studies = []
+        for bucket in buckets:
+            hits = bucket.get("study_details", {}).get("hits", {}).get("hits", [])
+            if hits:
+                studies.append(hits[0].get("_source", {}).get("study", {}))
+
+        logging.info(f"Found {len(studies)} DUOS study(s) for PHS ID '{phs_id}'")
+        return studies
 
     def get_workspace_lookup_by_namespace_and_name(self) -> dict[tuple[str, str], dict]:
         """
