@@ -9,12 +9,13 @@ from .request_util import POST, RunRequest
 
 DUOS_PROD_LINK = "https://consent.dsde-prod.broadinstitute.org"
 """@private"""
-
+DUOS_DEV_LINK = "https://consent.dsde-dev.broadinstitute.org"
+"""@private"""
 
 class DUOS:
     """Class for interacting with the DUOS API."""
 
-    def __init__(self, request_util: RunRequest):
+    def __init__(self, request_util: RunRequest, env: str = "prod") -> None:
         """
         Initialize the DUOS class.
 
@@ -23,6 +24,12 @@ class DUOS:
             request utility class to handle HTTP requests.
         """
         self.request_util = request_util
+        if env == "prod":
+            self.duos_link = DUOS_PROD_LINK
+        elif env == "dev":
+            self.duos_link = DUOS_DEV_LINK
+        else:
+            raise ValueError(f"Invalid DUOS environment: {env}. Must be 'prod' or 'dev'.")
         """@private"""
 
     def search_dataset_index(self, query: dict) -> requests.Response:
@@ -36,7 +43,7 @@ class DUOS:
         - requests.Response: The response from the request.
         """
         return self.request_util.run_request(
-            uri=f"{DUOS_PROD_LINK}/api/dataset/search/index/v2",
+            uri=f"{self.duos_link}/api/dataset/search/index/v2",
             method=POST,
             data=json.dumps(query),
             content_type="application/json",
