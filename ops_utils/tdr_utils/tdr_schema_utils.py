@@ -60,6 +60,11 @@ class InferTDRSchema:
         self.allow_disparate_data_types_in_column = allow_disparate_data_types_in_column
         """@private"""
 
+    @staticmethod
+    def _treat_empty_as_none(values: list[Any]) -> list[Any]:
+        """Replace empty/whitespace-only strings with None so they are ignored when determining data types."""
+        return [None if isinstance(v, str) and not v.strip() else v for v in values]
+
     def _check_type_consistency(self, key_value_type_mappings: dict) -> list[dict]:
         """
         Check if all values for each header are of the same type.
@@ -76,6 +81,8 @@ class InferTDRSchema:
         disparate_header_info = []
 
         for header, values_for_header in key_value_type_mappings.items():
+            # ignore empty strings when checking types, same as "None" entries
+            values_for_header = self._treat_empty_as_none(values_for_header)
             # check if some values are lists while others are not (consider this a "mismatch" if so) while ignoring
             # "None" entries
             if (any(isinstance(item, list) for item in values_for_header if item is not None) and
@@ -236,17 +243,20 @@ class InferTDRSchema:
         columns = []
 
         for header, values_for_header in key_value_type_mappings.items():
+            # ignore empty strings when determining data types, same as "None" entries
+            values_for_header = self._treat_empty_as_none(values_for_header)
             force_to_string = [h["force_to_string"] for h in disparate_header_info if h["header"] == header][0]
 
             # if the ANY of the values for a given header is a list, we assume that column contains arrays of values
             array_of = True if any(isinstance(v, list) for v in values_for_header) else False
 
-            if force_to_string:
-                logging.info(f"Header '{header}' was forced to string to to mismatched datatypes in column")
+            has_values = any(v is not None for v in values_for_header)
+            data_type = self._python_type_to_tdr_type_conversion(values_for_header) if has_values else None
+            # a column containing any file references must stay a fileref, even if other values are mismatched
+            if data_type != self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"] and (force_to_string or not has_values):
+                if force_to_string:
+                    logging.info(f"Header '{header}' was forced to string to to mismatched datatypes in column")
                 data_type = self.PYTHON_TDR_DATA_TYPE_MAPPING[str]
-            else:
-                # Use all existing values for the header to determine the data type
-                data_type = self._python_type_to_tdr_type_conversion(values_for_header)
 
             column_metadata = {
                 "name": header,
@@ -327,8 +337,11 @@ class InferTDRSchema:
         # Replace all nan with None
         metadata_df = metadata_df.where(pd.notnull(metadata_df), None)
 
-        # find all headers that need to be renamed if they have "entity" in them and rename the headers
-        headers_to_be_renamed = [{h: h.split(":")[1] for h in list(metadata_df.columns) if h.startswith("entity")}][0]
+        # find all headers that need to be renamed if they start with "entity:" (e.g. "entity:sample_id") and rename
+        # the headers. Headers that merely start with "entity" (e.g. "entity_type") are left alone.
+        headers_to_be_renamed = {
+            h: h.split(":", 1)[1] for h in list(metadata_df.columns) if h.startswith("entity:")
+        }
         metadata_df = metadata_df.rename(columns=headers_to_be_renamed)
 
         # start by gathering the column metadata by determining which headers are required or not
