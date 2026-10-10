@@ -250,13 +250,18 @@ class InferTDRSchema:
             # if the ANY of the values for a given header is a list, we assume that column contains arrays of values
             array_of = True if any(isinstance(v, list) for v in values_for_header) else False
 
-            has_values = any(v is not None for v in values_for_header)
-            data_type = self._python_type_to_tdr_type_conversion(values_for_header) if has_values else None
-            # a column containing any file references must stay a fileref, even if other values are mismatched
-            if data_type != self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"] and (force_to_string or not has_values):
-                if force_to_string:
+            string_type = self.PYTHON_TDR_DATA_TYPE_MAPPING[str]
+            fileref_type = self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"]
+
+            if not any(v is not None for v in values_for_header):
+                # nothing to infer a type from (every value is empty), so default to string
+                data_type = string_type
+            else:
+                data_type = self._python_type_to_tdr_type_conversion(values_for_header)
+                # a column containing any file references must stay a fileref, even if other values are mismatched
+                if force_to_string and data_type != fileref_type:
                     logging.info(f"Header '{header}' was forced to string to to mismatched datatypes in column")
-                data_type = self.PYTHON_TDR_DATA_TYPE_MAPPING[str]
+                    data_type = string_type
 
             column_metadata = {
                 "name": header,
