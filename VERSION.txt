@@ -1,2 +1,2 @@
-12.21.0
-- Addressing bug in logic within TDR schema inference
+12.21.1
+- Add more features to DUOS
