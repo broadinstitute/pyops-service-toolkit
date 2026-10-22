@@ -134,11 +134,18 @@ class RunRequest:
                     data=data
                 )
             elif method == PUT:
-                response = requests.put(
-                    uri,
-                    headers=headers,
-                    data=data
-                )
+                if files:
+                    response = requests.put(
+                        uri,
+                        headers=headers,
+                        files=files
+                    )
+                else:
+                    response = requests.put(
+                        uri,
+                        headers=headers,
+                        data=data
+                    )
             else:
                 raise ValueError(f"Method {method} is not supported")
             # Raise an exception for non-200 status codes and codes not in acceptable_return_codes
