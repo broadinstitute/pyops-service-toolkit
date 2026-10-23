@@ -1,2 +1,2 @@
-12.21.1
-- Add more features to DUOS
+12.21.2
+- Add time remaining display for batch TDR job execution.
