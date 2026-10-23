@@ -7,17 +7,20 @@ from typing import Optional, Sequence
 class Csv:
     """Class for CSV file operations."""
 
-    def __init__(self, file_path: str, delimiter: str = "\t"):
+    def __init__(self, file_path: str, delimiter: str = "\t", verbose: bool = True) -> None:
         r"""
         Initialize the Csv class.
 
         **Args:**
         - file_path (str): The path to the tabular file.
         - delimiter (str, optional): The delimiter to use in the tabular file. Defaults to `\\t` (tab-delimited).
+        - verbose (bool, optional): Whether to log the creation of the file. Defaults to `True`.
         """
         self.file_path = file_path
         """@private"""
         self.delimiter = delimiter
+        """@private"""
+        self.verbose = verbose
         """@private"""
 
     def create_tsv_from_list_of_dicts(self, list_of_dicts: list[dict], header_list: Optional[list[str]] = None) -> str:
@@ -47,7 +50,8 @@ class Csv:
                     )
                 )
             )
-        logging.info(f'Creating {self.file_path}')
+        if self.verbose:
+            logging.info(f'Creating {self.file_path}')
         with open(self.file_path, 'w', newline='') as f:
             writer = csv.DictWriter(
                 f, fieldnames=header_list, delimiter='\t', quotechar="'", extrasaction='ignore')
@@ -66,7 +70,8 @@ class Csv:
         **Returns:**
         - str: The path to the created TSV file.
         """
-        logging.info(f'Creating {self.file_path}')
+        if self.verbose:
+            logging.info(f'Creating {self.file_path}')
         with open(self.file_path, 'w') as f:
             for list_of_data in list_of_lists:
                 # Make sure all entries are strings

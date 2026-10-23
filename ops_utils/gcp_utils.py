@@ -150,7 +150,9 @@ class GCPCloudFunctions:
             "content_type": blob.content_type or guess_type(blob.name)[0] or "application/octet-stream",
             "file_extension": os.path.splitext(blob.name)[1],
             "size_in_bytes": blob.size,
-            "md5_hash": blob.md5_hash
+            "md5_hash": blob.md5_hash,
+            "time_created": blob.time_created.isoformat() if blob.time_created else None,
+            "last_modified": blob.updated.isoformat() if blob.updated else None,
         }
 
     @staticmethod
@@ -197,7 +199,9 @@ class GCPCloudFunctions:
             file_extensions_to_ignore: list[str] = [],
             file_strings_to_ignore: list[str] = [],
             file_extensions_to_include: list[str] = [],
-            file_name_only: bool = False
+            file_name_only: bool = False,
+            verbose: bool = False,
+            log_progress_interval: int = 10000
     ) -> list[dict]:
         """
         List contents of a GCS bucket and return a list of dictionaries with file information.
@@ -209,6 +213,8 @@ class GCPCloudFunctions:
         - file_strings_to_ignore (list[str], optional): List of file name substrings to ignore. Defaults to [].
         - file_extensions_to_include (list[str], optional): List of file extensions to include. Defaults to [].
         - file_name_only (bool, optional): Whether to return only the file list and no extra info. Defaults to `False`.
+        - verbose (bool, optional): Whether to log files not being included. Defaults to `False`.
+        - log_progress_interval (int, optional): Log a progress message every N files processed. Defaults to `10000`.
 
         **Returns:**
         - list[dict]: A list of dictionaries containing file information.
@@ -222,25 +228,34 @@ class GCPCloudFunctions:
         # Get the bucket object and set user_project for Requester Pays
         bucket = self.client.bucket(bucket_name, user_project=self.client.project)
 
-        # List blobs within the bucket
-        blobs = bucket.list_blobs(prefix=prefix)
-        logging.info("Finished listing blobs. Processing files now.")
+        # list_blobs returns a lazy iterator — no network calls happen until we iterate.
+        # page_size=1000 is the GCS maximum, minimising the number of paginated round-trips.
+        prefix_msg = f" with prefix '{prefix}'" if prefix else ""
+        logging.info(f"Starting to page through blobs in bucket '{bucket_name}'{prefix_msg}...")
+        blobs = bucket.list_blobs(prefix=prefix, page_size=1000)
 
-        # Create a list of dictionaries containing file information
-        file_list = [
-            self._create_bucket_contents_dict(
-                blob=blob, bucket_name=bucket_name, file_name_only=file_name_only
-            )
-            for blob in blobs
-            if self._validate_include_blob(
+        # Iterate with progress logging so large buckets don't appear stuck
+        file_list = []
+        for blob in blobs:
+            if blob.name.endswith("/"):
+                continue
+            if not self._validate_include_blob(
                 blob=blob,
                 file_extensions_to_ignore=file_extensions_to_ignore,
                 file_strings_to_ignore=file_strings_to_ignore,
                 file_extensions_to_include=file_extensions_to_include,
                 bucket_name=bucket_name
-            ) and not blob.name.endswith("/")
-        ]
-        logging.info(f"Found {len(file_list)} files in bucket")
+            ):
+                continue
+            file_list.append(
+                self._create_bucket_contents_dict(
+                    blob=blob, bucket_name=bucket_name, file_name_only=file_name_only
+                )
+            )
+            if verbose and len(file_list) % log_progress_interval == 0:
+                logging.info(f"Processed {len(file_list):,} files so far...")
+
+        logging.info(f"Found {len(file_list):,} files in bucket")
         return file_list
 
     def copy_cloud_file(self, src_cloud_path: str, full_destination_path: str, verbose: bool = False) -> None:
@@ -840,3 +855,153 @@ class GCPCloudFunctions:
         raise PermissionError(
             f"Maximum wait time of {max_wait_time_minutes} minute(s) exceeded. Write permission was not granted for "
             f"{cloud_path} after {attempt_number} attempts.")
+
+    def _load_blob_full_path_to_bucket_contents_dict(self, full_path: str, file_name_only: bool) -> dict:
+        """Load a blob from a full GCS path and convert it to a bucket-contents dict.
+
+        This is intended for use with multithreaded batch operations.
+
+        Raises:
+            ValueError: If the blob does not exist.
+        """
+        file_path_components = self._process_cloud_path(full_path)
+        blob = self.load_blob_from_full_path(full_path)
+
+        # load_blob_from_full_path reloads metadata when exists() is True.
+        # Ensure the object exists so downstream consumers always get a valid dict.
+        if not blob.exists():
+            raise ValueError(f"Blob does not exist: {full_path}")
+
+        return self._create_bucket_contents_dict(
+            bucket_name=file_path_components["bucket"],
+            blob=blob,
+            file_name_only=file_name_only
+        )
+
+    def check_files_exist_multithreaded(
+            self,
+            full_paths: list[str],
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
+            job_complete_for_logging: int = 500
+    ) -> dict[str, bool]:
+        """Check existence of multiple GCS files in parallel.
+
+        **Args:**
+        - full_paths (list[str]): List of full GCS paths (e.g. ``gs://bucket/path/to/object``) to check.
+        - workers (int, optional): Number of worker threads. Defaults to `10`.
+        - max_retries (int, optional): Maximum number of retries per job. Defaults to `5`.
+        - job_complete_for_logging (int, optional): Emit progress logs every N completed jobs. Defaults to `500`.
+
+        **Returns:**
+        - dict[str, bool]: A dictionary where each key is a GCS path and the value is ``True`` if the file exists,
+          ``False`` otherwise.
+        """
+        # _check_file_exists_in_gcs is needed because check_file_exists returns a plain bool, which would make it
+        # impossible to associate each result back to its path after the threads complete. By wrapping
+        # it here we return both the path and the result together, so the final dict comprehension
+        # can correctly map path -> bool regardless of the order results come back from the thread pool.
+        def _check_file_exists_in_gcs(path: str) -> dict:
+            return {"path": path, "exists": self.check_file_exists(path)}
+
+        jobs = [[path] for path in full_paths]
+
+        results = MultiThreadedJobs().run_multi_threaded_job(
+            workers=workers,
+            function=_check_file_exists_in_gcs,
+            list_of_jobs_args_list=jobs,
+            collect_output=True,
+            max_retries=max_retries,
+            fail_on_error=True,
+            jobs_complete_for_logging=job_complete_for_logging
+        )
+        return {item["path"]: item["exists"] for item in results}  # type: ignore[union-attr]
+
+    def read_files_multithreaded(
+            self,
+            full_paths: list[str],
+            encoding: str = "utf-8",
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
+            job_complete_for_logging: int = 500
+    ) -> dict[str, str]:
+        """Read the contents of multiple GCS files in parallel.
+
+        **Args:**
+        - full_paths (list[str]): List of full GCS paths (e.g. ``gs://bucket/path/to/object``) to read.
+        - encoding (str, optional): The encoding to use when decoding file contents. Defaults to `utf-8`.
+        - workers (int, optional): Number of worker threads. Defaults to `10`.
+        - max_retries (int, optional): Maximum number of retries per job. Defaults to `5`.
+        - job_complete_for_logging (int, optional): Emit progress logs every N completed jobs. Defaults to `500`.
+
+        **Returns:**
+        - dict[str, str]: A dictionary where each key is a GCS path and the value is the file's contents as a string.
+        """
+        # _read_file_contents_from_gcs is needed because read_file returns a plain str, which would make it
+        # impossible to associate each result back to its path after the threads complete. By wrapping
+        # it here we return both the path and the contents together, so the final dict comprehension
+        # can correctly map path -> contents regardless of the order results come back from the thread pool.
+        def _read_file_contents_from_gcs(path: str) -> dict:
+            return {"path": path, "contents": self.read_file(path, encoding=encoding)}
+
+        jobs = [[path] for path in full_paths]
+
+        results = MultiThreadedJobs().run_multi_threaded_job(
+            workers=workers,
+            function=_read_file_contents_from_gcs,
+            list_of_jobs_args_list=jobs,
+            collect_output=True,
+            max_retries=max_retries,
+            fail_on_error=True,
+            jobs_complete_for_logging=job_complete_for_logging
+        )
+        return {item["path"]: item["contents"] for item in results}  # type: ignore[union-attr]
+
+    def load_blobs_from_full_paths_multithreaded(
+            self,
+            full_paths: list[str],
+            file_name_only: bool = False,
+            workers: int = ARG_DEFAULTS["multithread_workers"],  # type: ignore[assignment]
+            max_retries: int = ARG_DEFAULTS["max_retries"],  # type: ignore[assignment]
+            job_complete_for_logging: int = 500
+    ) -> list[dict]:
+        """Load multiple blobs in parallel from a list of full GCS paths.
+
+        Args:
+            full_paths: List of full GCS paths (e.g. gs://bucket/path/to/object).
+            file_name_only: Whether to return only the file path in each dict.
+            workers: Number of worker threads.
+            max_retries: Maximum number of retries per job.
+            job_complete_for_logging: Emit progress logs every N completed jobs.
+
+        Returns:
+            List of dictionaries shaped like :meth:`_create_bucket_contents_dict`.
+
+        Raises:
+            Exception: If any blob cannot be loaded / does not exist / returns no output.
+        """
+        if not full_paths:
+            return []
+
+        # De-duplicate input paths and keep order
+        unique_paths = list(dict.fromkeys(full_paths))
+        jobs = [(path, file_name_only) for path in unique_paths]
+
+        results = MultiThreadedJobs().run_multi_threaded_job(
+            workers=workers,
+            function=self._load_blob_full_path_to_bucket_contents_dict,
+            list_of_jobs_args_list=jobs,
+            collect_output=True,
+            max_retries=max_retries,
+            fail_on_error=True,
+            jobs_complete_for_logging=job_complete_for_logging
+        )
+
+        # If any jobs failed, MultiThreadedJobs would have raised. Still defensively validate output.
+        if results is None or (unique_paths and (None in results)):  # type: ignore[operator]
+            raise Exception("Failed to load all blobs")
+
+        if len(results) != len(unique_paths) or any(not item for item in results):  # type: ignore[arg-type]
+            raise Exception("Failed to load all blobs")
+
+        return results  # type: ignore[return-value]

@@ -32,4 +32,4 @@ responses:
       X-GUploader-UploadID: AAO2Vwr9-SJ0QfSU6qNgZBXfoDuxvvpyEAdYiu0cu6DilCX1x01bX7Nc0v0B2_jLFYSIKjs
     method: GET
     status: 200
-    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o?projection=noAcl&userProject=operations-portal-427515&prettyPrint=false
+    url: https://storage.googleapis.com/storage/v1/b/test_bucket/o?maxResults=1000&projection=noAcl&userProject=operations-portal-427515&prettyPrint=false

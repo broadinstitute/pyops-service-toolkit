@@ -5,3 +5,4 @@ omit =
     */tdr_api_schema/*
     */get_api_yaml.py
     */azure_utils.py
+    */ingest_util.py

@@ -108,6 +108,19 @@ class TerraGroups:
         if role not in self.GROUP_MEMBERSHIP_OPTIONS:
             raise ValueError(f"Role must be one of {self.GROUP_MEMBERSHIP_OPTIONS}")
 
+    def get_all_groups(self) -> requests.Response:
+        """
+        Get all groups.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{SAM_LINK}/groups/v1"
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
+
     def remove_user_from_group(self, group: str, email: str, role: str) -> requests.Response:
         """
         Remove a user from a group.
@@ -198,6 +211,26 @@ class TerraGroups:
             accept_return_codes=accept_return_codes
         )
 
+    def check_group_members(self, group: str, role: str) -> requests.Response:
+        """
+        Check the members of a group.
+
+        **Args:**
+        - group (str): The name of the group.
+        - role (str): The role to check for in the group
+            (must be one of `ops_utils.terra_utils.MEMBER` or `ops_utils.terra_utils.ADMIN`).
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{SAM_LINK}/groups/v1/{group}/{role}"
+        self._check_role(role)
+        logging.info(f"Checking {role}s in group {group}")
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
+
 
 class TerraWorkspace:
     """Terra workspace class to manage workspaces and their attributes."""
@@ -251,18 +284,22 @@ class TerraWorkspace:
         """
         return f"{self.billing_project}/{self.workspace_name}"
 
-    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000) -> Any:
+    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000, verbose: bool = True, columns_to_return : list | None = None) -> Any:
         """
         Yield all entity metrics from the workspace.
 
         Args:
             entity (str): The type of entity to query.
             total_entities_per_page (int, optional): The number of entities per page. Defaults to 40000.
+            verbose (bool, optional): If True, will log the progress of fetching entity metrics. Defaults to True.
+            columns_to_return (list, optional): A list of columns to return. Defaults to None.
 
         Yields:
             Any: The JSON response containing entity metrics.
         """
         url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityQuery/{entity}?pageSize={total_entities_per_page}"  # noqa: E501
+        if columns_to_return is not None:
+            url += f"&fields={','.join(columns_to_return)}"
         response = self.request_util.run_request(
             uri=url,
             method=GET,
@@ -275,11 +312,13 @@ class TerraWorkspace:
         )
         yield first_page_json
         total_pages = first_page_json["resultMetadata"]["filteredPageCount"]
-        logging.info(
-            f"Looping through {total_pages} pages of data")
+        if verbose:
+            logging.info(
+                f"Looping through {total_pages} pages of data")
 
         for page in range(2, total_pages + 1):
-            logging.info(f"Getting page {page} of {total_pages}")
+            if verbose:
+                logging.info(f"Getting page {page} of {total_pages}")
             next_page = self.request_util.run_request(
                 uri=url,
                 method=GET,
@@ -347,21 +386,25 @@ class TerraWorkspace:
             f"Getting workspace info for {self.billing_project}/{self.workspace_name}")
         return self.request_util.run_request(uri=url, method=GET)
 
-    def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False) -> list[dict]:
+    def get_gcp_workspace_metrics(self, entity_type: str, remove_dicts: bool = False, total_entities_per_page: int = 40000, columns_to_return: list | None = None, verbose: bool = True) -> list[dict]:
         """
         Get metrics for a specific entity type in the workspace (specifically for Terra on GCP).
 
         **Args:**
         - entity_type (str): The type of entity to get metrics for.
         - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
+        - total_entities_per_page (int, optional): The total number of entities per page. Defaults to 40000.
+        - columns_to_return (list | None, optional): A list of columns to return. Defaults to None.
+        - verbose (bool, optional): Whether to log verbose output. Defaults to `True`.
 
         **Returns:**
         - list[dict]: A list of dictionaries containing entity metrics.
         """
         results = []
-        logging.info(f"Getting {entity_type} metadata for {self.billing_project}/{self.workspace_name}")
+        if verbose:
+            logging.info(f"Getting {entity_type} metadata for {self.billing_project}/{self.workspace_name}")
 
-        for page in self._yield_all_entity_metrics(entity=entity_type):
+        for page in self._yield_all_entity_metrics(entity=entity_type, total_entities_per_page=total_entities_per_page, columns_to_return=columns_to_return, verbose=verbose):
             results.extend(page["results"])
 
         # If remove_dicts is True, remove dictionaries from the workspace metrics
@@ -369,6 +412,29 @@ class TerraWorkspace:
             for row in results:
                 row['attributes'] = self._remove_dict_from_attributes(row['attributes'])
         return results
+
+    def get_flat_list_of_table_entity(self, entity_type: str, remove_dicts: bool = False, columns_to_return: list | None = None, verbose: bool = True) -> list[dict]:
+        """
+        Convert metrics returned by get_gcp_workspace_metrics to a flat list of dictionaries.
+
+        Adds the entity name to the dictionary with key "{entity_type}_id".
+
+        **Args:**
+        - entity_type (str): The type of entity to get metrics for.
+        - remove_dicts (bool, optional): Whether to remove dictionaries from the workspace metrics. Defaults to `False`.
+        - columns_to_return (list | None, optional): A list of columns to return. Defaults to None.
+        - verbose (bool, optional): Whether to log verbose output. Defaults to `True`.
+
+        **Returns:**
+        - list[dict]: A list of dictionaries containing entity metrics.
+        """
+        table_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type, remove_dicts=remove_dicts, columns_to_return=columns_to_return, verbose=verbose)
+        convert_metrics = []
+        for row in table_metrics:
+            converted_row = row['attributes']
+            converted_row[f"{row['entityType']}_id"] = row['name']
+            convert_metrics.append(converted_row)
+        return convert_metrics
 
     def get_specific_entity_metrics(self, entity_type: str, entity_name: str) -> requests.Response:
         """
@@ -381,7 +447,7 @@ class TerraWorkspace:
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"
+        url = f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entities/{entity_type}/{entity_name}"  # noqa: E501
         return self.request_util.run_request(uri=url, method=GET)
 
     def _remove_dict_from_attributes(self, attributes: dict) -> dict:
@@ -649,6 +715,98 @@ class TerraWorkspace:
             data=data
         )
 
+    def _batch_upsert(self, update_dict: list) -> requests.Response:
+        """
+        Run batch upsert on workspace table.
+
+        **Args:**
+        - update_dict (dict): A dictionary to update the workspace table.
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        endpoint = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/entities/batchUpsert"
+        return self.request_util.run_request(
+            uri=endpoint,
+            data=json.dumps(update_dict),
+            content_type=APPLICATION_JSON,
+            method=POST
+        )
+
+    def upload_metadata_with_batch_upsert(self, table_data: dict, force: bool = False) -> requests.Response:
+        """
+        Upload metadata to one or more workspace entity tables using batch upsert.
+
+        Builds the Terra batch upsert payload from a structured input dictionary and calls
+        `batch_upsert` with the result.
+
+        **Args:**
+        - table_data (dict): A dictionary mapping table names to their data configuration.
+            Each entry should have the following structure:
+
+            ```python
+            {
+                "table_name": {
+                    "table_id_column": "column_that_is_the_entity_id",
+                    "row_data": [
+                        {"column_that_is_the_entity_id": "row1_id", "column_b": "value1", ...},
+                        ...
+                    ]
+                },
+                ...
+            }
+            ```
+
+            - `table_id_column`: The name of the column whose value is used as the entity name
+              (`name` field in the upsert payload). This column is **not** included as an attribute
+              operation.
+            - `row_data`: A list of row dictionaries. Every key except `table_id_column` becomes
+              an `AddUpdateAttribute` operation.
+        - force (bool, optional): Whether to force update if id column does not match table name + _id.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        upsert_payload = []
+        table_name_failures = []
+        for table_name, config in table_data.items():
+            id_column = config["table_id_column"]
+            if id_column != f"{table_name}_id":
+                table_name_failures.append(
+                    f"id column, {id_column}, does not match table {table_name}. This column will be renamed to {table_name}_id."
+                    "Use force=True to force update."
+                )
+            rows = config["row_data"]
+            for row in rows:
+                entity_name = row.get(id_column)
+                if entity_name is None:
+                    raise Exception(f"Primary key column '{id_column}' is missing from row data - {row}")
+                operations = [
+                    {
+                        "op": "AddUpdateAttribute",
+                        "attributeName": col,
+                        "addUpdateAttribute": value,
+                    }
+                    for col, value in row.items()
+                    if col != id_column
+                ]
+                upsert_payload.append(
+                    {
+                        "name": entity_name,
+                        "entityType": table_name,
+                        "operations": operations,
+                    }
+                )
+        if table_name_failures:
+            for message in table_name_failures:
+                if force:
+                    logging.warning(message)
+                else:
+                    logging.error(message)
+            if not force:
+                raise Exception("One or more tables have id columns that do not match the expected format."
+                                " See error messages above for details. Use force=True to force update.")
+        return self._batch_upsert(upsert_payload)
+
     def get_workspace_workflows(self) -> requests.Response:
         """
         Get the workflows for the workspace.
@@ -746,6 +904,40 @@ class TerraWorkspace:
             )
         return res
 
+    def set_table_column_order(self, column_order: dict) -> requests.Response:
+        """
+        Set the column order for one or more entity tables in the workspace.
+
+        **Args:**
+        - column_order (dict): A dictionary mapping table names to their column configuration. Each table entry
+            should have the following structure:
+
+            ```
+            {
+                "table_name": {
+                    "shown": ["col1", "col2", ...],  # Columns to display, in order
+                    "hidden": ["col3", "col4", ...]  # Columns to hide
+                },
+                ...
+            }
+            ```
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        logging.info(
+            f"Setting column order for tables in workspace {self.billing_project}/{self.workspace_name}"
+        )
+        return self.update_workspace_attributes(
+            attributes=[
+                {
+                    "op": "AddUpdateAttribute",
+                    "attributeName": "workspace-column-defaults",
+                    "addUpdateAttribute": json.dumps(column_order)
+                }
+            ]
+        )
+
     def change_workspace_public_setting(self, public: bool) -> requests.Response:
         """
         Change a workspace's public setting.
@@ -800,7 +992,7 @@ class TerraWorkspace:
         - requests.Response: The response from the request.
         """
         response = self.request_util.run_request(
-            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",
+            uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}/entityTypes/{entity_to_delete}",  # noqa: E501
             method=DELETE
         )
         if response.status_code == 204:
@@ -931,7 +1123,7 @@ class TerraWorkspace:
             content_type=APPLICATION_JSON,
             data=json.dumps(payload),
         )
-      
+
     def retry_failed_submission(self, submission_id: str) -> requests.Response:
         """
         Retry a failed submission in Terra.
@@ -966,14 +1158,14 @@ class TerraWorkspace:
         """
         url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}"
         logging.info(
-            f"Getting status for submission: '{submission_id}' in workspace {self.billing_project}/{self.workspace_name}"
+            f"Getting status for submission: '{submission_id}' in workspace {self.billing_project}/{self.workspace_name}"  # noqa: E501
         )
         return self.request_util.run_request(
             uri=url,
             method=GET
         )
 
-    def get_workspace_submission_status(self) ->requests.Response:
+    def get_workspace_submission_status(self) -> requests.Response:
         """
         Get the status of all submissions in a Terra workspace.
 
@@ -989,18 +1181,25 @@ class TerraWorkspace:
             method=GET
         )
 
-    def get_workflow_status(self, submission_id: str, workflow_id: str) -> requests.Response:
+    def get_workflow_status(
+            self,
+            submission_id: str,
+            workflow_id: str,
+            expand_sub_workflow_metadata: bool = False) -> requests.Response:
         """
         Get the status of a workflow in a submission in Terra.
 
         **Args:**
         - submission_id (str): The ID of the submission.
         - workflow_id (str): The ID of the workflow.
+        - expand_sub_workflow_metadata (bool, optional): Whether to expand the expand_sub workflow metadata.
+          Defaults to `False`.
 
         **Returns:**
         - requests.Response: The response from the request.
         """
-        url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}/workflows/{workflow_id}"  # noqa: E501
+        expand_metadata = '?expandSubWorkflows=true' if expand_sub_workflow_metadata else ''
+        url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}/submissions/{submission_id}/workflows/{workflow_id}{expand_metadata}"  # noqa: E501
         logging.info(
             f"Getting status for workflow: '{workflow_id}' in submission: '{submission_id}' "
             f"in workspace {self.billing_project}/{self.workspace_name}"
@@ -1010,7 +1209,9 @@ class TerraWorkspace:
             method=GET
         )
 
-    def get_workspace_submission_stats(self, method_name: Optional[str] = None, retrieve_running_ids: bool = True) -> dict:
+    def get_workspace_submission_stats(
+            self, method_name: Optional[str] = None, retrieve_running_ids: bool = True
+    ) -> dict:
         """
         Get submission statistics for a Terra workspace, optionally filtered by method name.
 
@@ -1056,11 +1257,11 @@ class TerraWorkspace:
                     if workflow["status"] in ["Running", "Submitted", "Queued"]:
                         entity_id = workflow["workflowEntity"]["entityName"]
                         workflow_statuses['id_still_running'].append(entity_id)  # type: ignore[attr-defined]
-        running_count = workflow_statuses['running'] + workflow_statuses['submitted'] + workflow_statuses['queued']  # type: ignore[operator]
-        if retrieve_running_ids and len(workflow_statuses['id_still_running']) != running_count:  # type: ignore[arg-type]
+        running_count = workflow_statuses['running'] + workflow_statuses['submitted'] + workflow_statuses['queued']  # type: ignore[operator]  # noqa: E501
+        if retrieve_running_ids and len(workflow_statuses['id_still_running']) != running_count:  # type: ignore[arg-type]  # noqa: E501
             logging.warning(
                 f"Discrepancy found between total running/pending workflows, {running_count}, "
-                f"and the count of ids still running/pending, {len(workflow_statuses['id_still_running'])}. "  # type: ignore[arg-type]
+                f"and the count of ids still running/pending, {len(workflow_statuses['id_still_running'])}. "  # type: ignore[arg-type]  # noqa: E501
                 "Workflows may have completed between API calls."
             )
         denominator = workflow_statuses['succeeded'] + workflow_statuses['failed']  # type: ignore[operator]
@@ -1073,4 +1274,22 @@ class TerraWorkspace:
             workflow_statuses['success_rate'] = 0.0
         return workflow_statuses
 
+    def get_workspace_details(self, terra_google_project_id: str) -> requests.Response:
+        """
+        Get details of a Terra workspace using the Google project ID.
 
+        **Args:**
+        - terra_google_project_id (str): The Google project ID of the Terra workspace.
+
+        **Returns:**
+        - requests.Response: The response from the request.
+        """
+        url = f"{RAWLS_LINK}/workspaces/{self.billing_project}/{self.workspace_name}?userProject={terra_google_project_id}"  # noqa: E501
+        logging.info(
+            f"Getting workspace details for workspace '{self.workspace_name}' using Terra Google"
+            f" project ID: '{terra_google_project_id}'"
+        )
+        return self.request_util.run_request(
+            uri=url,
+            method=GET
+        )
