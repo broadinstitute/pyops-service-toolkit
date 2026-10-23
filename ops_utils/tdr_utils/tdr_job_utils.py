@@ -117,7 +117,8 @@ class SubmitAndMonitorMultipleJobs:
         """
         failed_jobs: list[str] = []
         total_jobs = len(self.job_args_list)
-        batch_durations: list[Any] = []
+        batch_durations: list[float] = []
+        total_batches = (total_jobs + self.batch_size - 1) // self.batch_size
         logging.info(f"Processing {total_jobs} {self.job_function.__name__} jobs in batches of {self.batch_size}")
 
         # Process jobs in batches
@@ -126,15 +127,15 @@ class SubmitAndMonitorMultipleJobs:
             current_batch = self.job_args_list[i:i + self.batch_size]
             start_time = time.time()
             batch_num = i // self.batch_size + 1
-            batches_left = (total_jobs + self.batch_size - 1) // self.batch_size - batch_num
+            batches_remaining = total_batches - batch_num + 1
             logging.info(
-                f"Submitting jobs for batch {batch_num} of {batches_left} with {len(current_batch)} jobs "
+                f"Submitting jobs for batch {batch_num} of {total_batches} with {len(current_batch)} jobs "
             )
 
             # Estimate time remaining per batch
             if batch_durations:
                 avg_duration = sum(batch_durations) / len(batch_durations)
-                est_remaining = avg_duration * batches_left
+                est_remaining = avg_duration * batches_remaining
                 logging.info(f"Estimated time remaining: {est_remaining/60:.2f} minutes")
 
             # Submit jobs for the current batch
