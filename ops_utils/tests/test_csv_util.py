@@ -209,6 +209,31 @@ class TestCsv:
             }
         ]
 
+    def test_iter_dicts_from_tsv_is_lazy_and_matches_list_version(self):
+        """
+        Test that iterating over a TSV gives the same rows as building the whole list, but one row at a time
+        """
+        tsv_content = "columnA\tcolumnB\nfoo\tbar\nbaz\tqux\n"
+
+        with patch("builtins.open", return_value=StringIO(tsv_content)):
+            rows = self.csv_tab_delimiter.iter_dicts_from_tsv()
+            assert not isinstance(rows, list)
+            assert next(rows) == {"columnA": "foo", "columnB": "bar"}
+            assert list(rows) == [{"columnA": "baz", "columnB": "qux"}]
+
+    def test_iter_dicts_from_tsv_real_file(self, tmp_path):
+        """
+        Test that a comma delimited file on disk can be read again each time the iterator is created
+        """
+        file_path = tmp_path / "data.csv"
+        file_path.write_text('id, value\n1,"a,b"\n2,c\n')
+        csv_util = Csv(file_path=str(file_path), delimiter=",")
+
+        expected = [{"id": "1", "value": "a,b"}, {"id": "2", "value": "c"}]
+        assert list(csv_util.iter_dicts_from_tsv()) == expected
+        assert list(csv_util.iter_dicts_from_tsv()) == expected
+        assert list(csv_util.iter_dicts_from_tsv()) == csv_util.create_list_of_dicts_from_tsv()
+
     def test_create_list_of_dicts_from_tsv_tab_delim_wrong_expected_headers(self):
         """
         Test that a ValueError with the appropriate error message is raised when

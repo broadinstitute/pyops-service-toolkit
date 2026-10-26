@@ -1,7 +1,7 @@
 """Module for CSV file operations."""
 import csv
 import logging
-from typing import Optional, Sequence
+from typing import Iterator, Optional, Sequence
 
 
 class Csv:
@@ -104,6 +104,19 @@ class Csv:
         with open(self.file_path, 'r') as f:
             reader = csv.DictReader(f, delimiter=self.delimiter, skipinitialspace=True)
             return reader.fieldnames  # type: ignore[return-value]
+
+    def iter_dicts_from_tsv(self) -> Iterator[dict]:
+        """
+        Iterate over the rows of a TSV file as dictionaries, one at a time.
+
+        Unlike `create_list_of_dicts_from_tsv`, the whole file is never held in memory so this is suitable for very
+        large files. The file is read again from the start each time the method is called.
+
+        **Returns:**
+        - Iterator[dict]: An iterator of dictionaries with the file headers as keys, one per row.
+        """
+        with open(self.file_path) as f:
+            yield from csv.DictReader(f, delimiter=self.delimiter, skipinitialspace=True)
 
     def create_list_of_dicts_from_tsv(
             self,

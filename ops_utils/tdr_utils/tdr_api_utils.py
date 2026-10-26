@@ -3,7 +3,7 @@
 import json
 import logging
 import requests
-from typing import Any, Optional, Union
+from typing import Any, Iterable, Iterator, Optional, Union
 from pydantic import ValidationError
 
 from ..request_util import GET, POST, DELETE, PUT, RunRequest
@@ -1148,7 +1148,7 @@ class FilterOutSampleIdsAlreadyInDataset:
 
     def __init__(
             self,
-            ingest_metrics: list[dict],
+            ingest_metrics: Iterable[dict],
             dataset_id: str,
             tdr: TDR,
             target_table_name: str,
@@ -1158,7 +1158,8 @@ class FilterOutSampleIdsAlreadyInDataset:
         Initialize the FilterOutSampleIdsAlreadyInDataset class.
 
         **Args:**
-        - ingest_metrics (list[dict]): The metrics to be ingested.
+        - ingest_metrics (Iterable[dict]): The metrics to be ingested. Must be a list to use `run`. Any iterable
+                (e.g. a generator) can be used with `iter_filtered`.
         - dataset_id (str): The ID of the dataset.
         - tdr (`ops_utils.tdr_utils.tdr_utils.TDR`): The TDR instance
         - target_table_name (str): The name of the target table.
@@ -1175,6 +1176,43 @@ class FilterOutSampleIdsAlreadyInDataset:
         self.filter_entity_id = filter_entity_id
         """@private"""
 
+    def _get_existing_ids(self) -> set[str]:
+        """
+        Get all of the IDs that already exist in the target table.
+
+        Returned as a set so that checking each row is a constant time lookup.
+        """
+        logging.info(
+            f"Getting all {self.filter_entity_id} that already exist in table {self.target_table_name} in "
+            f"dataset {self.dataset_id}"
+        )
+        return set(
+            self.tdr.get_dataset_sample_ids(
+                dataset_id=self.dataset_id,
+                target_table_name=self.target_table_name,
+                entity_id=self.filter_entity_id
+            )
+        )
+
+    def iter_filtered(self) -> Iterator[dict]:
+        """
+        Lazily filter out rows that already exist in the dataset.
+
+        Rows are checked one at a time as the returned iterator is consumed, so the ingest metrics never need to be
+        held in memory. The existing IDs are retrieved from the dataset when the first row is requested.
+
+        **Returns:**
+        - Iterator[dict]: The ingest metrics that do not already exist in the dataset.
+        """
+        dataset_sample_ids = self._get_existing_ids()
+        filtered_out = 0
+        for row in self.ingest_metrics:
+            if str(row[self.filter_entity_id]) in dataset_sample_ids:
+                filtered_out += 1
+            else:
+                yield row
+        logging.info(f"Filtered out {filtered_out} rows that already exist in dataset")
+
     def run(self) -> list[dict]:
         """
         Run the filter process to remove sample IDs that already exist in the dataset.
@@ -1182,26 +1220,18 @@ class FilterOutSampleIdsAlreadyInDataset:
         **Returns:**
         - list[dict]: The filtered ingest metrics.
         """
+        ingest_metrics: list[dict] = self.ingest_metrics  # type: ignore[assignment]
         # Get all sample ids that already exist in dataset
-        logging.info(
-            f"Getting all {self.filter_entity_id} that already exist in table {self.target_table_name} in "
-            f"dataset {self.dataset_id}"
-        )
-
-        dataset_sample_ids = self.tdr.get_dataset_sample_ids(
-            dataset_id=self.dataset_id,
-            target_table_name=self.target_table_name,
-            entity_id=self.filter_entity_id
-        )
+        dataset_sample_ids = self._get_existing_ids()
         # Filter out rows that already exist in dataset
         filtered_ingest_metrics = [
             row
-            for row in self.ingest_metrics
+            for row in ingest_metrics
             if str(row[self.filter_entity_id]) not in dataset_sample_ids
         ]
-        if len(filtered_ingest_metrics) < len(self.ingest_metrics):
+        if len(filtered_ingest_metrics) < len(ingest_metrics):
             logging.info(
-                f"Filtered out {len(self.ingest_metrics) - len(filtered_ingest_metrics)} rows that already exist in "
+                f"Filtered out {len(ingest_metrics) - len(filtered_ingest_metrics)} rows that already exist in "
                 f"dataset. There is {len(filtered_ingest_metrics)} rows left to ingest"
             )
 

@@ -7,7 +7,126 @@ import numpy as np
 import pandas as pd
 import math
 from datetime import date, datetime
-from typing import Any, Optional, Union
+from typing import Any, Iterable, Optional, Union
+
+GCP_FILEREF_REGEX = "^gs://.*"
+"""@private"""
+
+
+def _is_null(value: Any) -> bool:
+    """Whether a value counts as null (None or a float NaN), the same way pandas does for scalar cells."""
+    return value is None or (isinstance(value, float) and math.isnan(value))
+
+
+def _is_number(value: Any) -> bool:
+    """Whether a value is an int or float (booleans are not considered numbers)."""
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _is_integer_like(value: Union[int, float]) -> bool:
+    """Whether a number is an int, or a float with no fractional part. NaN is ignored (treated as integer-like)."""
+    if isinstance(value, float):
+        return math.isnan(value) or value.is_integer()
+    return True
+
+
+class _ColumnProfile:
+    """
+    Running summary of everything needed to infer the TDR schema for one column.
+
+    Values are added one at a time so the schema can be inferred in a single pass over the data without ever
+    holding a whole column in memory. The tracked state mirrors what `InferTDRSchema` derives from the full
+    list of values for a column when it works from a DataFrame.
+
+    Two notions of "empty" are tracked, matching the DataFrame path: `non_null_count` only ignores `None`/NaN
+    (used to decide if a column is required), while everything else ignores empty/whitespace-only strings as well
+    (used to decide a column's data type).
+    """
+
+    __slots__ = (
+        "non_null_count", "typed_count", "scalar_count", "list_count", "any_truthy", "has_fileref",
+        "first_value_is_list", "first_scalar_type", "scalars_match_first_type", "scalars_all_numeric",
+        "scalars_all_integer_like", "first_list_item_type", "list_items_match_first_type",
+        "list_items_all_numeric", "list_items_all_integer_like",
+    )
+
+    def __init__(self) -> None:
+        self.non_null_count = 0
+        self.typed_count = 0
+        self.scalar_count = 0
+        self.list_count = 0
+        # Whether any value used for typing is truthy (0, "", False and [] are not)
+        self.any_truthy = False
+        self.has_fileref = False
+        self.first_value_is_list: Optional[bool] = None
+        self.first_scalar_type: Optional[type] = None
+        self.scalars_match_first_type = True
+        self.scalars_all_numeric = True
+        self.scalars_all_integer_like = True
+        self.first_list_item_type: Optional[type] = None
+        self.list_items_match_first_type = True
+        self.list_items_all_numeric = True
+        self.list_items_all_integer_like = True
+
+    def add(self, value: Any) -> None:
+        """Add one value for the column to the profile."""
+        if _is_null(value):
+            return
+        self.non_null_count += 1
+        # Empty/whitespace-only strings are ignored when determining data types
+        if isinstance(value, str) and not value.strip():
+            return
+        self.typed_count += 1
+        if self.first_value_is_list is None:
+            self.first_value_is_list = isinstance(value, list)
+        if value:
+            self.any_truthy = True
+        if isinstance(value, list):
+            self.list_count += 1
+            for item in value:
+                self._add_list_item(item)
+        else:
+            self.scalar_count += 1
+            self._add_scalar(value)
+
+    def _add_scalar(self, value: Any) -> None:
+        if self.first_scalar_type is None:
+            self.first_scalar_type = type(value)
+        elif not isinstance(value, self.first_scalar_type):
+            self.scalars_match_first_type = False
+        if _is_number(value):
+            if not _is_integer_like(value):
+                self.scalars_all_integer_like = False
+        else:
+            self.scalars_all_numeric = False
+            if isinstance(value, str) and re.search(pattern=GCP_FILEREF_REGEX, string=value):
+                self.has_fileref = True
+
+    def _add_list_item(self, item: Any) -> None:
+        if self.first_list_item_type is None:
+            self.first_list_item_type = type(item)
+        elif not isinstance(item, self.first_list_item_type):
+            self.list_items_match_first_type = False
+        if _is_number(item):
+            if not _is_integer_like(item):
+                self.list_items_all_integer_like = False
+        else:
+            self.list_items_all_numeric = False
+            if isinstance(item, str) and re.search(pattern=GCP_FILEREF_REGEX, string=item):
+                self.has_fileref = True
+
+    @property
+    def is_type_consistent(self) -> bool:
+        """Whether all the values used for typing are of the same type."""
+        if self.list_count and self.scalar_count:
+            # Some values are lists and some are not
+            return False
+        if self.list_count:
+            return self.list_items_match_first_type
+        # A column made up of only numbers (ints and floats) is consistent, which matches pandas upcasting a column
+        # of ints and floats to all floats. This does not happen if the column also holds empty strings
+        numbers_upcast_to_float = self.scalars_all_numeric and self.non_null_count == self.typed_count
+        return self.scalars_match_first_type or numbers_upcast_to_float
 
 
 class InferTDRSchema:
@@ -30,7 +149,7 @@ class InferTDRSchema:
 
     def __init__(
             self,
-            input_metadata: list[dict],
+            input_metadata: Iterable[dict],
             table_name: str,
             all_fields_non_required: bool = False,
             allow_disparate_data_types_in_column: bool = False,
@@ -40,7 +159,10 @@ class InferTDRSchema:
         Initialize the InferTDRSchema class.
 
         **Args:**
-        - input_metadata (list[dict]): The input metadata to infer the schema from.
+        - input_metadata (Iterable[dict]): The input metadata to infer the schema from. If this is a `list` the whole
+                list is loaded into a DataFrame to infer the schema. Any other iterable (e.g. a generator) is read in
+                a single pass without holding the rows in memory, which makes it possible to infer the schema for
+                very large inputs. Note that an iterator can only be consumed once.
         - table_name (str): The name of the table for which the schema is being inferred.
         - all_fields_non_required (bool): A boolean indicating whether all columns should be set to non-required
                 besides for primary key. Defaults to `False`
@@ -333,10 +455,122 @@ class InferTDRSchema:
         """
         Infer the schema for the table based on the input metadata.
 
+        If the input metadata is a `list` it is loaded into a DataFrame. Any other iterable is processed in a single
+        streaming pass so that memory use does not grow with the number of rows.
+
         **Returns:**
         - dict: The inferred schema in the format expected by TDR.
         """
         logging.info(f"Inferring schema for table {self.table_name}")
+        if isinstance(self.input_metadata, list):
+            return self._infer_schema_from_dataframe()
+        return self._infer_schema_streaming()
+
+    @staticmethod
+    def _rename_header(header: str) -> str:
+        """Strip the "entity:" prefix from headers such as "entity:sample_id". Other headers are left alone."""
+        return header.split(":", 1)[1] if header.startswith("entity:") else header
+
+    def _resolve_streamed_data_type(self, profile: _ColumnProfile) -> str:
+        """Equivalent of `_python_type_to_tdr_type_conversion` for a column that was profiled while streaming."""
+        if profile.has_fileref:
+            return self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"]
+        # All values are plain numbers
+        if profile.scalar_count == profile.typed_count and profile.scalars_all_numeric:
+            all_integers = profile.scalars_all_integer_like
+            return self.PYTHON_TDR_DATA_TYPE_MAPPING[int if all_integers else float]
+        # All values are lists of plain numbers
+        if profile.list_count == profile.typed_count and profile.list_items_all_numeric:
+            all_integers = profile.list_items_all_integer_like
+            return self.PYTHON_TDR_DATA_TYPE_MAPPING[int if all_integers else float]
+        # Otherwise use the type of the first value (or of the first item if the first value is a list)
+        first_type = profile.first_list_item_type if profile.first_value_is_list else profile.first_scalar_type
+        if first_type is None:
+            return self.PYTHON_TDR_DATA_TYPE_MAPPING[str]
+        return self.PYTHON_TDR_DATA_TYPE_MAPPING[first_type]
+
+    def _infer_schema_streaming(self) -> dict:
+        """
+        Infer the schema from a single pass over the input metadata, keeping only a small summary of each column.
+
+        Produces the same schema as `_infer_schema_from_dataframe`.
+        """
+        profiles: dict[str, _ColumnProfile] = {}
+        total_rows = 0
+        for row in self.input_metadata:
+            total_rows += 1
+            for header, value in row.items():
+                profile = profiles.get(header)
+                if profile is None:
+                    profile = profiles[header] = _ColumnProfile()
+                profile.add(value)
+
+        column_metadata = []
+        problematic_headers = []
+        for original_header, profile in profiles.items():
+            header = self._rename_header(original_header)
+
+            # Determine whether the column is required
+            # arrays cannot be required in tdr
+            if profile.list_count:
+                header_metadata: dict[str, Any] = {"name": header, "required": False}
+            # all rows are none for the column so default to string
+            elif profile.non_null_count == 0:
+                header_metadata = {"name": header, "required": False, "data_type": "string"}
+            elif profile.non_null_count < total_rows or (self.all_fields_non_required and header != self.primary_key):
+                header_metadata = {"name": header, "required": False}
+            else:
+                header_metadata = {"name": header, "required": True}
+
+            # Columns where every value is none have nothing to infer a type from and are not included in the schema
+            if profile.non_null_count == 0:
+                column_metadata.append(header_metadata)
+                continue
+
+            # Determine whether the types in the column are consistent and if they need to be forced to a string
+            force_to_string = False
+            if profile.is_type_consistent:
+                # a column where every value is falsy (e.g. all zeros) is forced to a string. A column of only numbers
+                # with some nulls is loaded into a DataFrame as floats, where the nulls become NaN, which is truthy
+                has_nan_from_nulls = (
+                    profile.non_null_count < total_rows
+                    and profile.non_null_count == profile.scalar_count == profile.typed_count
+                    and profile.scalars_all_numeric
+                )
+                force_to_string = not (profile.any_truthy or has_nan_from_nulls)
+            elif self.allow_disparate_data_types_in_column:
+                logging.info(
+                    f"Not all data types matched for header '{header}' but forcing them to strings as "
+                    f"'allow_disparate_data_types_in_column' setting is set to true"
+                )
+                force_to_string = True
+            else:
+                problematic_headers.append(header)
+
+            if profile.typed_count == 0:
+                # nothing to infer a type from (every value is empty), so default to string
+                data_type = self.PYTHON_TDR_DATA_TYPE_MAPPING[str]
+            else:
+                data_type = self._resolve_streamed_data_type(profile)
+                # a column containing any file references must stay a fileref, even if other values are mismatched
+                if force_to_string and data_type != self.PYTHON_TDR_DATA_TYPE_MAPPING["fileref"]:
+                    logging.info(f"Header '{header}' was forced to string to to mismatched datatypes in column")
+                    data_type = self.PYTHON_TDR_DATA_TYPE_MAPPING[str]
+
+            header_metadata.update({"name": header, "datatype": data_type, "array_of": profile.list_count > 0})
+            column_metadata.append(header_metadata)
+
+        if problematic_headers:
+            raise Exception(
+                f"Not all values for the following headers are of the same type: {problematic_headers}. To force all"
+                f" values in rows of a given column to be forced to the same type and bypass this error, re-run with "
+                f"the 'force_disparate_rows_to_string' option set to true"
+            )
+
+        return {"name": self.table_name, "columns": column_metadata}
+
+    def _infer_schema_from_dataframe(self) -> dict:
+        """Infer the schema by loading all of the input metadata into a DataFrame."""
         # create the dataframe
         metadata_df = pd.DataFrame(self.input_metadata)
         # Replace all nan with None

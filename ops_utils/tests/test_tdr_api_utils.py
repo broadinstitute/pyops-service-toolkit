@@ -202,6 +202,44 @@ class TestTerraWorkspaceUtils:
         ).run()
         assert len(results) == 1
 
+    def test_filter_out_sample_ids_already_in_dataset_iter_filtered_is_lazy(self):
+        pulled = []
+
+        def rows():
+            for sample_id in ["sample1", "sample2", "sample3", "sample4"]:
+                pulled.append(sample_id)
+                yield {"sample_id": sample_id}
+
+        tdr = MagicMock()
+        tdr.get_dataset_sample_ids.return_value = ["sample1", "sample3"]
+        filtered = FilterOutSampleIdsAlreadyInDataset(
+            ingest_metrics=rows(),
+            dataset_id=TEST_DATASET_ID,
+            tdr=tdr,
+            target_table_name=TABLE_NAME,
+            filter_entity_id="sample_id"
+        ).iter_filtered()
+
+        # nothing is read or looked up until the iterator is used
+        assert pulled == []
+        tdr.get_dataset_sample_ids.assert_not_called()
+        assert next(filtered) == {"sample_id": "sample2"}
+        assert pulled == ["sample1", "sample2"]
+        assert list(filtered) == [{"sample_id": "sample4"}]
+        tdr.get_dataset_sample_ids.assert_called_once_with(
+            dataset_id=TEST_DATASET_ID, target_table_name=TABLE_NAME, entity_id="sample_id"
+        )
+
+    def test_filter_out_sample_ids_already_in_dataset_matches_non_string_ids(self):
+        tdr = MagicMock()
+        tdr.get_dataset_sample_ids.return_value = ["1", "3"]
+        rows = [{"id": 1}, {"id": 2}, {"id": 3}]
+        kwargs = dict(dataset_id=TEST_DATASET_ID, tdr=tdr, target_table_name=TABLE_NAME, filter_entity_id="id")
+        assert FilterOutSampleIdsAlreadyInDataset(ingest_metrics=rows, **kwargs).run() == [{"id": 2}]
+        assert list(FilterOutSampleIdsAlreadyInDataset(ingest_metrics=iter(rows), **kwargs).iter_filtered()) == [
+            {"id": 2}
+        ]
+
     @responses.activate
     def test_get_or_create_dataset(self):
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_or_create_dataset.yaml")

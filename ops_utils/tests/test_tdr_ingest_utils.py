@@ -1,5 +1,6 @@
+import pytest
 import responses
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from ops_utils.request_util import RunRequest
 from ops_utils.tdr_utils.tdr_api_utils import TDR
@@ -7,7 +8,8 @@ from ops_utils.terra_util import TerraWorkspace
 from ops_utils.tdr_utils.tdr_ingest_utils import (
     ConvertTerraTableInfoForIngest,
     GetPermissionsForWorkspaceIngest,
-    FilterAndBatchIngest
+    FilterAndBatchIngest,
+    BatchIngest
 )
 
 mock_token = MagicMock()
@@ -113,3 +115,93 @@ class TestTDRIngestUtils:
             }
         ).run()
         assert True
+
+
+class TestBatchIngest:
+    """Tests for ingesting from a list versus lazily from an iterator"""
+
+    @staticmethod
+    def _batch_ingest(ingest_metadata, batch_size=2, **kwargs):
+        return BatchIngest(
+            ingest_metadata=ingest_metadata,
+            tdr=MagicMock(),
+            target_table_name="tbl",
+            dataset_id=TEST_DATASET_ID,
+            batch_size=batch_size,
+            bulk_mode=False,
+            **kwargs
+        )
+
+    @staticmethod
+    def _run_and_capture_batches(batch_ingest):
+        """Run the ingest while recording the records sent to TDR for each batch."""
+        sent = []
+        with patch("ops_utils.tdr_utils.tdr_ingest_utils.StartAndMonitorIngest") as start_and_monitor:
+            start_and_monitor.side_effect = lambda **kw: MagicMock(run=lambda: sent.append(kw["ingest_records"]))
+            batch_ingest.run()
+        return sent
+
+    @staticmethod
+    def _ids(batches):
+        return [[record["id"] for record in batch] for batch in batches]
+
+    def test_list_is_ingested_in_batches(self):
+        rows = [{"id": str(i)} for i in range(5)]
+        sent = self._run_and_capture_batches(self._batch_ingest(rows))
+        assert self._ids(sent) == [["0", "1"], ["2", "3"], ["4"]]
+
+    def test_iterator_is_ingested_in_the_same_batches(self):
+        rows = [{"id": str(i), "n": i} for i in range(5)]
+        from_list = self._run_and_capture_batches(self._batch_ingest(list(rows)))
+        from_iterator = self._run_and_capture_batches(self._batch_ingest(iter(rows)))
+        # every record gets a timestamp when reformatted so compare everything but that
+        for batches in (from_list, from_iterator):
+            for batch in batches:
+                for record in batch:
+                    record.pop("last_modified_date")
+        assert from_iterator == from_list
+
+    def test_iterator_is_only_read_one_batch_at_a_time(self):
+        pulled = []
+        sent = []
+
+        def rows():
+            for i in range(7):
+                pulled.append(i)
+                yield {"id": str(i)}
+
+        batch_ingest = self._batch_ingest(rows(), batch_size=3)
+        with patch("ops_utils.tdr_utils.tdr_ingest_utils.StartAndMonitorIngest") as start_and_monitor:
+            # record how much of the iterator had been consumed when each batch was sent to TDR
+            start_and_monitor.side_effect = lambda **kw: MagicMock(run=lambda: sent.append(len(pulled)))
+            batch_ingest.run()
+        assert sent == [3, 6, 7]
+
+    def test_iterator_of_nothing_ingests_nothing(self):
+        assert self._run_and_capture_batches(self._batch_ingest(iter([]))) == []
+
+    def test_rows_dropped_when_reformatting_do_not_stop_iterator_ingest(self):
+        # a row that does not match the provided schema is dropped, leaving the first batch empty
+        schema_info = {"n": {"datatype": "int64"}}
+        rows = iter([{"id": "bad", "n": "x"}, {"id": "bad2", "n": "y"}, {"id": "good", "n": 3}])
+        sent = self._run_and_capture_batches(self._batch_ingest(rows, schema_info=schema_info))
+        assert self._ids(sent) == [["good"]]
+
+    def test_mixed_lists_and_non_lists_are_only_made_consistent_for_a_list(self):
+        rows = [{"id": "a", "tags": ["x"]}, {"id": "b", "tags": "y"}]
+        from_list = self._run_and_capture_batches(self._batch_ingest(list(rows), batch_size=10))
+        assert [r["tags"] for r in from_list[0]] == [["x"], ["y"]]
+        from_iterator = self._run_and_capture_batches(self._batch_ingest(iter(rows), batch_size=10))
+        assert [r["tags"] for r in from_iterator[0]] == [["x"], "y"]
+
+    def test_test_ingest_exits_after_first_batch_of_iterator(self):
+        pulled = []
+
+        def rows():
+            for i in range(10):
+                pulled.append(i)
+                yield {"id": str(i)}
+
+        with pytest.raises(SystemExit):
+            self._run_and_capture_batches(self._batch_ingest(rows(), batch_size=2, test_ingest=True))
+        assert pulled == [0, 1]
