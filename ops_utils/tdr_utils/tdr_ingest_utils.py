@@ -5,8 +5,9 @@ import logging
 import sys
 import pytz
 from datetime import datetime
+import itertools
 import math
-from typing import Optional, Any
+from typing import Optional, Any, Iterable, Union
 from dateutil import parser
 
 from ..vars import ARG_DEFAULTS
@@ -21,7 +22,7 @@ class BatchIngest:
 
     def __init__(
             self,
-            ingest_metadata: list[dict],
+            ingest_metadata: Union[list[dict], Iterable[dict]],
             tdr: TDR,
             target_table_name: str,
             dataset_id: str,
@@ -39,7 +40,11 @@ class BatchIngest:
         Initialize the BatchIngest class.
 
         **Args:**
-        - ingest_metadata (list[dict]): The metadata to be ingested.
+        - ingest_metadata (list[dict] | Iterable[dict]): The metadata to be ingested. If a `list` is provided, headers
+                where some values are lists and some are not are made consistent before ingesting. Any other iterable
+                (e.g. a generator) is read lazily one batch at a time, so only a single batch is held in memory at
+                once. This is meant for very large inputs. Since the whole input is never available at once, the
+                list/non-list consistency step is not done for an iterable.
         - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
         - target_table_name (str): The name of the target table.
         - dataset_id (str): The ID of the dataset.
@@ -59,7 +64,11 @@ class BatchIngest:
                 with schema info. Defaults to None.
         - skip_reformat (bool, optional): Flag indicating if reformatting should be skipped. Defaults to `False`.
         """
-        self.ingest_metadata = self._reformat_for_type_consistency(ingest_metadata)
+        self.ingest_metadata: Union[list[dict], Iterable[dict]] = (
+            self._reformat_for_type_consistency(ingest_metadata)
+            if isinstance(ingest_metadata, list)
+            else ingest_metadata
+        )
         """@private"""
         self.tdr = tdr
         """@private"""
@@ -124,46 +133,64 @@ class BatchIngest:
 
         return updated_metadata
 
+    def _ingest_batch(self, metrics_batch: list[dict]) -> None:
+        """
+        Reformat one batch of metrics and ingest it into TDR.
+
+        Args:
+            metrics_batch (list[dict]): The batch of metrics to ingest.
+        """
+        if self.skip_reformat:
+            reformatted_batch = metrics_batch
+        else:
+            reformatted_batch = ReformatMetricsForIngest(
+                ingest_metadata=metrics_batch,
+                file_to_uuid_dict=self.file_to_uuid_dict,
+                schema_info=self.schema_info
+            ).run()
+
+        if self.load_tag:
+            load_tag = self.load_tag
+        else:
+            load_tag = f"{self.dataset_id}.{self.target_table_name}"
+        # Start actual ingest
+        if reformatted_batch:
+            StartAndMonitorIngest(
+                tdr=self.tdr,
+                ingest_records=reformatted_batch,
+                target_table_name=self.target_table_name,
+                dataset_id=self.dataset_id,
+                load_tag=load_tag,
+                bulk_mode=self.bulk_mode,
+                update_strategy=self.update_strategy,
+                waiting_time_to_poll=self.waiting_time_to_poll
+            ).run()
+            logging.info(f"Completed batch ingest of {len(reformatted_batch)} rows")
+            if self.test_ingest:
+                logging.info("First batch completed, exiting since test_ingest was used")
+                sys.exit(0)
+        else:
+            logging.info("No rows to ingest in this batch after reformatting")
+
     def run(self) -> None:
         """Run the batch ingestion process."""
-        logging.info(
-            f"Batching {len(self.ingest_metadata)} total rows into batches of {self.batch_size} for ingest")
-        total_batches = math.ceil(len(self.ingest_metadata) / self.batch_size)
-        for i in range(0, len(self.ingest_metadata), self.batch_size):
-            batch_number = i // self.batch_size + 1
-            logging.info(f"Starting ingest batch {batch_number} of {total_batches} into table {self.target_table_name}")
-            metrics_batch = self.ingest_metadata[i:i + self.batch_size]
-            if self.skip_reformat:
-                reformatted_batch = metrics_batch
-            else:
-                reformatted_batch = ReformatMetricsForIngest(
-                    ingest_metadata=metrics_batch,
-                    file_to_uuid_dict=self.file_to_uuid_dict,
-                    schema_info=self.schema_info
-                ).run()
-
-            if self.load_tag:
-                load_tag = self.load_tag
-            else:
-                load_tag = f"{self.dataset_id}.{self.target_table_name}"
-            # Start actual ingest
-            if reformatted_batch:
-                StartAndMonitorIngest(
-                    tdr=self.tdr,
-                    ingest_records=reformatted_batch,
-                    target_table_name=self.target_table_name,
-                    dataset_id=self.dataset_id,
-                    load_tag=load_tag,
-                    bulk_mode=self.bulk_mode,
-                    update_strategy=self.update_strategy,
-                    waiting_time_to_poll=self.waiting_time_to_poll
-                ).run()
-                logging.info(f"Completed batch ingest of {len(reformatted_batch)} rows")
-                if self.test_ingest:
-                    logging.info("First batch completed, exiting since test_ingest was used")
-                    sys.exit(0)
-            else:
-                logging.info("No rows to ingest in this batch after reformatting")
+        if isinstance(self.ingest_metadata, list):
+            logging.info(
+                f"Batching {len(self.ingest_metadata)} total rows into batches of {self.batch_size} for ingest")
+            total_batches = math.ceil(len(self.ingest_metadata) / self.batch_size)
+            for i in range(0, len(self.ingest_metadata), self.batch_size):
+                batch_number = i // self.batch_size + 1
+                logging.info(
+                    f"Starting ingest batch {batch_number} of {total_batches} into table {self.target_table_name}")
+                self._ingest_batch(self.ingest_metadata[i:i + self.batch_size])
+        else:
+            logging.info(f"Reading rows in batches of {self.batch_size} for ingest")
+            rows = iter(self.ingest_metadata)
+            batch_number = 0
+            while metrics_batch := list(itertools.islice(rows, self.batch_size)):
+                batch_number += 1
+                logging.info(f"Starting ingest batch {batch_number} into table {self.target_table_name}")
+                self._ingest_batch(metrics_batch)
         logging.info("Whole Ingest completed")
 
 

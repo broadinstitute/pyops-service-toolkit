@@ -25,7 +25,9 @@ class SetUpTDRTables:
         **Args:**
         - tdr (`ops_utils.tdr_utils.tdr_api_utils.TDR`): An instance of the TDR class.
         - dataset_id (str): The ID of the dataset.
-        - table_info_dict (dict): A dictionary containing table information.
+        - table_info_dict (dict): A dictionary containing table information. The `ingest_metadata` for each table
+                can be a list of dicts, or an iterator of dicts (e.g. a generator) to infer the schema without
+                holding all of the rows in memory.
         - all_fields_non_required (bool): A boolean indicating whether all columns are non-required.
         Defaults to `False`.
         - force_disparate_rows_to_string (bool): A boolean indicating whether disparate rows should be forced to
