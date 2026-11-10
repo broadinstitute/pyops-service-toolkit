@@ -1,3 +1,2 @@
-12.22.0
-- Add ability to infer a TDR schema and ingest into TDR from an iterator (e.g. a generator) so very large tables do not need to be held in memory. `InferTDRSchema` streams the schema when given a non-list iterable, `BatchIngest` reads non-list iterables one batch at a time, and `Csv.iter_dicts_from_tsv` and `FilterOutSampleIdsAlreadyInDataset.iter_filtered` yield rows lazily
-- Speed up `FilterOutSampleIdsAlreadyInDataset` by checking existing IDs against a set instead of a list
+12.23.0
+- Add `azul_utils` for the AnVIL Data Explorer (Azul): `AzulClient` to get the default catalog, check Azul is not reindexing, request a PFB manifest, and validate an Azul access token, plus `SignedUrl`, a holder that redacts signed URLs from logs
