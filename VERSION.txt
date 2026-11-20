@@ -1,2 +1,2 @@
-12.22.1
-- Loosen requirements
+12.23.0
+- Add `TDR.export_snapshot` to start an asynchronous snapshot export (`exportGsPaths`, `validatePrimaryKeyUniqueness` and `signUrls` are supported). Poll the returned job with `get_job_status` and read the result with `get_job_result`
