@@ -298,6 +298,40 @@ class TDR:
         logging.info(f"Making snapshot {snapshot_id} public")
         return self.request_util.run_request(uri=uri, method=PUT, content_type=APPLICATION_JSON, data="true")
 
+    def export_snapshot(
+            self,
+            snapshot_id: str,
+            export_gs_paths: bool = False,
+            validate_primary_key_uniqueness: bool = True,
+            sign_urls: bool = True
+    ) -> requests.Response:
+        """
+        Start an asynchronous export of a snapshot.
+
+        The export runs as a TDR job. Poll it with `get_job_status` and read the export details (for example
+        the signed `manifest.json` URL under `format.parquet.manifest`) with `get_job_result`.
+
+        **Args:**
+        - snapshot_id (str): The ID of the snapshot to export.
+        - export_gs_paths (bool, optional): Whether the export should use `gs://` paths instead of signed
+                `https` URLs. Defaults to `False`.
+        - validate_primary_key_uniqueness (bool, optional): Whether to validate primary key uniqueness during the
+                export (a non-unique primary key fails the export). Defaults to `True`.
+        - sign_urls (bool, optional): Whether to sign the URLs in the export. Defaults to `True`.
+
+        **Returns:**
+        - requests.Response: The response from the request (a `202` with the export job, whose `id` is the job ID).
+        """
+        uri = f"{self.tdr_link}/snapshots/{snapshot_id}/export"
+        # requests renders Python bools as "True"/"False", but TDR expects lowercase
+        params = {
+            "exportGsPaths": str(export_gs_paths).lower(),
+            "validatePrimaryKeyUniqueness": str(validate_primary_key_uniqueness).lower(),
+            "signUrls": str(sign_urls).lower(),
+        }
+        logging.info(f"Exporting snapshot {snapshot_id}")
+        return self.request_util.run_request(uri=uri, method=GET, params=params)
+
     def get_snapshot_info(
             self,
             snapshot_id: str,
@@ -532,7 +566,7 @@ class TDR:
         acceptable_return_code = list(range(100, 600)) if expect_failure else []
         return self.request_util.run_request(uri=uri, method=GET, accept_return_codes=acceptable_return_code)
 
-    def unlock_dataset(self, dataset_id: str, lock_name:str, force_unlock:bool = False) -> requests.Response:
+    def unlock_dataset(self, dataset_id: str, lock_name: str, force_unlock: bool = False) -> requests.Response:
         """Unlock a dataset.
 
         **Args:**

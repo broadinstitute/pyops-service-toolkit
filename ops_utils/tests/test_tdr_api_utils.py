@@ -254,6 +254,42 @@ class TestTerraWorkspaceUtils:
         assert dataset_id == TEST_DATASET_ID
 
     @responses.activate
+    def test_export_snapshot(self):
+        job_id = "4Fp5px7uTV29KiMh89e6aA"
+        responses.add(
+            responses.GET,
+            f"{self.tdr_util.tdr_link}/snapshots/{SNAPSHOT_ID}/export",
+            json={"id": job_id, "job_status": "running"},
+            status=202,
+        )
+        response = self.tdr_util.export_snapshot(snapshot_id=SNAPSHOT_ID)
+        assert response.status_code == 202
+        assert response.json()["id"] == job_id
+        # Defaults match the endpoint's, sent as lowercase strings
+        assert responses.calls[0].request.params == {
+            "exportGsPaths": "false",
+            "validatePrimaryKeyUniqueness": "true",
+            "signUrls": "true",
+        }
+
+    @responses.activate
+    def test_export_snapshot_custom_params(self):
+        responses.add(
+            responses.GET,
+            f"{self.tdr_util.tdr_link}/snapshots/{SNAPSHOT_ID}/export",
+            json={"id": "job-1"},
+            status=202,
+        )
+        self.tdr_util.export_snapshot(
+            snapshot_id=SNAPSHOT_ID, export_gs_paths=True, validate_primary_key_uniqueness=False, sign_urls=False
+        )
+        assert responses.calls[0].request.params == {
+            "exportGsPaths": "true",
+            "validatePrimaryKeyUniqueness": "false",
+            "signUrls": "false",
+        }
+
+    @responses.activate
     def test_get_job_status(self):
         responses._add_from_file(file_path="ops_utils/tests/data/tdr_util/get_job_status.yaml")
         response = self.tdr_util.get_job_status(
