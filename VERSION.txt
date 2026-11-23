@@ -1,2 +1,5 @@
+12.23.1
+- Fix `TerraWorkspace.delete_workspace` returning `406 Not Acceptable`: a successful delete replies 202 with a plain-text message, so the request now sends `Accept: */*` instead of `application/json`
+
 12.23.0
 - Add `TDR.export_snapshot` to start an asynchronous snapshot export (`exportGsPaths`, `validatePrimaryKeyUniqueness` and `signUrls` are supported). Poll the returned job with `get_job_status` and read the result with `get_job_result`
