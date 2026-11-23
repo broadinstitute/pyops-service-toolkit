@@ -214,6 +214,12 @@ class TestTerraWorkspaceMethods(unittest.TestCase):
             request_util=self.mock_request_instance
         )
 
+    def test_delete_workspace_accepts_plain_text_response(self):
+        self.workspace.delete_workspace()
+        _, kwargs = self.mock_request_instance.run_request.call_args
+        self.assertEqual(kwargs["method"], "DELETE")
+        self.assertEqual(kwargs["accept"], "*/*")
+
     def test_validate_terra_headers_for_tdr_conversion_valid(self):
         # Test with valid headers
         valid_headers = ["validHeader", "valid_header", "valid2", "v"]

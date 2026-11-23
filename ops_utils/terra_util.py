@@ -284,7 +284,7 @@ class TerraWorkspace:
         """
         return f"{self.billing_project}/{self.workspace_name}"
 
-    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000, verbose: bool = True, columns_to_return : list | None = None) -> Any:
+    def _yield_all_entity_metrics(self, entity: str, total_entities_per_page: int = 40000, verbose: bool = True, columns_to_return: list | None = None) -> Any:
         """
         Yield all entity metrics from the workspace.
 
@@ -428,7 +428,8 @@ class TerraWorkspace:
         **Returns:**
         - list[dict]: A list of dictionaries containing entity metrics.
         """
-        table_metrics = self.get_gcp_workspace_metrics(entity_type=entity_type, remove_dicts=remove_dicts, columns_to_return=columns_to_return, verbose=verbose)
+        table_metrics = self.get_gcp_workspace_metrics(
+            entity_type=entity_type, remove_dicts=remove_dicts, columns_to_return=columns_to_return, verbose=verbose)
         convert_metrics = []
         for row in table_metrics:
             converted_row = row['attributes']
@@ -852,7 +853,10 @@ class TerraWorkspace:
         """
         return self.request_util.run_request(
             uri=f"{self.terra_link}/workspaces/{self.billing_project}/{self.workspace_name}",
-            method=DELETE
+            method=DELETE,
+            # A successful delete replies 202 with a text/plain message, so a JSON-only Accept header is
+            # rejected with 406 Not Acceptable even though the workspace was deleted.
+            accept="*/*"
         )
 
     def update_workspace_attributes(self, attributes: list[dict]) -> requests.Response:
